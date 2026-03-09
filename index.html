@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frame Rate & Exposure Calculator — UI Prototype</title>
+  <style>
+    /* =========================================================
+       DESIGN TOKENS  (Figma: use as Variables / Styles)
+       ========================================================= */
+    :root {
+      /* --- Color Palette --- */
+      --color-primary:       #3F51B5;   /* Indigo 500  */
+      --color-primary-dark:  #303F9F;
+      --color-primary-light: #C5CAE9;
+      --color-accent:        #FF5722;   /* Deep-Orange 500  */
+      --color-bg:            #F5F6FA;
+      --color-surface:       #FFFFFF;
+      --color-text:          #212121;
+      --color-text-secondary:#757575;
+      --color-border:        #E0E0E0;
+      --color-error:         #D32F2F;
+      --color-error-bg:      #FFEBEE;
+      --color-success:       #2E7D32;
+      --color-success-bg:    #E8F5E9;
+      --color-warning:       #F57F17;
+      --color-warning-bg:    #FFF8E1;
+
+      /* --- Typography (Inter / System) --- */
+      --font-family:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --fs-xs:   0.75rem;   /* 12px */
+      --fs-sm:   0.8125rem; /* 13px */
+      --fs-base: 0.9375rem; /* 15px */
+      --fs-md:   1.125rem;  /* 18px */
+      --fs-lg:   1.5rem;    /* 24px */
+      --fs-xl:   2rem;      /* 32px */
+
+      /* --- Spacing (8-pt grid) --- */
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+      --space-7: 48px;
+
+      /* --- Radii & Shadows --- */
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+      --shadow-elevated: 0 8px 28px rgba(0,0,0,0.12);
+
+      /* --- Transitions --- */
+      --transition: 0.2s ease;
+    }
+
+    /* =========================================================
+       RESET & BASE
+       ========================================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 16px; }
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    /* =========================================================
+       PAGE WRAPPER
+       ========================================================= */
+    .page {
+      width: 100%;
+      max-width: 680px;
+    }
+
+    /* =========================================================
+       HEADER
+       ========================================================= */
+    .header {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+    .header__icon {
+      font-size: 2.5rem;
+      margin-bottom: var(--space-2);
+    }
+    .header__title {
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--color-primary-dark);
+    }
+    .header__subtitle {
+      font-size: var(--fs-base);
+      color: var(--color-text-secondary);
+      max-width: 560px;
+      margin: var(--space-2) auto 0;
+    }
+
+    /* =========================================================
+       TAB BAR  (Segmented Control)
+       ========================================================= */
+    .tab-bar {
+      display: flex;
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+      padding: var(--space-1);
+      margin-bottom: var(--space-5);
+      position: relative;
+    }
+    .tab-bar__btn {
+      flex: 1;
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-primary-dark);
+      cursor: pointer;
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+      position: relative;
+      z-index: 1;
+    }
+    .tab-bar__btn:hover:not(.active) {
+      background: rgba(63,81,181,0.08);
+    }
+    .tab-bar__btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+    .tab-bar__btn.active {
+      background: var(--color-surface);
+      color: var(--color-primary);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    }
+
+    /* =========================================================
+       FORM CARD
+       ========================================================= */
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    .card__section-title {
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+    }
+
+    /* ---- Form Group ---- */
+    .form-group {
+      margin-bottom: var(--space-5);
+    }
+    .form-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+    .form-label .required {
+      color: var(--color-error);
+      margin-left: 2px;
+    }
+
+    .form-hint {
+      display: block;
+      font-size: var(--fs-xs);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-2);
+    }
+
+    /* ---- Input ---- */
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--fs-base);
+      font-family: var(--font-family);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      appearance: none;
+    }
+    .form-input:hover,
+    .form-select:hover {
+      border-color: #BDBDBD;
+    }
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(63,81,181,0.15);
+    }
+
+    /* Error State */
+    .form-input.has-error,
+    .form-select.has-error {
+      border-color: var(--color-error);
+    }
+    .form-input.has-error:focus,
+    .form-select.has-error:focus {
+      box-shadow: 0 0 0 3px rgba(211,47,47,0.15);
+    }
+
+    /* ---- Select Wrapper (custom caret) ---- */
+    .select-wrapper {
+      position: relative;
+    }
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--color-text-secondary);
+      pointer-events: none;
+    }
+    .form-select {
+      padding-right: 40px;
+    }
+
+    /* ---- Inline Error Message ---- */
+    .form-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-1);
+      font-size: var(--fs-xs);
+      color: var(--color-error);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.25s, max-height 0.25s;
+    }
+    .form-error.visible {
+      opacity: 1;
+      max-height: 40px;
+    }
+    .form-error__icon {
+      flex-shrink: 0;
+      width: 14px; height: 14px;
+    }
+
+    /* ---- Input with unit suffix ---- */
+    .input-with-unit {
+      position: relative;
+    }
+    .input-with-unit .unit-suffix {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--fs-sm);
+      color: var(--color-text-secondary);
+      pointer-events: none;
+    }
+    .input-with-unit .form-input {
+      padding-right: 60px;
+    }
+
+    /* =========================================================
+       ACTION BUTTONS
+       ========================================================= */
+    .actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+      margin-top: var(--space-6);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      font-family: var(--font-family);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: background var(--transition), box-shadow var(--transition), transform 0.1s;
+      min-width: 120px;
+    }
+    .btn:active {
+      transform: scale(0.97);
+    }
+    .btn:focus-visible {
+      outline: 2px solid var(--color-primary);
+      outline-offset: 2px;
+    }
+
+    .btn--primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn--primary:hover {
+      background: var(--color-primary-dark);
+      box-shadow: 0 2px 8px rgba(63,81,181,0.25);
+    }
+
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border);
+    }
+    .btn--secondary:hover {
+      background: #F5F5F5;
+      color: var(--color-text);
+      border-color: #BDBDBD;
+    }
+
+    /* =========================================================
+       GLOBAL ERROR BANNER
+       ========================================================= */
+    .global-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-error-bg);
+      border: 1px solid #FFCDD2;
+      border-radius: var(--radius-sm);
+      margin-bottom: var(--space-5);
+      font-size: var(--fs-sm);
+      color: var(--color-error);
+      /* Hidden by default; add .visible to show */
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.3s, max-height 0.3s, padding 0.3s, margin 0.3s;
+      padding: 0 var(--space-4);
+      margin-bottom: 0;
+    }
+    .global-error.visible {
+      opacity: 1;
+      max-height: 80px;
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+    .global-error svg {
+      flex-shrink: 0;
+    }
+
+    /* =========================================================
+       RESULT CARD
+       ========================================================= */
+    .result-card {
+      background: var(--color-success-bg);
+      border: 1.5px solid #A5D6A7;
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      text-align: center;
+      margin-bottom: var(--space-5);
+      /* Hidden state */
+      opacity: 0;
+      transform: translateY(12px);
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s, transform 0.4s, max-height 0.4s, padding 0.4s, margin 0.4s;
+      padding: 0 var(--space-6);
+      margin-bottom: 0;
+    }
+    .result-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 300px;
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+    .result-card__icon {
+      width: 48px; height: 48px;
+      margin: 0 auto var(--space-3);
+      background: var(--color-success);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .result-card__icon svg { fill: #fff; }
+    .result-card__label {
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-success);
+      margin-bottom: var(--space-2);
+    }
+    .result-card__value {
+      font-size: var(--fs-xl);
+      font-weight: 800;
+      color: var(--color-success);
+      margin-bottom: var(--space-2);
+    }
+    .result-card__unit {
+      font-size: var(--fs-md);
+      font-weight: 400;
+      color: var(--color-text-secondary);
+    }
+    .result-card__note {
+      font-size: var(--fs-xs);
+      color: var(--color-text-secondary);
+      margin-top: var(--space-3);
+      font-style: italic;
+    }
+
+    /* =========================================================
+       CAUTION / INFO BANNER
+       ========================================================= */
+    .info-banner {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-warning-bg);
+      border: 1px solid #FFE082;
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-xs);
+      color: var(--color-warning);
+      line-height: 1.5;
+    }
+    .info-banner svg { flex-shrink: 0; margin-top: 1px; }
+
+    /* =========================================================
+       TOOLTIP ICON
+       ========================================================= */
+    .tooltip-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px; height: 16px;
+      border-radius: 50%;
+      background: var(--color-border);
+      color: var(--color-text-secondary);
+      font-size: 10px;
+      font-weight: 700;
+      cursor: help;
+      margin-left: var(--space-1);
+      vertical-align: middle;
+      position: relative;
+    }
+    .tooltip-icon:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--color-text);
+      color: #fff;
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-sm);
+      font-size: var(--fs-xs);
+      font-weight: 400;
+      white-space: nowrap;
+      max-width: 260px;
+      white-space: normal;
+      z-index: 10;
+      box-shadow: var(--shadow-elevated);
+    }
+
+    /* =========================================================
+       FOOTER / DISCLAIMER
+       ========================================================= */
+    .disclaimer {
+      text-align: center;
+      font-size: var(--fs-xs);
+      color: var(--color-text-secondary);
+      padding: var(--space-4) 0;
+    }
+
+    /* =========================================================
+       RESPONSIVE
+       ========================================================= */
+    @media (max-width: 480px) {
+      body { padding: var(--space-4) var(--space-3); }
+      .card { padding: var(--space-5); }
+      .header__title { font-size: var(--fs-lg); }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+      .result-card__value { font-size: var(--fs-lg); }
+    }
+
+    /* =========================================================
+       INTERACTIVE DEMO STATES (for prototype)
+       ========================================================= */
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ====== HEADER ====== -->
+  <header class="header">
+    <div class="header__icon">📷</div>
+    <h1 class="header__title">Frame Rate & Exposure Calculator</h1>
+    <p class="header__subtitle">
+      Calculate the optimal frame rate (fps) and exposure time (&micro;s) for your
+      high-speed imaging application.
+    </p>
+  </header>
+
+  <!-- ====== TAB BAR ====== -->
+  <nav class="tab-bar" role="tablist" aria-label="Calculator mode">
+    <button class="tab-bar__btn active" role="tab" aria-selected="true"
+            id="tab-exposure" aria-controls="panel-exposure"
+            onclick="switchTab('exposure')">
+      ⏱&ensp;Exposure Time
+    </button>
+    <button class="tab-bar__btn" role="tab" aria-selected="false"
+            id="tab-framerate" aria-controls="panel-framerate"
+            onclick="switchTab('framerate')">
+      🎞&ensp;Frame Rate
+    </button>
+  </nav>
+
+  <!-- ====== GLOBAL ERROR BANNER ====== -->
+  <div class="global-error" id="globalError" role="alert" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>Please fix the highlighted errors before calculating.</span>
+  </div>
+
+  <!-- ============================================================
+       TAB PANEL: EXPOSURE TIME
+       ============================================================ -->
+  <div class="tab-content active" id="panel-exposure" role="tabpanel" aria-labelledby="tab-exposure">
+    <div class="card">
+      <!-- <p class="card__section-title">Input Parameters</p> -->
+
+      <!-- Unit Selector (DROPDOWN — recommended for 4+ options) -->
+      <div class="form-group">
+        <label class="form-label" for="exp-unit">
+          Subject Length Units <span class="required">*</span>
+          <span class="tooltip-icon" data-tooltip="Select the measurement unit for FOV length and object speed.">?</span>
+        </label>
+        <div class="select-wrapper">
+          <select class="form-select" id="exp-unit">
+            <option value="" disabled selected>Select a unit…</option>
+            <option value="in">Inches (in)</option>
+            <option value="ft">Feet (ft)</option>
+            <option value="cm">Centimeters (cm)</option>
+            <option value="m">Meters (m)</option>
+          </select>
+        </div>
+        <div class="form-error" id="exp-unit-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Please select a unit.</span>
+        </div>
+      </div>
+
+      <!-- Length of FOV -->
+      <div class="form-group">
+        <label class="form-label" for="exp-fov">
+          Length of FOV in motion direction <span class="required">*</span>
+          <span class="tooltip-icon" data-tooltip="Enter the field of view length in the direction corresponding to the sensor dimension.">?</span>
+        </label>
+        <span class="form-hint">Enter value in selected length units</span>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="exp-fov" placeholder="e.g. 0.064" autocomplete="off" />
+          <span class="unit-suffix" id="exp-fov-suffix">—</span>
+        </div>
+        <div class="form-error" id="exp-fov-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>This field is required. Enter a positive number.</span>
+        </div>
+      </div>
+
+      <!-- Object Speed -->
+      <div class="form-group">
+        <label class="form-label" for="exp-speed">
+          Object Speed <span class="required">*</span>
+        </label>
+        <span class="form-hint">Speed of the subject in selected length-units per second</span>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="exp-speed" placeholder="e.g. 1.3" autocomplete="off" />
+          <span class="unit-suffix" id="exp-speed-suffix">—/s</span>
+        </div>
+        <div class="form-error" id="exp-speed-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>This field is required. Enter a positive number.</span>
+        </div>
+      </div>
+
+      <!-- Resolution -->
+      <div class="form-group">
+        <label class="form-label" for="exp-resolution">
+          Resolution in motion direction <span class="required">*</span>
+          <span class="tooltip-icon" data-tooltip="Sensor resolution (pixels) in the same direction as the FOV length.">?</span>
+        </label>
+        <span class="form-hint">Sensor resolution in pixels</span>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="numeric" id="exp-resolution" placeholder="e.g. 1280" autocomplete="off" />
+          <span class="unit-suffix">px</span>
+        </div>
+        <div class="form-error" id="exp-resolution-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>This field is required. Enter a positive integer.</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button class="btn btn--secondary" type="button" onclick="clearForm('exposure')">
+          ↺&ensp;Clear
+        </button>
+        <button class="btn btn--primary" type="button" onclick="calculate('exposure')">
+          Calculate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       TAB PANEL: FRAME RATE
+       ============================================================ -->
+  <div class="tab-content" id="panel-framerate" role="tabpanel" aria-labelledby="tab-framerate">
+    <div class="card">
+      <p class="card__section-title">Input Parameters</p>
+
+      <!-- Unit Selector -->
+      <div class="form-group">
+        <label class="form-label" for="fr-unit">
+          Subject Length Units <span class="required">*</span>
+          <span class="tooltip-icon" data-tooltip="Select the measurement unit for FOV length and object speed.">?</span>
+        </label>
+        <div class="select-wrapper">
+          <select class="form-select" id="fr-unit">
+            <option value="" disabled selected>Select a unit…</option>
+            <option value="in">Inches (in)</option>
+            <option value="ft">Feet (ft)</option>
+            <option value="cm">Centimeters (cm)</option>
+            <option value="m">Meters (m)</option>
+          </select>
+        </div>
+        <div class="form-error" id="fr-unit-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>Please select a unit.</span>
+        </div>
+      </div>
+
+      <!-- Object Speed -->
+      <div class="form-group">
+        <label class="form-label" for="fr-speed">
+          Object Speed <span class="required">*</span>
+        </label>
+        <span class="form-hint">Speed of the subject in selected length-units per second</span>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="fr-speed" placeholder="e.g. 2500" autocomplete="off" />
+          <span class="unit-suffix" id="fr-speed-suffix">—/s</span>
+        </div>
+        <div class="form-error" id="fr-speed-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>This field is required. Enter a positive number.</span>
+        </div>
+      </div>
+
+      <!-- Length of FOV -->
+      <div class="form-group">
+        <label class="form-label" for="fr-fov">
+          Length of FOV in motion direction <span class="required">*</span>
+          <span class="tooltip-icon" data-tooltip="Enter the FOV length in the direction of object motion.">?</span>
+        </label>
+        <span class="form-hint">Enter value in selected length units</span>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="fr-fov" placeholder="e.g. 1280" autocomplete="off" />
+          <span class="unit-suffix" id="fr-fov-suffix">—</span>
+        </div>
+        <div class="form-error" id="fr-fov-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>This field is required. Enter a positive number.</span>
+        </div>
+      </div>
+
+      <!-- Event Frames -->
+      <div class="form-group">
+        <label class="form-label" for="fr-frames">
+          Event Frames <span class="required">*</span>
+          <span class="tooltip-icon" data-tooltip="Total number of frames you want to capture as the object traverses the FOV. 100 frames is common.">?</span>
+        </label>
+        <span class="form-hint">Number of frames to capture (commonly 100)</span>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="numeric" id="fr-frames" placeholder="e.g. 500" autocomplete="off" />
+          <span class="unit-suffix">frames</span>
+        </div>
+        <div class="form-error" id="fr-frames-error">
+          <svg class="form-error__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <span>This field is required. Enter a positive integer.</span>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions">
+        <button class="btn btn--secondary" type="button" onclick="clearForm('framerate')">
+          ↺&ensp;Clear
+        </button>
+        <button class="btn btn--primary" type="button" onclick="calculate('framerate')">
+          Calculate
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== RESULT CARD ====== -->
+  <div class="result-card" id="resultCard" role="status" aria-live="polite">
+    <div class="result-card__icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <p class="result-card__label" id="resultLabel">Calculated Exposure Time</p>
+    <p class="result-card__value" id="resultValue">—</p>
+    <p class="result-card__unit" id="resultUnit"></p>
+    <p class="result-card__note">
+      ⚠ Approximation — assumes constant speed and orthogonal imaging.
+    </p>
+  </div>
+
+  <!-- ====== INFO / CAUTION BANNER ====== -->
+  <div class="info-banner">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>
+      <strong>Caution:</strong> Results are approximations intended to provide a reasonable
+      target for frame rate and exposure settings. These calculations assume constant
+      speed and imaging orthogonally with respect to the object motion.
+    </span>
+  </div>
+
+  <!-- ====== DISCLAIMER ====== -->
+  <p class="disclaimer">
+    Calculator reference: Phantom High Speed &bull; UI Design Prototype
+  </p>
+
+</div><!-- /.page -->
+
+<!-- ====================================================================
+     INTERACTIVE DEMO SCRIPT (for prototype walkthrough)
+     ==================================================================== -->
+<script>
+  const UNIT_LABELS = { in: 'in', ft: 'ft', cm: 'cm', m: 'm' };
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-bar__btn').forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected', 'false'); });
+    document.querySelectorAll('.tab-content').forEach(p => p.classList.remove('active'));
+
+    if (tab === 'exposure') {
+      document.getElementById('tab-exposure').classList.add('active');
+      document.getElementById('tab-exposure').setAttribute('aria-selected', 'true');
+      document.getElementById('panel-exposure').classList.add('active');
+    } else {
+      document.getElementById('tab-framerate').classList.add('active');
+      document.getElementById('tab-framerate').setAttribute('aria-selected', 'true');
+      document.getElementById('panel-framerate').classList.add('active');
+    }
+    // Hide result and global error when switching tabs
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('globalError').classList.remove('visible');
+  }
+
+  function updateUnitSuffix(selectId, suffixIds) {
+    const select = document.getElementById(selectId);
+    select.addEventListener('change', () => {
+      const u = UNIT_LABELS[select.value] || '—';
+      suffixIds.forEach(([id, append]) => {
+        document.getElementById(id).textContent = u + (append || '');
+      });
+    });
+  }
+  updateUnitSuffix('exp-unit', [['exp-fov-suffix', ''], ['exp-speed-suffix', '/s']]);
+  updateUnitSuffix('fr-unit', [['fr-fov-suffix', ''], ['fr-speed-suffix', '/s']]);
+
+  function showError(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('visible');
+    // Also mark input
+    const input = el?.previousElementSibling?.querySelector?.('.form-input, .form-select')
+                || el?.parentElement?.querySelector?.('.form-input, .form-select');
+    if (input) input.classList.add('has-error');
+  }
+
+  function hideError(id) {
+    const el = document.getElementById(id);
+    if (el) el.classList.remove('visible');
+    const input = el?.previousElementSibling?.querySelector?.('.form-input, .form-select')
+                || el?.parentElement?.querySelector?.('.form-input, .form-select');
+    if (input) input.classList.remove('has-error');
+  }
+
+  function clearAllErrors(prefix) {
+    const errorIds = prefix === 'exposure'
+      ? ['exp-unit-error', 'exp-fov-error', 'exp-speed-error', 'exp-resolution-error']
+      : ['fr-unit-error', 'fr-speed-error', 'fr-fov-error', 'fr-frames-error'];
+    errorIds.forEach(hideError);
+    document.getElementById('globalError').classList.remove('visible');
+  }
+
+  function clearForm(mode) {
+    clearAllErrors(mode);
+    document.getElementById('resultCard').classList.remove('visible');
+    if (mode === 'exposure') {
+      document.getElementById('exp-unit').selectedIndex = 0;
+      ['exp-fov', 'exp-speed', 'exp-resolution'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('exp-fov-suffix').textContent = '—';
+      document.getElementById('exp-speed-suffix').textContent = '—/s';
+    } else {
+      document.getElementById('fr-unit').selectedIndex = 0;
+      ['fr-speed', 'fr-fov', 'fr-frames'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('fr-fov-suffix').textContent = '—';
+      document.getElementById('fr-speed-suffix').textContent = '—/s';
+    }
+  }
+
+  function validate(mode) {
+    clearAllErrors(mode);
+    let valid = true;
+    const checkRequired = (inputId, errorId) => {
+      const el = document.getElementById(inputId);
+      const val = el.tagName === 'SELECT' ? el.value : el.value.trim();
+      if (!val || (el.tagName !== 'SELECT' && (isNaN(Number(val)) || Number(val) <= 0))) {
+        showError(errorId);
+        valid = false;
+      }
+    };
+
+    if (mode === 'exposure') {
+      checkRequired('exp-unit', 'exp-unit-error');
+      checkRequired('exp-fov', 'exp-fov-error');
+      checkRequired('exp-speed', 'exp-speed-error');
+      checkRequired('exp-resolution', 'exp-resolution-error');
+    } else {
+      checkRequired('fr-unit', 'fr-unit-error');
+      checkRequired('fr-speed', 'fr-speed-error');
+      checkRequired('fr-fov', 'fr-fov-error');
+      checkRequired('fr-frames', 'fr-frames-error');
+    }
+    return valid;
+  }
+
+  function calculate(mode) {
+    const valid = validate(mode);
+    if (!valid) {
+      document.getElementById('globalError').classList.add('visible');
+      document.getElementById('resultCard').classList.remove('visible');
+      return;
+    }
+    document.getElementById('globalError').classList.remove('visible');
+
+    let resultLabel, resultValue, resultUnit;
+    if (mode === 'exposure') {
+      const fov = parseFloat(document.getElementById('exp-fov').value);
+      const speed = parseFloat(document.getElementById('exp-speed').value);
+      const resolution = parseInt(document.getElementById('exp-resolution').value, 10);
+      // Exposure = (FOV / resolution) / speed  →  seconds  →  convert to µs
+      const exposureSec = (fov / resolution) / speed;
+      const exposureUs = exposureSec * 1e6;
+      resultLabel = 'Calculated Exposure Time';
+      resultValue = exposureUs < 1 ? exposureUs.toFixed(4) : exposureUs.toLocaleString(undefined, {maximumFractionDigits: 2});
+      resultUnit = 'microseconds (µs)';
+    } else {
+      const speed = parseFloat(document.getElementById('fr-speed').value);
+      const fov = parseFloat(document.getElementById('fr-fov').value);
+      const frames = parseInt(document.getElementById('fr-frames').value, 10);
+      // Frame rate = (speed * frames) / FOV
+      const fps = (speed * frames) / fov;
+      resultLabel = 'Calculated Frame Rate';
+      resultValue = fps.toLocaleString(undefined, {maximumFractionDigits: 2});
+      resultUnit = 'frames per second (fps)';
+    }
+
+    document.getElementById('resultLabel').textContent = resultLabel;
+    document.getElementById('resultValue').textContent = resultValue;
+    document.getElementById('resultUnit').textContent = resultUnit;
+    document.getElementById('resultCard').classList.add('visible');
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // Real-time error clearing when user starts fixing
+  document.querySelectorAll('.form-input, .form-select').forEach(el => {
+    const event = el.tagName === 'SELECT' ? 'change' : 'input';
+    el.addEventListener(event, () => {
+      el.classList.remove('has-error');
+      const errorEl = el.closest('.form-group')?.querySelector('.form-error');
+      if (errorEl) errorEl.classList.remove('visible');
+    });
+  });
+</script>
+
+</body>
+</html>
