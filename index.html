@@ -104,6 +104,35 @@
       max-width: 560px;
       margin: var(--space-2) auto 0;
     }
+    .header-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding: var(--space-1);
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+    }
+    .header-nav__link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+    }
+    .header-nav__link:hover {
+      background: rgba(63,81,181,0.08);
+    }
+    .header-nav__link.active {
+      background: var(--color-surface);
+      color: var(--color-primary);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    }
 
     /* =========================================================
        TAB BAR  (Segmented Control)
@@ -527,6 +556,10 @@
       Calculate the optimal frame rate (fps) and exposure time (&micro;s) for your
       high-speed imaging application.
     </p>
+    <div class="header-nav" aria-label="Calculator navigation">
+      <a class="header-nav__link active" href="index.html">📷&ensp;Frame Rate &amp; Exposure</a>
+      <a class="header-nav__link" href="lens-calculator.html">🔭&ensp;Lens Calculator</a>
+    </div>
   </header>
 
   <!-- ====== TAB BAR ====== -->
@@ -583,7 +616,6 @@
           Length of FOV in motion direction <span class="required">*</span>
           <span class="tooltip-icon" data-tooltip="Enter the field of view length in the direction corresponding to the sensor dimension.">?</span>
         </label>
-        <span class="form-hint">Enter value in selected length units</span>
         <div class="input-with-unit">
           <input class="form-input" type="text" inputmode="decimal" id="exp-fov" placeholder="e.g. 0.064" autocomplete="off" />
           <span class="unit-suffix" id="exp-fov-suffix">—</span>
@@ -599,7 +631,6 @@
         <label class="form-label" for="exp-speed">
           Object Speed <span class="required">*</span>
         </label>
-        <span class="form-hint">Speed of the subject in selected length-units per second</span>
         <div class="input-with-unit">
           <input class="form-input" type="text" inputmode="decimal" id="exp-speed" placeholder="e.g. 1.3" autocomplete="off" />
           <span class="unit-suffix" id="exp-speed-suffix">—/s</span>
@@ -616,7 +647,6 @@
           Resolution in motion direction <span class="required">*</span>
           <span class="tooltip-icon" data-tooltip="Sensor resolution (pixels) in the same direction as the FOV length.">?</span>
         </label>
-        <span class="form-hint">Sensor resolution in pixels</span>
         <div class="input-with-unit">
           <input class="form-input" type="text" inputmode="numeric" id="exp-resolution" placeholder="e.g. 1280" autocomplete="off" />
           <span class="unit-suffix">px</span>
@@ -672,7 +702,6 @@
         <label class="form-label" for="fr-speed">
           Object Speed <span class="required">*</span>
         </label>
-        <span class="form-hint">Speed of the subject in selected length-units per second</span>
         <div class="input-with-unit">
           <input class="form-input" type="text" inputmode="decimal" id="fr-speed" placeholder="e.g. 2500" autocomplete="off" />
           <span class="unit-suffix" id="fr-speed-suffix">—/s</span>
@@ -689,7 +718,6 @@
           Length of FOV in motion direction <span class="required">*</span>
           <span class="tooltip-icon" data-tooltip="Enter the FOV length in the direction of object motion.">?</span>
         </label>
-        <span class="form-hint">Enter value in selected length units</span>
         <div class="input-with-unit">
           <input class="form-input" type="text" inputmode="decimal" id="fr-fov" placeholder="e.g. 1280" autocomplete="off" />
           <span class="unit-suffix" id="fr-fov-suffix">—</span>
@@ -706,7 +734,6 @@
           Event Frames <span class="required">*</span>
           <span class="tooltip-icon" data-tooltip="Total number of frames you want to capture as the object traverses the FOV. 100 frames is common.">?</span>
         </label>
-        <span class="form-hint">Number of frames to capture (commonly 100)</span>
         <div class="input-with-unit">
           <input class="form-input" type="text" inputmode="numeric" id="fr-frames" placeholder="e.g. 500" autocomplete="off" />
           <span class="unit-suffix">frames</span>
@@ -740,16 +767,6 @@
     <p class="result-card__note">
       ⚠ Approximation — assumes constant speed and orthogonal imaging.
     </p>
-  </div>
-
-  <!-- ====== INFO / CAUTION BANNER ====== -->
-  <div class="info-banner">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    <span>
-      <strong>Caution:</strong> Results are approximations intended to provide a reasonable
-      target for frame rate and exposure settings. These calculations assume constant
-      speed and imaging orthogonally with respect to the object motion.
-    </span>
   </div>
 
   <!-- ====== DISCLAIMER ====== -->

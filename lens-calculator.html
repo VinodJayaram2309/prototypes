@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Lens Calculator — UI Prototype</title>
+  <style>
+    :root {
+      --color-primary:       #3F51B5;
+      --color-primary-dark:  #303F9F;
+      --color-primary-light: #C5CAE9;
+      --color-bg:            #F5F6FA;
+      --color-surface:       #FFFFFF;
+      --color-text:          #212121;
+      --color-text-secondary:#757575;
+      --color-border:        #E0E0E0;
+      --color-error:         #D32F2F;
+      --color-error-bg:      #FFEBEE;
+      --color-success:       #2E7D32;
+      --color-success-bg:    #E8F5E9;
+
+      --font-family:  'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --fs-xs:   0.75rem;
+      --fs-sm:   0.8125rem;
+      --fs-base: 0.9375rem;
+      --fs-md:   1.125rem;
+      --fs-lg:   1.5rem;
+      --fs-xl:   2rem;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+      --transition: 0.2s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .page { width: 100%; max-width: 720px; }
+
+    .header {
+      text-align: center;
+      margin-bottom: var(--space-6);
+    }
+    .header__icon { font-size: 2.5rem; margin-bottom: var(--space-2); }
+    .header__title {
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--color-primary-dark);
+    }
+    .header__subtitle {
+      font-size: var(--fs-base);
+      color: var(--color-text-secondary);
+      max-width: 620px;
+      margin: var(--space-2) auto 0;
+    }
+
+    .header__back {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: var(--space-4);
+      padding: var(--space-2) var(--space-4);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      color: var(--color-primary);
+      text-decoration: none;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      background: var(--color-surface);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .header__back:hover { background: #F5F5F5; border-color: #BDBDBD; }
+
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .xy-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+
+    .form-group { margin-bottom: var(--space-5); }
+    .form-group:last-of-type { margin-bottom: 0; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    .form-group.is-hidden {
+      display: none;
+    }
+
+    .form-label {
+      display: block;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+    .required { color: var(--color-error); margin-left: 2px; }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--fs-base);
+      font-family: var(--font-family);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      appearance: none;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(63,81,181,0.15);
+    }
+
+    .form-input.has-error,
+    .form-select.has-error {
+      border-color: var(--color-error);
+    }
+
+    .select-wrapper,
+    .input-with-unit {
+      position: relative;
+    }
+
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--color-text-secondary);
+      pointer-events: none;
+    }
+
+    .form-select { padding-right: 40px; }
+
+    .unit-suffix {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--fs-sm);
+      color: var(--color-text-secondary);
+      pointer-events: none;
+    }
+
+    .input-with-unit .form-input { padding-right: 62px; }
+
+    .form-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-1);
+      font-size: var(--fs-xs);
+      color: var(--color-error);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.25s, max-height 0.25s;
+    }
+    .form-error.visible { opacity: 1; max-height: 40px; }
+
+    .actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+      margin-top: var(--space-6);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      font-family: var(--font-family);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      min-width: 120px;
+      transition: background var(--transition), box-shadow var(--transition);
+    }
+
+    .btn--primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn--primary:hover { background: var(--color-primary-dark); }
+
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border);
+    }
+    .btn--secondary:hover { background: #F5F5F5; color: var(--color-text); }
+
+    .global-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-error-bg);
+      border: 1px solid #FFCDD2;
+      border-radius: var(--radius-sm);
+      color: var(--color-error);
+      font-size: var(--fs-sm);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.3s, max-height 0.3s, padding 0.3s, margin 0.3s;
+      padding: 0 var(--space-4);
+      margin-bottom: 0;
+    }
+    .global-error.visible {
+      opacity: 1;
+      max-height: 80px;
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+
+    .result-card {
+      background: var(--color-success-bg);
+      border: 1.5px solid #A5D6A7;
+      border-radius: var(--radius-lg);
+      padding: 0 var(--space-6);
+      text-align: center;
+      opacity: 0;
+      transform: translateY(12px);
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s, transform 0.4s, max-height 0.4s, padding 0.4s, margin 0.4s;
+      margin-bottom: 0;
+    }
+    .result-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 360px;
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    .result-card__label {
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-success);
+      margin-bottom: var(--space-3);
+    }
+
+    .result-rows {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-2);
+      font-size: var(--fs-md);
+      color: var(--color-text);
+      text-align: left;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed #A5D6A7;
+      padding-bottom: var(--space-1);
+    }
+
+    .result-note {
+      margin-top: var(--space-3);
+      font-size: var(--fs-xs);
+      color: var(--color-text-secondary);
+      font-style: italic;
+    }
+
+    .disclaimer {
+      text-align: center;
+      font-size: var(--fs-xs);
+      color: var(--color-text-secondary);
+      padding: var(--space-4) 0;
+    }
+
+    @media (max-width: 680px) {
+      .xy-row { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: var(--space-4) var(--space-3); }
+      .card { padding: var(--space-5); }
+      .header__title { font-size: var(--fs-lg); }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header class="header">
+    <div class="header__icon">🔭</div>
+    <h1 class="header__title">Lens Calculator</h1>
+    <p class="header__subtitle">
+      Phantom Lens calculator UI Design for selecting focal length based on camera model,
+      distance, and required field of view.
+    </p>
+    <a class="header__back" href="index.html">← Back to Frame Rate & Exposure Calculator</a>
+  </header>
+
+  <div class="global-error" id="globalError" role="alert" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span>Please fix the highlighted errors before calculating.</span>
+  </div>
+
+  <div class="card">
+    <div class="form-grid">
+      <div class="form-group full">
+        <label class="form-label" for="cameraModel">Camera Model <span class="required">*</span></label>
+        <div class="select-wrapper">
+          <select class="form-select" id="cameraModel">
+            <option value="" disabled selected>Select a camera model…</option>
+            <option value="v2640">Phantom v2640</option>
+            <option value="veo710">Phantom VEO 710</option>
+            <option value="tmx7510">Phantom TMX 7510</option>
+            <option value="custom">Custom Sensor</option>
+          </select>
+        </div>
+        <div class="form-error" id="cameraModel-error">
+          <span>Please select a camera model.</span>
+        </div>
+      </div>
+
+      <div class="form-group full is-hidden" id="sensorModeGroup">
+        <label class="form-label" for="sensorMode">Sensor Mode <span class="required">*</span></label>
+        <div class="select-wrapper">
+          <select class="form-select" id="sensorMode">
+            <option value="" disabled selected>Select sensor mode…</option>
+          </select>
+        </div>
+        <div class="form-error" id="sensorMode-error"><span>Please select a sensor mode.</span></div>
+      </div>
+
+      <div class="xy-row">
+        <div class="form-group">
+          <label class="form-label" for="resX">Resolution X <span class="required">*</span></label>
+          <div class="input-with-unit">
+            <input class="form-input" type="text" inputmode="numeric" id="resX" placeholder="e.g. 1280" autocomplete="off" />
+            <span class="unit-suffix">px</span>
+          </div>
+          <div class="form-error" id="resX-error"><span>Enter a positive integer.</span></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="resY">Resolution Y <span class="required">*</span></label>
+          <div class="input-with-unit">
+            <input class="form-input" type="text" inputmode="numeric" id="resY" placeholder="e.g. 800" autocomplete="off" />
+            <span class="unit-suffix">px</span>
+          </div>
+          <div class="form-error" id="resY-error"><span>Enter a positive integer.</span></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="units">Units <span class="required">*</span></label>
+        <div class="select-wrapper">
+          <select class="form-select" id="units">
+            <option value="" disabled selected>Select units…</option>
+            <option value="m">Meters</option>
+            <option value="ft">Feet</option>
+          </select>
+        </div>
+        <div class="form-error" id="units-error"><span>Please select units.</span></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="distance">Distance from Object <span class="required">*</span></label>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="distance" placeholder="e.g. 2.5" autocomplete="off" />
+          <span class="unit-suffix" id="distanceSuffix">—</span>
+        </div>
+        <div class="form-error" id="distance-error"><span>Enter a positive number.</span></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fovH">Horizontal Field of View <span class="required">*</span></label>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="fovH" placeholder="e.g. 1.25" autocomplete="off" />
+          <span class="unit-suffix" id="fovHSuffix">—</span>
+        </div>
+        <div class="form-error" id="fovH-error"><span>Enter a positive number.</span></div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="fovV">Vertical Field of View <span class="required">*</span></label>
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="fovV" placeholder="e.g. 0.80" autocomplete="off" />
+          <span class="unit-suffix" id="fovVSuffix">—</span>
+        </div>
+        <div class="form-error" id="fovV-error"><span>Enter a positive number.</span></div>
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn btn--secondary" type="button" id="clearBtn">↺&ensp;Clear</button>
+      <button class="btn btn--primary" type="button" id="calcBtn">Calculate</button>
+    </div>
+  </div>
+
+  <div class="result-card" id="resultCard" role="status" aria-live="polite">
+    <p class="result-card__label">Calculated Focal Length</p>
+    <div class="result-rows">
+      <div class="result-row"><span>Horizontal fit</span><strong id="resultH">—</strong></div>
+      <div class="result-row"><span>Vertical fit</span><strong id="resultV">—</strong></div>
+      <!-- <div class="result-row"><span>Suggested lens (avg)</span><strong id="resultAvg">—</strong></div> -->
+    </div>
+    <!-- <p class="result-note">If horizontal and vertical values differ, pick an average or bias toward your critical framing direction.</p> -->
+  </div>
+
+  <p class="disclaimer">Lens Calculator reference: Phantom High Speed &bull; UI Design Prototype</p>
+</div>
+
+<script>
+  const cameraProfiles = {
+    v2640: {
+      label: 'Phantom v2640',
+      nativeX: 2048,
+      nativeY: 1952,
+      sensorWmm: 27.03,
+      sensorHmm: 25.74,
+      modes: [
+        { id: 'full', label: 'Full Sensor (2048 × 1952)', x: 2048, y: 1952 },
+        { id: '2k', label: '2K Wide (2048 × 1152)', x: 2048, y: 1152 },
+        { id: '1k', label: '1K Crop (1024 × 976)', x: 1024, y: 976 }
+      ]
+    },
+    veo710: {
+      label: 'Phantom VEO 710',
+      nativeX: 1280,
+      nativeY: 800,
+      sensorWmm: 20.48,
+      sensorHmm: 12.8,
+      modes: [
+        { id: 'full', label: 'Full Sensor (1280 × 800)', x: 1280, y: 800 },
+        { id: 'hd', label: 'HD Crop (1280 × 720)', x: 1280, y: 720 },
+        { id: 'svga', label: 'SVGA Crop (800 × 600)', x: 800, y: 600 }
+      ]
+    },
+    tmx7510: {
+      label: 'Phantom TMX 7510',
+      nativeX: 1280,
+      nativeY: 800,
+      sensorWmm: 17.92,
+      sensorHmm: 11.2,
+      modes: [
+        { id: 'full', label: 'Full Sensor (1280 × 800)', x: 1280, y: 800 },
+        { id: 'hd', label: 'HD Crop (1280 × 720)', x: 1280, y: 720 },
+        { id: 'wvga', label: 'WVGA Crop (800 × 480)', x: 800, y: 480 }
+      ]
+    },
+    custom: {
+      label: 'Custom Sensor',
+      nativeX: 1920,
+      nativeY: 1080,
+      sensorWmm: 13.2,
+      sensorHmm: 8.8,
+      modes: [
+        { id: 'full', label: 'Full Sensor (1920 × 1080)', x: 1920, y: 1080 },
+        { id: 'hd', label: 'HD (1280 × 720)', x: 1280, y: 720 },
+        { id: 'vga', label: 'VGA (640 × 480)', x: 640, y: 480 }
+      ]
+    }
+  };
+
+  const fields = ['cameraModel', 'sensorMode', 'resX', 'resY', 'units', 'distance', 'fovH', 'fovV'];
+  const unitLabels = { m: 'm', ft: 'ft' };
+
+  function setError(id, visible) {
+    const err = document.getElementById(id + '-error');
+    if (!err) return;
+    err.classList.toggle('visible', visible);
+    const field = document.getElementById(id);
+    if (field) field.classList.toggle('has-error', visible);
+  }
+
+  function clearErrors() {
+    fields.forEach(id => setError(id, false));
+    document.getElementById('globalError').classList.remove('visible');
+  }
+
+  function updateUnitSuffixes() {
+    const u = unitLabels[document.getElementById('units').value] || '—';
+    document.getElementById('distanceSuffix').textContent = u;
+    document.getElementById('fovHSuffix').textContent = u;
+    document.getElementById('fovVSuffix').textContent = u;
+  }
+
+  function updateCameraDefaults() {
+    const key = document.getElementById('cameraModel').value;
+    const profile = cameraProfiles[key];
+    const sensorModeGroup = document.getElementById('sensorModeGroup');
+    const sensorModeSelect = document.getElementById('sensorMode');
+
+    if (!profile) {
+      sensorModeGroup.classList.add('is-hidden');
+      sensorModeSelect.innerHTML = '<option value="" disabled selected>Select sensor mode…</option>';
+      document.getElementById('resX').value = '';
+      document.getElementById('resY').value = '';
+      return;
+    }
+
+    sensorModeGroup.classList.remove('is-hidden');
+    sensorModeSelect.innerHTML = '<option value="" disabled selected>Select sensor mode…</option>';
+
+    profile.modes.forEach(mode => {
+      const opt = document.createElement('option');
+      opt.value = mode.id;
+      opt.textContent = mode.label;
+      sensorModeSelect.appendChild(opt);
+    });
+
+    const defaultMode = profile.modes[0];
+    sensorModeSelect.value = defaultMode.id;
+    document.getElementById('resX').value = defaultMode.x;
+    document.getElementById('resY').value = defaultMode.y;
+  }
+
+  function updateSensorModeDefaults() {
+    const cameraKey = document.getElementById('cameraModel').value;
+    const sensorMode = document.getElementById('sensorMode').value;
+    const profile = cameraProfiles[cameraKey];
+
+    if (!profile || !sensorMode) return;
+    const mode = profile.modes.find(m => m.id === sensorMode);
+    if (!mode) return;
+
+    document.getElementById('resX').value = mode.x;
+    document.getElementById('resY').value = mode.y;
+  }
+
+  function parsePositiveNumber(id) {
+    const v = document.getElementById(id).value.trim();
+    if (!v || isNaN(Number(v)) || Number(v) <= 0) return null;
+    return Number(v);
+  }
+
+  function parsePositiveInteger(id) {
+    const v = document.getElementById(id).value.trim();
+    if (!/^\d+$/.test(v) || Number(v) <= 0) return null;
+    return Number(v);
+  }
+
+  function validate() {
+    clearErrors();
+    let isValid = true;
+
+    const model = document.getElementById('cameraModel').value;
+    if (!model) { setError('cameraModel', true); isValid = false; }
+    if (model && !document.getElementById('sensorMode').value) { setError('sensorMode', true); isValid = false; }
+    if (parsePositiveInteger('resX') === null) { setError('resX', true); isValid = false; }
+    if (parsePositiveInteger('resY') === null) { setError('resY', true); isValid = false; }
+    if (!document.getElementById('units').value) { setError('units', true); isValid = false; }
+    if (parsePositiveNumber('distance') === null) { setError('distance', true); isValid = false; }
+    if (parsePositiveNumber('fovH') === null) { setError('fovH', true); isValid = false; }
+    if (parsePositiveNumber('fovV') === null) { setError('fovV', true); isValid = false; }
+
+    if (!isValid) document.getElementById('globalError').classList.add('visible');
+    return isValid;
+  }
+
+  function getSensorDimensionsMm(modelKey, resX, resY) {
+    const profile = cameraProfiles[modelKey];
+    if (!profile) {
+      return { w: 13.2, h: 8.8 };
+    }
+
+    const scaleX = resX / profile.nativeX;
+    const scaleY = resY / profile.nativeY;
+    return {
+      w: profile.sensorWmm * scaleX,
+      h: profile.sensorHmm * scaleY
+    };
+  }
+
+  function toMillimeters(value, unit) {
+    return unit === 'ft' ? value * 304.8 : value * 1000;
+  }
+
+  function formatMm(value) {
+    return value.toLocaleString(undefined, { maximumFractionDigits: 2 }) + ' mm';
+  }
+
+  function calculate() {
+    if (!validate()) {
+      document.getElementById('resultCard').classList.remove('visible');
+      return;
+    }
+
+    const model = document.getElementById('cameraModel').value;
+    const resX = parsePositiveInteger('resX');
+    const resY = parsePositiveInteger('resY');
+    const unit = document.getElementById('units').value;
+    const distanceMm = toMillimeters(parsePositiveNumber('distance'), unit);
+    const fovHMm = toMillimeters(parsePositiveNumber('fovH'), unit);
+    const fovVMm = toMillimeters(parsePositiveNumber('fovV'), unit);
+
+    const sensor = getSensorDimensionsMm(model, resX, resY);
+    const focalH = (sensor.w * distanceMm) / fovHMm;
+    const focalV = (sensor.h * distanceMm) / fovVMm;
+    const focalAvg = (focalH + focalV) / 2;
+
+    document.getElementById('resultH').textContent = formatMm(focalH);
+    document.getElementById('resultV').textContent = formatMm(focalV);
+    // document.getElementById('resultAvg').textContent = formatMm(focalAvg);
+    document.getElementById('resultCard').classList.add('visible');
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function clearForm() {
+    clearErrors();
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('cameraModel').selectedIndex = 0;
+    document.getElementById('sensorModeGroup').classList.add('is-hidden');
+    document.getElementById('sensorMode').innerHTML = '<option value="" disabled selected>Select sensor mode…</option>';
+    document.getElementById('units').selectedIndex = 0;
+    ['resX', 'resY', 'distance', 'fovH', 'fovV'].forEach(id => document.getElementById(id).value = '');
+    updateUnitSuffixes();
+  }
+
+  document.getElementById('cameraModel').addEventListener('change', () => {
+    updateCameraDefaults();
+    setError('cameraModel', false);
+    setError('sensorMode', false);
+  });
+
+  document.getElementById('sensorMode').addEventListener('change', () => {
+    updateSensorModeDefaults();
+    setError('sensorMode', false);
+  });
+
+  document.getElementById('units').addEventListener('change', () => {
+    updateUnitSuffixes();
+    setError('units', false);
+  });
+
+  ['resX', 'resY', 'distance', 'fovH', 'fovV'].forEach(id => {
+    document.getElementById(id).addEventListener('input', () => setError(id, false));
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', calculate);
+  document.getElementById('clearBtn').addEventListener('click', clearForm);
+
+  updateUnitSuffixes();
+</script>
+</body>
+</html>
