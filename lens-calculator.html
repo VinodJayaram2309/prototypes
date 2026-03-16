@@ -75,22 +75,33 @@
       margin: var(--space-2) auto 0;
     }
 
-    .header__back {
+    .header-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding: var(--space-1);
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+    }
+    .header-nav__link {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      margin-top: var(--space-4);
       padding: var(--space-2) var(--space-4);
-      border: 1.5px solid var(--color-border);
       border-radius: var(--radius-sm);
-      color: var(--color-primary);
       text-decoration: none;
       font-size: var(--fs-sm);
       font-weight: 600;
-      background: var(--color-surface);
-      transition: background var(--transition), border-color var(--transition);
+      color: var(--color-primary-dark);
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
     }
-    .header__back:hover { background: #F5F5F5; border-color: #BDBDBD; }
+    .header-nav__link:hover { background: rgba(63,81,181,0.08); }
+    .header-nav__link.active {
+      background: var(--color-surface);
+      color: var(--color-primary);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    }
 
     .card {
       background: var(--color-surface);
@@ -347,7 +358,11 @@
       Phantom Lens calculator UI Design for selecting focal length based on camera model,
       distance, and required field of view.
     </p>
-    <a class="header__back" href="index.html">← Back to Frame Rate & Exposure Calculator</a>
+    <nav class="header-nav" aria-label="Calculator navigation">
+      <a class="header-nav__link" href="index.html">📷&ensp;Frame Rate &amp; Exposure</a>
+      <a class="header-nav__link" href="frame-record-calculator.html">🎬&ensp;Frame Rate &amp; Record Time</a>
+      <a class="header-nav__link active" href="lens-calculator.html">🔭&ensp;Lens Calculator</a>
+    </nav>
   </header>
 
   <div class="global-error" id="globalError" role="alert" aria-live="polite">
@@ -386,20 +401,22 @@
       <div class="xy-row">
         <div class="form-group">
           <label class="form-label" for="resX">Resolution X <span class="required">*</span></label>
-          <div class="input-with-unit">
-            <input class="form-input" type="text" inputmode="numeric" id="resX" placeholder="e.g. 1280" autocomplete="off" />
-            <span class="unit-suffix">px</span>
+          <div class="select-wrapper">
+            <select class="form-select" id="resX">
+              <option value="" disabled selected>Select X…</option>
+            </select>
           </div>
-          <div class="form-error" id="resX-error"><span>Enter a positive integer.</span></div>
+          <div class="form-error" id="resX-error"><span>Please select X resolution.</span></div>
         </div>
 
         <div class="form-group">
           <label class="form-label" for="resY">Resolution Y <span class="required">*</span></label>
-          <div class="input-with-unit">
-            <input class="form-input" type="text" inputmode="numeric" id="resY" placeholder="e.g. 800" autocomplete="off" />
-            <span class="unit-suffix">px</span>
+          <div class="select-wrapper">
+            <select class="form-select" id="resY">
+              <option value="" disabled selected>Select Y…</option>
+            </select>
           </div>
-          <div class="form-error" id="resY-error"><span>Enter a positive integer.</span></div>
+          <div class="form-error" id="resY-error"><span>Please select Y resolution.</span></div>
         </div>
       </div>
 
@@ -471,9 +488,9 @@
       sensorWmm: 27.03,
       sensorHmm: 25.74,
       modes: [
-        { id: 'full', label: 'Full Sensor (2048 × 1952)', x: 2048, y: 1952 },
-        { id: '2k', label: '2K Wide (2048 × 1152)', x: 2048, y: 1152 },
-        { id: '1k', label: '1K Crop (1024 × 976)', x: 1024, y: 976 }
+        { id: 'full', label: 'Full Sensor', x: 2048, y: 1952 },
+        { id: '2k', label: '2K Wide', x: 2048, y: 1152 },
+        { id: '1k', label: '1K Crop', x: 1024, y: 976 }
       ]
     },
     veo710: {
@@ -483,9 +500,9 @@
       sensorWmm: 20.48,
       sensorHmm: 12.8,
       modes: [
-        { id: 'full', label: 'Full Sensor (1280 × 800)', x: 1280, y: 800 },
-        { id: 'hd', label: 'HD Crop (1280 × 720)', x: 1280, y: 720 },
-        { id: 'svga', label: 'SVGA Crop (800 × 600)', x: 800, y: 600 }
+        { id: 'full', label: 'Full Sensor', x: 1280, y: 800 },
+        { id: 'hd', label: 'HD Crop', x: 1280, y: 720 },
+        { id: 'svga', label: 'SVGA Crop', x: 800, y: 600 }
       ]
     },
     tmx7510: {
@@ -495,9 +512,9 @@
       sensorWmm: 17.92,
       sensorHmm: 11.2,
       modes: [
-        { id: 'full', label: 'Full Sensor (1280 × 800)', x: 1280, y: 800 },
-        { id: 'hd', label: 'HD Crop (1280 × 720)', x: 1280, y: 720 },
-        { id: 'wvga', label: 'WVGA Crop (800 × 480)', x: 800, y: 480 }
+        { id: 'full', label: 'Full Sensor', x: 1280, y: 800 },
+        { id: 'hd', label: 'HD Crop', x: 1280, y: 720 },
+        { id: 'wvga', label: 'WVGA Crop', x: 800, y: 480 }
       ]
     },
     custom: {
@@ -507,9 +524,9 @@
       sensorWmm: 13.2,
       sensorHmm: 8.8,
       modes: [
-        { id: 'full', label: 'Full Sensor (1920 × 1080)', x: 1920, y: 1080 },
-        { id: 'hd', label: 'HD (1280 × 720)', x: 1280, y: 720 },
-        { id: 'vga', label: 'VGA (640 × 480)', x: 640, y: 480 }
+        { id: 'full', label: 'Full Sensor', x: 1920, y: 1080 },
+        { id: 'hd', label: 'HD', x: 1280, y: 720 },
+        { id: 'vga', label: 'VGA', x: 640, y: 480 }
       ]
     }
   };
@@ -546,8 +563,8 @@
     if (!profile) {
       sensorModeGroup.classList.add('is-hidden');
       sensorModeSelect.innerHTML = '<option value="" disabled selected>Select sensor mode…</option>';
-      document.getElementById('resX').value = '';
-      document.getElementById('resY').value = '';
+      document.getElementById('resX').innerHTML = '<option value="" disabled selected>Select X…</option>';
+      document.getElementById('resY').innerHTML = '<option value="" disabled selected>Select Y…</option>';
       return;
     }
 
@@ -563,8 +580,7 @@
 
     const defaultMode = profile.modes[0];
     sensorModeSelect.value = defaultMode.id;
-    document.getElementById('resX').value = defaultMode.x;
-    document.getElementById('resY').value = defaultMode.y;
+    populateResolutionDropdowns(profile, defaultMode);
   }
 
   function updateSensorModeDefaults() {
@@ -576,8 +592,40 @@
     const mode = profile.modes.find(m => m.id === sensorMode);
     if (!mode) return;
 
-    document.getElementById('resX').value = mode.x;
-    document.getElementById('resY').value = mode.y;
+    populateResolutionDropdowns(profile, mode);
+  }
+
+  function populateResolutionDropdowns(profile, selectedMode) {
+    const xSelect = document.getElementById('resX');
+    const ySelect = document.getElementById('resY');
+
+    const uniqueX = [...new Set(profile.modes.map(mode => mode.x))];
+    const uniqueY = [...new Set(profile.modes.map(mode => mode.y))];
+
+    xSelect.innerHTML = '<option value="" disabled>Select X…</option>';
+    ySelect.innerHTML = '<option value="" disabled>Select Y…</option>';
+
+    uniqueX.forEach(x => {
+      const opt = document.createElement('option');
+      opt.value = String(x);
+      opt.textContent = x + ' px';
+      xSelect.appendChild(opt);
+    });
+
+    uniqueY.forEach(y => {
+      const opt = document.createElement('option');
+      opt.value = String(y);
+      opt.textContent = y + ' px';
+      ySelect.appendChild(opt);
+    });
+
+    if (selectedMode) {
+      xSelect.value = String(selectedMode.x);
+      ySelect.value = String(selectedMode.y);
+    } else {
+      xSelect.selectedIndex = 0;
+      ySelect.selectedIndex = 0;
+    }
   }
 
   function parsePositiveNumber(id) {
@@ -664,8 +712,10 @@
     document.getElementById('cameraModel').selectedIndex = 0;
     document.getElementById('sensorModeGroup').classList.add('is-hidden');
     document.getElementById('sensorMode').innerHTML = '<option value="" disabled selected>Select sensor mode…</option>';
+    document.getElementById('resX').innerHTML = '<option value="" disabled selected>Select X…</option>';
+    document.getElementById('resY').innerHTML = '<option value="" disabled selected>Select Y…</option>';
     document.getElementById('units').selectedIndex = 0;
-    ['resX', 'resY', 'distance', 'fovH', 'fovV'].forEach(id => document.getElementById(id).value = '');
+    ['distance', 'fovH', 'fovV'].forEach(id => document.getElementById(id).value = '');
     updateUnitSuffixes();
   }
 
@@ -685,8 +735,12 @@
     setError('units', false);
   });
 
-  ['resX', 'resY', 'distance', 'fovH', 'fovV'].forEach(id => {
+  ['distance', 'fovH', 'fovV'].forEach(id => {
     document.getElementById(id).addEventListener('input', () => setError(id, false));
+  });
+
+  ['resX', 'resY'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => setError(id, false));
   });
 
   document.getElementById('calcBtn').addEventListener('click', calculate);

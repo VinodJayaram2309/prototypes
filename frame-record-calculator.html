@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frame Rate & Record Time Calculator — UI Prototype</title>
+  <style>
+    :root {
+      --color-primary:       #3F51B5;
+      --color-primary-dark:  #303F9F;
+      --color-primary-light: #C5CAE9;
+      --color-bg:            #F5F6FA;
+      --color-surface:       #FFFFFF;
+      --color-text:          #212121;
+      --color-text-secondary:#757575;
+      --color-border:        #E0E0E0;
+      --color-error:         #D32F2F;
+      --color-error-bg:      #FFEBEE;
+      --color-success:       #2E7D32;
+      --color-success-bg:    #E8F5E9;
+      --color-info-bg:       #E3F2FD;
+      --color-info-border:   #90CAF9;
+      --color-info:          #1565C0;
+
+      --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --fs-xs:   0.75rem;
+      --fs-sm:   0.8125rem;
+      --fs-base: 0.9375rem;
+      --fs-md:   1.125rem;
+      --fs-lg:   1.5rem;
+      --fs-xl:   2rem;
+
+      --space-1: 4px;
+      --space-2: 8px;
+      --space-3: 12px;
+      --space-4: 16px;
+      --space-5: 24px;
+      --space-6: 32px;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 16px;
+      --shadow-card: 0 2px 12px rgba(0,0,0,0.08);
+      --transition: 0.2s ease;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-family);
+      background: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-6) var(--space-4);
+    }
+
+    .page { width: 100%; max-width: 720px; }
+
+    /* ---- Header ---- */
+    .header { text-align: center; margin-bottom: var(--space-6); }
+    .header__icon { font-size: 2.5rem; margin-bottom: var(--space-2); }
+    .header__title {
+      font-size: var(--fs-xl);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      color: var(--color-primary-dark);
+    }
+    .header__subtitle {
+      font-size: var(--fs-base);
+      color: var(--color-text-secondary);
+      max-width: 620px;
+      margin: var(--space-2) auto 0;
+    }
+
+    /* ---- Header Nav ---- */
+    .header-nav {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-3);
+      padding: var(--space-1);
+      background: var(--color-primary-light);
+      border-radius: var(--radius-md);
+    }
+    .header-nav__link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-2) var(--space-4);
+      border-radius: var(--radius-sm);
+      text-decoration: none;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-primary-dark);
+      transition: background var(--transition), color var(--transition), box-shadow var(--transition);
+    }
+    .header-nav__link:hover { background: rgba(63,81,181,0.08); }
+    .header-nav__link.active {
+      background: var(--color-surface);
+      color: var(--color-primary);
+      box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    }
+
+    /* ---- Card ---- */
+    .card {
+      background: var(--color-surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    /* ---- Form Layout ---- */
+    .form-group { margin-bottom: var(--space-5); }
+    .form-group.is-hidden { display: none; }
+
+    .xy-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--space-4);
+    }
+    .xy-row .form-group { margin-bottom: 0; }
+
+    /* ---- Labels ---- */
+    .form-label {
+      display: block;
+      font-size: var(--fs-sm);
+      font-weight: 600;
+      color: var(--color-text);
+      margin-bottom: var(--space-1);
+    }
+    .required { color: var(--color-error); margin-left: 2px; }
+
+    /* ---- Inputs & Selects ---- */
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: var(--space-3) var(--space-4);
+      font-size: var(--fs-base);
+      font-family: var(--font-family);
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: var(--color-surface);
+      color: var(--color-text);
+      transition: border-color var(--transition), box-shadow var(--transition);
+      appearance: none;
+    }
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(63,81,181,0.15);
+    }
+    .form-input.has-error,
+    .form-select.has-error { border-color: var(--color-error); }
+
+    .select-wrapper,
+    .input-with-unit { position: relative; }
+    .select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      width: 0; height: 0;
+      border-left: 5px solid transparent;
+      border-right: 5px solid transparent;
+      border-top: 6px solid var(--color-text-secondary);
+      pointer-events: none;
+    }
+    .form-select { padding-right: 40px; }
+
+    .unit-suffix {
+      position: absolute;
+      right: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-size: var(--fs-sm);
+      color: var(--color-text-secondary);
+      pointer-events: none;
+    }
+    .input-with-unit .form-input { padding-right: 62px; }
+
+    /* ---- Inline error ---- */
+    .form-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-1);
+      font-size: var(--fs-xs);
+      color: var(--color-error);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.25s, max-height 0.25s;
+    }
+    .form-error.visible { opacity: 1; max-height: 40px; }
+
+    /* ---- Section divider ---- */
+    .section-label {
+      font-size: var(--fs-xs);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-4);
+      padding-bottom: var(--space-2);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    /* ---- Actions ---- */
+    .actions {
+      display: flex;
+      gap: var(--space-3);
+      justify-content: flex-end;
+      margin-top: var(--space-6);
+      padding-top: var(--space-5);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-5);
+      font-size: var(--fs-base);
+      font-weight: 600;
+      font-family: var(--font-family);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      min-width: 120px;
+      transition: background var(--transition), box-shadow var(--transition), transform 0.1s;
+    }
+    .btn:active { transform: scale(0.97); }
+
+    .btn--primary {
+      background: var(--color-primary);
+      color: #fff;
+      border-color: var(--color-primary);
+    }
+    .btn--primary:hover {
+      background: var(--color-primary-dark);
+      box-shadow: 0 2px 8px rgba(63,81,181,0.25);
+    }
+
+    .btn--secondary {
+      background: transparent;
+      color: var(--color-text-secondary);
+      border-color: var(--color-border);
+    }
+    .btn--secondary:hover { background: #F5F5F5; color: var(--color-text); }
+
+    .btn--sm {
+      min-width: 80px;
+      padding: var(--space-2) var(--space-4);
+      font-size: var(--fs-sm);
+    }
+
+    /* ---- Global Error Banner ---- */
+    .global-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-3);
+      background: var(--color-error-bg);
+      border: 1px solid #FFCDD2;
+      border-radius: var(--radius-sm);
+      color: var(--color-error);
+      font-size: var(--fs-sm);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.3s, max-height 0.3s, padding 0.3s, margin 0.3s;
+      padding: 0 var(--space-4);
+      margin-bottom: 0;
+    }
+    .global-error.visible {
+      opacity: 1;
+      max-height: 80px;
+      padding: var(--space-3) var(--space-4);
+      margin-bottom: var(--space-5);
+    }
+
+    /* ---- Result Card ---- */
+    .result-card {
+      background: var(--color-success-bg);
+      border: 1.5px solid #A5D6A7;
+      border-radius: var(--radius-lg);
+      padding: 0 var(--space-6);
+      opacity: 0;
+      transform: translateY(12px);
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s, transform 0.4s, max-height 0.5s, padding 0.4s, margin 0.4s;
+      margin-bottom: 0;
+    }
+    .result-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+      max-height: 400px;
+      padding: var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    .result-card__label {
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--color-success);
+      margin-bottom: var(--space-4);
+    }
+
+    .result-rows {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: var(--space-3);
+      max-width: 560px;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-3);
+      border-bottom: 1px dashed #A5D6A7;
+      padding-bottom: var(--space-2);
+    }
+    .result-row:last-child { border-bottom: none; }
+
+    .result-row__key {
+      font-size: var(--fs-sm);
+      color: var(--color-text-secondary);
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+    .result-row__val {
+      font-size: var(--fs-md);
+      font-weight: 700;
+      color: var(--color-success);
+      text-align: right;
+    }
+
+    /* ---- Optional / Manual FPS card ---- */
+    .optional-card {
+      background: var(--color-info-bg);
+      border: 1.5px solid var(--color-info-border);
+      border-radius: var(--radius-lg);
+      padding: 0 var(--space-6);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.4s, max-height 0.5s, padding 0.4s, margin 0.4s;
+      margin-bottom: 0;
+    }
+    .optional-card.visible {
+      opacity: 1;
+      max-height: 260px;
+      padding: var(--space-5) var(--space-6);
+      margin-bottom: var(--space-5);
+    }
+
+    .optional-card__title {
+      font-size: var(--fs-sm);
+      font-weight: 700;
+      color: var(--color-info);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: var(--space-4);
+    }
+
+    .manual-fps-row {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-3);
+    }
+
+    .manual-fps-row .input-with-unit {
+      flex: 1;
+    }
+
+    .manual-fps-error {
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+      margin-top: var(--space-1);
+      font-size: var(--fs-xs);
+      color: var(--color-error);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.25s, max-height 0.25s;
+    }
+    .manual-fps-error.visible { opacity: 1; max-height: 40px; }
+
+    .manual-result {
+      margin-top: var(--space-4);
+      padding: var(--space-3) var(--space-4);
+      background: var(--color-surface);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--color-info-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: var(--space-3);
+      opacity: 0;
+      max-height: 0;
+      overflow: hidden;
+      transition: opacity 0.3s, max-height 0.3s, padding 0.3s, margin 0.3s;
+      padding: 0 var(--space-4);
+      margin-top: 0;
+    }
+    .manual-result.visible {
+      opacity: 1;
+      max-height: 60px;
+      padding: var(--space-3) var(--space-4);
+      margin-top: var(--space-4);
+    }
+
+    .manual-result__key {
+      font-size: var(--fs-sm);
+      color: var(--color-text-secondary);
+      font-weight: 500;
+    }
+    .manual-result__val {
+      font-size: var(--fs-md);
+      font-weight: 700;
+      color: var(--color-info);
+    }
+
+    /* ---- Disclaimer ---- */
+    .disclaimer {
+      text-align: center;
+      font-size: var(--fs-xs);
+      color: var(--color-text-secondary);
+      padding: var(--space-4) 0;
+    }
+
+    @media (max-width: 600px) {
+      .xy-row { grid-template-columns: 1fr; }
+      .header-nav { flex-direction: column; }
+    }
+
+    @media (max-width: 480px) {
+      body { padding: var(--space-4) var(--space-3); }
+      .card { padding: var(--space-5); }
+      .header__title { font-size: var(--fs-lg); }
+      .actions { flex-direction: column; }
+      .btn { width: 100%; }
+      .manual-fps-row { flex-direction: column; }
+      .manual-fps-row .btn--sm { width: 100%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ====== HEADER ====== -->
+  <header class="header">
+    <div class="header__icon">🎬</div>
+    <h1 class="header__title">Frame Rate & Record Time</h1>
+    <p class="header__subtitle">
+      Estimate the maximum frame rate, available frames, and record time for a
+      Phantom camera based on its configuration.
+    </p>
+    <nav class="header-nav" aria-label="Calculator navigation">
+      <a class="header-nav__link" href="index.html">📷&ensp;Frame Rate &amp; Exposure</a>
+      <a class="header-nav__link active" href="frame-record-calculator.html">🎬&ensp;Frame Rate &amp; Record Time</a>
+      <a class="header-nav__link" href="lens-calculator.html">🔭&ensp;Lens Calculator</a>
+    </nav>
+  </header>
+
+  <!-- ====== GLOBAL ERROR ====== -->
+  <div class="global-error" id="globalError" role="alert" aria-live="polite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+    </svg>
+    <span>Please fix the highlighted errors before calculating.</span>
+  </div>
+
+  <!-- ====== FORM CARD ====== -->
+  <div class="card">
+
+    <!-- 1. Camera Model -->
+    <div class="form-group" id="group-cameraModel">
+      <label class="form-label" for="cameraModel">Camera Model <span class="required">*</span></label>
+      <div class="select-wrapper">
+        <select class="form-select" id="cameraModel">
+          <option value="" disabled selected>Select a camera model…</option>
+          <option value="v2640">Phantom v2640</option>
+          <option value="veo710">Phantom VEO 710</option>
+          <option value="tmx7510">Phantom TMX 7510</option>
+          <option value="veo640">Phantom VEO 640</option>
+        </select>
+      </div>
+      <div class="form-error" id="cameraModel-error"><span>Please select a camera model.</span></div>
+    </div>
+
+    <!-- 2. Fast Option (conditional) -->
+    <div class="form-group is-hidden" id="group-fastOption">
+      <label class="form-label" for="fastOption">Fast Option</label>
+      <div class="select-wrapper">
+        <select class="form-select" id="fastOption">
+          <option value="no">No</option>
+          <option value="yes">Yes</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 3. Sensor Mode (conditional) -->
+    <div class="form-group is-hidden" id="group-sensorMode">
+      <label class="form-label" for="sensorMode">Sensor Mode <span class="required">*</span></label>
+      <div class="select-wrapper">
+        <select class="form-select" id="sensorMode">
+          <option value="" disabled selected>Select sensor mode…</option>
+        </select>
+      </div>
+      <div class="form-error" id="sensorMode-error"><span>Please select a sensor mode.</span></div>
+    </div>
+
+    <!-- 4. Memory (conditional) -->
+    <div class="form-group is-hidden" id="group-memory">
+      <label class="form-label" for="memory">Memory <span class="required">*</span></label>
+      <div class="select-wrapper">
+        <select class="form-select" id="memory">
+          <option value="" disabled selected>Select memory…</option>
+        </select>
+      </div>
+      <div class="form-error" id="memory-error"><span>Please select a memory option.</span></div>
+    </div>
+
+    <!-- 5. Bit-Depth (conditional) -->
+    <div class="form-group is-hidden" id="group-bitDepth">
+      <label class="form-label" for="bitDepth">Bit-Depth <span class="required">*</span></label>
+      <div class="select-wrapper">
+        <select class="form-select" id="bitDepth">
+          <option value="" disabled selected>Select bit-depth…</option>
+        </select>
+      </div>
+      <div class="form-error" id="bitDepth-error"><span>Please select a bit-depth.</span></div>
+    </div>
+
+    <!-- 6. CXP6 Banks (conditional) -->
+    <div class="form-group is-hidden" id="group-cxpBanks">
+      <label class="form-label" for="cxpBanks">CXP6 Banks</label>
+      <div class="select-wrapper">
+        <select class="form-select" id="cxpBanks">
+          <option value="" disabled selected>Select CXP6 banks…</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 7. Shutter Mode (conditional) -->
+    <div class="form-group is-hidden" id="group-shutterMode">
+      <label class="form-label" for="shutterMode">Shutter Mode</label>
+      <div class="select-wrapper">
+        <select class="form-select" id="shutterMode">
+          <option value="" disabled selected>Select shutter mode…</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 8. Resolution / Frame Rate mode toggle -->
+    <div class="form-group is-hidden" id="group-calcMode">
+      <label class="form-label" for="calcMode">Resolution / Frame Rate</label>
+      <div class="select-wrapper">
+        <select class="form-select" id="calcMode">
+          <option value="byResolution">Enter Resolution → Find Max Frame Rate</option>
+          <option value="byFPS">Enter Frame Rate → Find Record Time</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- 9. X and Y resolution row -->
+    <div class="is-hidden" id="group-xy">
+      <div class="xy-row">
+        <div class="form-group">
+          <label class="form-label" id="labelX" for="resX">Resolution X <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select class="form-select" id="resX">
+              <option value="" disabled selected>Select X…</option>
+            </select>
+          </div>
+          <div class="form-error" id="resX-error"><span id="resX-error-msg">Please select a value.</span></div>
+        </div>
+        <div class="form-group" id="group-resY">
+          <label class="form-label" for="resY">Resolution Y <span class="required">*</span></label>
+          <div class="select-wrapper">
+            <select class="form-select" id="resY">
+              <option value="" disabled selected>Select Y…</option>
+            </select>
+          </div>
+          <div class="form-error" id="resY-error"><span>Please select a value.</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions">
+      <button class="btn btn--secondary" type="button" id="clearBtn">↺&ensp;Clear</button>
+      <button class="btn btn--primary" type="button" id="calcBtn">Calculate</button>
+    </div>
+  </div>
+
+  <!-- ====== RESULT CARD ====== -->
+  <div class="result-card" id="resultCard" role="status" aria-live="polite">
+    <p class="result-card__label">Calculation Results</p>
+    <div class="result-rows">
+      <div class="result-row" id="row-maxFps">
+        <span class="result-row__key">Max Frame Rate</span>
+        <span class="result-row__val" id="val-maxFps">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-row__key">Frames Available</span>
+        <span class="result-row__val" id="val-frames">—</span>
+      </div>
+      <div class="result-row">
+        <span class="result-row__key">Record Time at Max Rate</span>
+        <span class="result-row__val" id="val-recTime">—</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====== OPTIONAL: MANUAL FRAME RATE ====== -->
+  <div class="optional-card" id="optionalCard">
+    <p class="optional-card__title">Optional — Custom Frame Rate</p>
+    <div class="manual-fps-row">
+      <div style="flex:1">
+        <div class="input-with-unit">
+          <input class="form-input" type="text" inputmode="decimal" id="manualFps"
+                 placeholder="Enter manual frame rate (fps)" autocomplete="off" />
+          <span class="unit-suffix">fps</span>
+        </div>
+        <div class="manual-fps-error" id="manualFps-error">
+          <span>Enter a positive number not exceeding the max frame rate.</span>
+        </div>
+      </div>
+      <button class="btn btn--primary btn--sm" type="button" id="manualCalcBtn">Enter</button>
+    </div>
+    <div class="manual-result" id="manualResult">
+      <span class="manual-result__key">Record Time at Custom Rate</span>
+      <strong class="manual-result__val" id="val-manualRecTime">—</strong>
+    </div>
+  </div>
+
+  <p class="disclaimer">
+    Frame Rate &amp; Record Time Calculator reference: Phantom High Speed &bull; UI Design Prototype<br>
+    <em>Results are estimates only. Actual values may vary — consult the product data sheet.</em>
+  </p>
+</div>
+
+<script>
+  /* =========================================================
+     CAMERA PROFILES
+     pixelBandwidth = nativeX * nativeY * baseFpsAtNative
+     fastMultiplier applied when Fast Option = Yes
+     ========================================================= */
+  const cameras = {
+    v2640: {
+      label: 'Phantom v2640',
+      nativeX: 2048, nativeY: 1952,
+      pixelBandwidth: 2048 * 1952 * 6242,   // ~25 billion px/s
+      hasFastOption: true, fastMultiplier: 1.30,
+      memories: [
+        { label: '16 GB', bytes: 16e9 },
+        { label: '32 GB', bytes: 32e9 },
+        { label: '64 GB', bytes: 64e9 },
+        { label: '128 GB', bytes: 128e9 }
+      ],
+      bitDepths: [{ label: '8-bit', bits: 8 }, { label: '10-bit', bits: 10 }, { label: '12-bit', bits: 12 }],
+      cxpBanks: ['2', '4'],
+      shutterModes: ['Global Shutter'],
+      sensorModes: [
+        { id: 'full', label: 'Full Sensor', x: 2048, y: 1952 },
+        { id: '2k',   label: '2K Wide',    x: 2048, y: 1152 },
+        { id: '1k',   label: '1K Crop',     x: 1024, y: 976  }
+      ]
+    },
+    veo710: {
+      label: 'Phantom VEO 710',
+      nativeX: 1280, nativeY: 800,
+      pixelBandwidth: 1280 * 800 * 7100,    // ~7.3 billion px/s
+      hasFastOption: false,
+      memories: [
+        { label: '8 GB',  bytes: 8e9  },
+        { label: '16 GB', bytes: 16e9 },
+        { label: '32 GB', bytes: 32e9 },
+        { label: '64 GB', bytes: 64e9 }
+      ],
+      bitDepths: [{ label: '8-bit', bits: 8 }, { label: '10-bit', bits: 10 }, { label: '12-bit', bits: 12 }],
+      cxpBanks: ['2'],
+      shutterModes: ['Global Shutter'],
+      sensorModes: [
+        { id: 'full', label: 'Full Sensor', x: 1280, y: 800 },
+        { id: 'hd',   label: 'HD Crop',     x: 1280, y: 720 },
+        { id: 'svga', label: 'SVGA Crop',    x: 800,  y: 600 }
+      ]
+    },
+    tmx7510: {
+      label: 'Phantom TMX 7510',
+      nativeX: 1280, nativeY: 800,
+      pixelBandwidth: 1280 * 800 * 75000,   // ~76.8 billion px/s
+      hasFastOption: true, fastMultiplier: 1.20,
+      memories: [
+        { label: '8 GB',  bytes: 8e9  },
+        { label: '16 GB', bytes: 16e9 },
+        { label: '32 GB', bytes: 32e9 },
+        { label: '64 GB', bytes: 64e9 }
+      ],
+      bitDepths: [{ label: '8-bit', bits: 8 }, { label: '10-bit', bits: 10 }],
+      cxpBanks: ['2', '4'],
+      shutterModes: ['Global Shutter'],
+      sensorModes: [
+        { id: 'full', label: 'Full Sensor', x: 1280, y: 800 },
+        { id: 'hd',   label: 'HD Crop',     x: 1280, y: 720 },
+        { id: 'wvga', label: 'WVGA Crop',    x: 800,  y: 480 }
+      ]
+    },
+    veo640: {
+      label: 'Phantom VEO 640',
+      nativeX: 2560, nativeY: 1600,
+      pixelBandwidth: 2560 * 1600 * 1470,   // ~6 billion px/s
+      hasFastOption: false,
+      memories: [
+        { label: '8 GB',  bytes: 8e9  },
+        { label: '16 GB', bytes: 16e9 },
+        { label: '32 GB', bytes: 32e9 }
+      ],
+      bitDepths: [{ label: '8-bit', bits: 8 }, { label: '10-bit', bits: 10 }, { label: '12-bit', bits: 12 }],
+      cxpBanks: ['2'],
+      shutterModes: ['Global Shutter', 'Rolling Shutter'],
+      sensorModes: [
+        { id: 'full', label: 'Full Sensor', x: 2560, y: 1600 },
+        { id: '2k',   label: '2K Wide',     x: 2560, y: 1440 },
+        { id: '1080', label: 'Full HD',     x: 1920, y: 1080 }
+      ]
+    }
+  };
+
+  const requiredFields = ['cameraModel', 'sensorMode', 'memory', 'bitDepth'];
+  let currentProfile = null;
+  let lastFramesAvailable = null;
+  let lastMaxFps = null;
+
+  /* =========================================================  UTILITIES  ========================================================= */
+  function setError(id, visible) {
+    const err = document.getElementById(id + '-error');
+    if (err) err.classList.toggle('visible', visible);
+    const el = document.getElementById(id);
+    if (el) el.classList.toggle('has-error', visible);
+  }
+
+  function clearErrors() {
+    ['cameraModel', 'sensorMode', 'memory', 'bitDepth', 'resX', 'resY'].forEach(id => setError(id, false));
+    document.getElementById('globalError').classList.remove('visible');
+  }
+
+  function show(groupId) { document.getElementById(groupId).classList.remove('is-hidden'); }
+  function hide(groupId) { document.getElementById(groupId).classList.add('is-hidden'); }
+
+  function populateSelect(selectId, items, valueKey, labelKey, placeholder) {
+    const sel = document.getElementById(selectId);
+    sel.innerHTML = placeholder ? `<option value="" disabled selected>${placeholder}</option>` : '';
+    items.forEach((item, i) => {
+      const opt = document.createElement('option');
+      opt.value = typeof item === 'string' ? item : item[valueKey] ?? i;
+      opt.textContent = typeof item === 'string' ? item : item[labelKey];
+      sel.appendChild(opt);
+    });
+  }
+
+  function formatFps(fps) {
+    return fps.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' fps';
+  }
+
+  function formatFrames(n) {
+    return n.toLocaleString(undefined, { maximumFractionDigits: 0 }) + ' frames';
+  }
+
+  function formatTime(sec) {
+    if (sec >= 60)  return (sec / 60).toFixed(2) + ' min';
+    if (sec >= 1)   return sec.toFixed(3) + ' s';
+    if (sec >= 0.001) return (sec * 1000).toFixed(2) + ' ms';
+    return (sec * 1e6).toFixed(1) + ' µs';
+  }
+
+  /* =========================================================  CAMERA MODEL CHANGE  ========================================================= */
+  function onCameraChange() {
+    const key = document.getElementById('cameraModel').value;
+    currentProfile = cameras[key] || null;
+
+    // Hide everything first, then show what this camera supports
+    ['group-fastOption','group-sensorMode','group-memory','group-bitDepth',
+     'group-cxpBanks','group-shutterMode','group-calcMode','group-xy'].forEach(hide);
+    setError('cameraModel', false);
+    hideResultCards();
+
+    if (!currentProfile) return;
+
+    // Fast Option
+    if (currentProfile.hasFastOption) {
+      document.getElementById('fastOption').value = 'no';
+      show('group-fastOption');
+    }
+
+    // Sensor modes
+    populateSelect('sensorMode', currentProfile.sensorModes, 'id', 'label', 'Select sensor mode…');
+    // Auto-select first
+    document.getElementById('sensorMode').value = currentProfile.sensorModes[0].id;
+    setError('sensorMode', false);
+    show('group-sensorMode');
+    syncSensorModeToXY();
+
+    // Memory
+    populateSelect('memory', currentProfile.memories, null, 'label', 'Select memory…');
+    document.getElementById('memory').value = '';
+    show('group-memory');
+
+    // Bit-Depth
+    populateSelect('bitDepth', currentProfile.bitDepths, null, 'label', 'Select bit-depth…');
+    document.getElementById('bitDepth').value = '';
+    show('group-bitDepth');
+
+    // CXP6 Banks
+    populateSelect('cxpBanks', currentProfile.cxpBanks, null, null, null);
+    document.getElementById('cxpBanks').value = currentProfile.cxpBanks[0];
+    show('group-cxpBanks');
+
+    // Shutter Mode
+    populateSelect('shutterMode', currentProfile.shutterModes, null, null, null);
+    document.getElementById('shutterMode').value = currentProfile.shutterModes[0];
+    show('group-shutterMode');
+
+    // Calc mode & XY
+    document.getElementById('calcMode').value = 'byResolution';
+    show('group-calcMode');
+    show('group-xy');
+    updateCalcModeLabels();
+  }
+
+  /* =========================================================  SENSOR MODE → XY  ========================================================= */
+  function syncSensorModeToXY() {
+    if (!currentProfile) return;
+    const modeId = document.getElementById('sensorMode').value;
+    const mode = currentProfile.sensorModes.find(m => m.id === modeId);
+    if (!mode) return;
+    const calcMode = document.getElementById('calcMode').value;
+    if (calcMode === 'byResolution') {
+      populateResolutionDropdowns(mode);
+    } else {
+      populateFpsDropdowns();
+    }
+  }
+
+  function populateResolutionDropdowns(selectedMode) {
+    if (!currentProfile) return;
+    const xSelect = document.getElementById('resX');
+    const ySelect = document.getElementById('resY');
+
+    const uniqueX = [...new Set(currentProfile.sensorModes.map(mode => mode.x))];
+    const uniqueY = [...new Set(currentProfile.sensorModes.map(mode => mode.y))];
+
+    xSelect.innerHTML = '<option value="" disabled>Select X…</option>';
+    ySelect.innerHTML = '<option value="" disabled>Select Y…</option>';
+
+    uniqueX.forEach(x => {
+      const opt = document.createElement('option');
+      opt.value = String(x);
+      opt.textContent = x + ' px';
+      xSelect.appendChild(opt);
+    });
+
+    uniqueY.forEach(y => {
+      const opt = document.createElement('option');
+      opt.value = String(y);
+      opt.textContent = y + ' px';
+      ySelect.appendChild(opt);
+    });
+
+    if (selectedMode) {
+      xSelect.value = String(selectedMode.x);
+      ySelect.value = String(selectedMode.y);
+    }
+  }
+
+  function populateFpsDropdowns() {
+    if (!currentProfile) return;
+    const xSelect = document.getElementById('resX');
+    const fastOn = currentProfile.hasFastOption && document.getElementById('fastOption').value === 'yes';
+    const fastMult = fastOn ? currentProfile.fastMultiplier : 1.0;
+    const modeId = document.getElementById('sensorMode').value;
+    const sMode = currentProfile.sensorModes.find(mode => mode.id === modeId) || currentProfile.sensorModes[0];
+    const theoreticalMax = Math.max(1, Math.floor((currentProfile.pixelBandwidth * fastMult) / (sMode.x * sMode.y)));
+
+    const preset = [250, 500, 1000, 2000, 5000, 10000, 20000, 50000, 100000]
+      .filter(fps => fps < theoreticalMax);
+    const fpsOptions = [...preset, theoreticalMax];
+
+    xSelect.innerHTML = '<option value="" disabled>Select frame rate…</option>';
+    fpsOptions.forEach(fps => {
+      const opt = document.createElement('option');
+      opt.value = String(fps);
+      opt.textContent = fps.toLocaleString() + ' fps';
+      xSelect.appendChild(opt);
+    });
+
+    xSelect.value = String(theoreticalMax);
+  }
+
+  /* =========================================================  CALC MODE LABELS  ========================================================= */
+  function updateCalcModeLabels() {
+    const mode = document.getElementById('calcMode').value;
+    const labelX = document.getElementById('labelX');
+    const groupResY = document.getElementById('group-resY');
+    const errorMsg = document.getElementById('resX-error-msg');
+
+    if (mode === 'byFPS') {
+      labelX.innerHTML = 'Target Frame Rate <span class="required">*</span>';
+      errorMsg.textContent = 'Please select a frame rate.';
+      groupResY.classList.add('is-hidden');
+      populateFpsDropdowns();
+    } else {
+      labelX.innerHTML = 'Resolution X <span class="required">*</span>';
+      errorMsg.textContent = 'Please select a value.';
+      groupResY.classList.remove('is-hidden');
+      syncSensorModeToXY();
+    }
+    setError('resX', false);
+    setError('resY', false);
+  }
+
+  function hideResultCards() {
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('optionalCard').classList.remove('visible');
+    document.getElementById('manualResult').classList.remove('visible');
+    lastFramesAvailable = null;
+    lastMaxFps = null;
+  }
+
+  /* =========================================================  VALIDATE  ========================================================= */
+  function validate() {
+    clearErrors();
+    let ok = true;
+    const mode = document.getElementById('calcMode').value;
+
+    if (!document.getElementById('cameraModel').value)  { setError('cameraModel', true); ok = false; }
+    if (!document.getElementById('sensorMode').value && !document.getElementById('group-sensorMode').classList.contains('is-hidden'))
+      { setError('sensorMode', true); ok = false; }
+    if (!document.getElementById('memory').value)       { setError('memory', true); ok = false; }
+    if (!document.getElementById('bitDepth').value)     { setError('bitDepth', true); ok = false; }
+
+    const xVal = Number(document.getElementById('resX').value);
+    if (!xVal || xVal <= 0) {
+      setError('resX', true); ok = false;
+    }
+    if (mode === 'byResolution') {
+      const yVal = Number(document.getElementById('resY').value);
+      if (!yVal || yVal <= 0) { setError('resY', true); ok = false; }
+    }
+
+    if (!ok) document.getElementById('globalError').classList.add('visible');
+    return ok;
+  }
+
+  /* =========================================================  CALCULATE  ========================================================= */
+  function calculate() {
+    if (!validate()) {
+      hideResultCards();
+      return;
+    }
+    document.getElementById('globalError').classList.remove('visible');
+
+    const profile   = currentProfile;
+    const mode      = document.getElementById('calcMode').value;
+    const memBytes  = currentProfile.memories.find(m => m.label === document.getElementById('memory').value)?.bytes || 0;
+    const bitDepth  = currentProfile.bitDepths.find(b => b.label === document.getElementById('bitDepth').value)?.bits || 8;
+    const fastOn    = profile.hasFastOption && document.getElementById('fastOption').value === 'yes';
+    const fastMult  = fastOn ? profile.fastMultiplier : 1.0;
+
+    let resX, resY, maxFps;
+
+    if (mode === 'byResolution') {
+      resX = parseInt(document.getElementById('resX').value, 10);
+      resY = parseInt(document.getElementById('resY').value, 10);
+      maxFps = Math.floor((profile.pixelBandwidth * fastMult) / (resX * resY));
+    } else {
+      // byFPS: use sensor mode resolution, target fps is X input
+      const targetFps = parseFloat(document.getElementById('resX').value);
+      const modeId    = document.getElementById('sensorMode').value;
+      const sMode     = profile.sensorModes.find(m => m.id === modeId);
+      resX = sMode ? sMode.x : profile.nativeX;
+      resY = sMode ? sMode.y : profile.nativeY;
+      const theoreticalMax = Math.floor((profile.pixelBandwidth * fastMult) / (resX * resY));
+      maxFps = Math.min(targetFps, theoreticalMax);
+    }
+
+    const framesAvailable = Math.floor(memBytes / (resX * resY * bitDepth / 8));
+    const recordTimeSec   = framesAvailable / maxFps;
+
+    lastMaxFps           = maxFps;
+    lastFramesAvailable  = framesAvailable;
+
+    document.getElementById('val-maxFps').textContent   = formatFps(maxFps);
+    document.getElementById('val-frames').textContent   = formatFrames(framesAvailable);
+    document.getElementById('val-recTime').textContent  = formatTime(recordTimeSec);
+
+    // Show/hide "Max Frame Rate" row based on mode
+    document.getElementById('row-maxFps').style.display = mode === 'byFPS' ? 'none' : '';
+
+    document.getElementById('resultCard').classList.add('visible');
+    document.getElementById('optionalCard').classList.add('visible');
+    document.getElementById('manualResult').classList.remove('visible');
+    document.getElementById('manualFps').value = '';
+
+    document.getElementById('resultCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* =========================================================  MANUAL FPS  ========================================================= */
+  function calculateManual() {
+    const el  = document.getElementById('manualFps');
+    const err = document.getElementById('manualFps-error');
+    const val = parseFloat(el.value.trim());
+
+    el.classList.remove('has-error');
+    err.classList.remove('visible');
+
+    if (!val || val <= 0 || (lastMaxFps !== null && val > lastMaxFps)) {
+      el.classList.add('has-error');
+      err.classList.add('visible');
+      document.getElementById('manualResult').classList.remove('visible');
+      return;
+    }
+
+    const timeSec = lastFramesAvailable / val;
+    document.getElementById('val-manualRecTime').textContent = formatTime(timeSec);
+    document.getElementById('manualResult').classList.add('visible');
+  }
+
+  /* =========================================================  CLEAR  ========================================================= */
+  function clearForm() {
+    clearErrors();
+    hideResultCards();
+    currentProfile = null;
+
+    document.getElementById('cameraModel').selectedIndex = 0;
+    document.getElementById('manualFps').value = '';
+    document.getElementById('manualFps').classList.remove('has-error');
+    document.getElementById('manualFps-error').classList.remove('visible');
+    document.getElementById('resX').innerHTML = '<option value="" disabled selected>Select X…</option>';
+    document.getElementById('resY').innerHTML = '<option value="" disabled selected>Select Y…</option>';
+
+    ['group-fastOption','group-sensorMode','group-memory','group-bitDepth',
+     'group-cxpBanks','group-shutterMode','group-calcMode','group-xy'].forEach(hide);
+  }
+
+  /* =========================================================  EVENT WIRING  ========================================================= */
+  document.getElementById('cameraModel').addEventListener('change', onCameraChange);
+
+  document.getElementById('sensorMode').addEventListener('change', () => {
+    setError('sensorMode', false);
+    syncSensorModeToXY();
+  });
+
+  document.getElementById('fastOption').addEventListener('change', () => {
+    if (document.getElementById('calcMode').value === 'byFPS') {
+      populateFpsDropdowns();
+    }
+  });
+
+  document.getElementById('calcMode').addEventListener('change', updateCalcModeLabels);
+
+  document.getElementById('memory').addEventListener('change', () => setError('memory', false));
+  document.getElementById('bitDepth').addEventListener('change', () => setError('bitDepth', false));
+
+  ['resX', 'resY'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => setError(id, false));
+  });
+
+  document.getElementById('calcBtn').addEventListener('click', calculate);
+  document.getElementById('clearBtn').addEventListener('click', clearForm);
+  document.getElementById('manualCalcBtn').addEventListener('click', calculateManual);
+
+  document.getElementById('manualFps').addEventListener('keydown', e => {
+    if (e.key === 'Enter') calculateManual();
+  });
+</script>
+</body>
+</html>
