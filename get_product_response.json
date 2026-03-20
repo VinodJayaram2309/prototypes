@@ -1,0 +1,1909 @@
+{
+  "allowPurchases": true,
+  "availableForPickup": false,
+  "baseOptions": [],
+  "categories": [
+    {
+      "code": "instruments"
+    },
+    {
+      "code": "viscometers"
+    }
+  ],
+  "code": "XDV2T",
+  "description": "<p>The DV2T Viscometer features a 5-inch color display to guide users through test creation and data gathering for fast and easy viscosity measurements. The DV2T also offers powerful programming capabilities and results analysis including data averaging and QC limits with alarms. Using the new Program Generator Software, you can create user instructions with multi-step test protocols.</p>\n<h3>Features</h3>\n<ul>\n<li>5.7-inch Full-Color Touch Screen Display</li>\n<li>Enhanced Security</li>\n<li>Convenient Bubble Leveling</li>\n<li>Built-in RTD Temperature Probe</li>\n<li>DV360 Software Optional</li>\n</ul>",
+  "metaDescription": "DV2T Viscometer from AMETEK Brookfield with powerful programming features is ideal for viscosity measurements in the laboratory. Visit store to know more details",
+  "metaKeywords": "Brookfield DV2T Viscometer",
+  "multidimensional": true,
+  "name": "DV2T Viscometer",
+  "numberOfReviews": 0,
+  "pageTitle": "DV2T Viscometer",
+  "priceRange": {},
+  "productType": "PHYSICAL",
+  "purchasable": false,
+  "quoteOnly": false,
+  "shipsInDays": "5",
+  "stock": {
+    "isValueRounded": false,
+    "stockLevel": 0,
+    "stockLevelStatus": "outOfStock"
+  },
+  "summary": "",
+  "url": "/Instruments/DV2T-Viscometer/p/XDV2T",
+  "variantMatrix": [
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TLVMJ00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVMJ00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            },
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TLVMJ00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVMJ00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TLVMJ00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVMJ00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Magnetic Coupling with Point & Jewel",
+            "sequence": 1
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TLVTJ00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVTJ00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            },
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TLVTJ00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVTJ00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TLVTJ00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVTJ00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Threaded Coupling with Point & Jewel",
+            "sequence": 2
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Torque Range",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2TLVMJ00U00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVMJ00U00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "LV",
+        "sequence": 1
+      }
+    },
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVMJ00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Torque Range",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVMJ00W00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00W00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "RV",
+            "sequence": 2
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Suspension Options",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2TRVMJ00W00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00W00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "Magnetic Coupling with Point & Jewel",
+        "sequence": 1
+      }
+    },
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVMJ00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVMJ00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Magnetic Coupling with Point & Jewel",
+            "sequence": 1
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVTJ00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTJ00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            },
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVTJ00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTJ00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVTJ00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTJ00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Threaded Coupling with Point & Jewel",
+            "sequence": 2
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVMB00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVMB00W00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00W00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Magnetic Coupling with Ball Bearing",
+            "sequence": 3
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Torque Range",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2TRVMB00W00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00W00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "RV",
+        "sequence": 2
+      }
+    },
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Torque Range",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVMB00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "RV",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Cord Type",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVMB00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "United States",
+            "sequence": 1
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THAMB00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Torque Range",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THAMB00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "HA",
+            "sequence": 3
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THBMB00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Torque Range",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THBMB00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "HB",
+            "sequence": 4
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Suspension Options",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2THAMB00U00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00U00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "Magnetic Coupling with Ball Bearing",
+        "sequence": 3
+      }
+    },
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THAMJ00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMJ00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            },
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THAMJ00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMJ00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THAMJ00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMJ00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Magnetic Coupling with Point & Jewel",
+            "sequence": 1
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THATJ00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THATJ00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            },
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THATJ00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THATJ00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THATJ00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THATJ00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Threaded Coupling with Point & Jewel",
+            "sequence": 2
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THAMB00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THAMB00W00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00W00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Magnetic Coupling with Ball Bearing",
+            "sequence": 3
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THATB00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THATB00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Threaded Coupling with Ball Bearing",
+            "sequence": 4
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Torque Range",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2THAMB00W00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00W00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "HA",
+        "sequence": 3
+      }
+    },
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Torque Range",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVTB00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTB00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "RV",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Cord Type",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVTB00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTB00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "United States",
+            "sequence": 1
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2TRVTB00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTB00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Torque Range",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2TRVTB00W00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTB00W00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "RV",
+            "sequence": 2
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THATB00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Torque Range",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THATB00W00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00W00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "HA",
+            "sequence": 3
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Suspension Options",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2THATB00W00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00W00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "Threaded Coupling with Ball Bearing",
+        "sequence": 4
+      }
+    },
+    {
+      "elements": [
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THBMB00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THBMB00W00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00W00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Magnetic Coupling with Ball Bearing",
+            "sequence": 3
+          }
+        },
+        {
+          "elements": [
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THBTB00U00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THBTB00U00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "United States",
+                "sequence": 1
+              }
+            },
+            {
+              "elements": [],
+              "isLeaf": true,
+              "parentVariantCategory": {
+                "hasImage": false,
+                "name": "Cord Type",
+                "priority": 0
+              },
+              "variantOption": {
+                "code": "XDV2THBTB00W00",
+                "priceData": {
+                  "value": 0
+                },
+                "stock": {
+                  "isValueRounded": false,
+                  "stockLevel": 0
+                },
+                "url": "/Instruments/DV2T-Viscometer/p/XDV2THBTB00W00",
+                "variantOptionQualifiers": [
+                  {
+                    "image": {}
+                  }
+                ]
+              },
+              "variantValueCategory": {
+                "name": "Without Cord",
+                "sequence": 2
+              }
+            }
+          ],
+          "isLeaf": false,
+          "parentVariantCategory": {
+            "hasImage": false,
+            "name": "Suspension Options",
+            "priority": 0
+          },
+          "variantOption": {
+            "code": "XDV2THBTB00U00",
+            "url": "/Instruments/DV2T-Viscometer/p/XDV2THBTB00U00",
+            "variantOptionQualifiers": [
+              {
+                "image": {}
+              }
+            ]
+          },
+          "variantValueCategory": {
+            "name": "Threaded Coupling with Ball Bearing",
+            "sequence": 4
+          }
+        }
+      ],
+      "isLeaf": false,
+      "parentVariantCategory": {
+        "hasImage": false,
+        "name": "Torque Range",
+        "priority": 0
+      },
+      "variantOption": {
+        "code": "XDV2THBMB00W00",
+        "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00W00",
+        "variantOptionQualifiers": [
+          {
+            "image": {}
+          }
+        ]
+      },
+      "variantValueCategory": {
+        "name": "HB",
+        "sequence": 4
+      }
+    }
+  ],
+  "variantOptions": [
+    {
+      "code": "XDV2THAMB00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Ball Bearing"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THAMB00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMB00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THAMJ00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMJ00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THAMJ00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THAMJ00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THATB00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THATB00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THATB00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Ball Bearing"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THATJ00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THATJ00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THATJ00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THATJ00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HA"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THBMB00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Ball Bearing"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HB"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THBMB00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THBMB00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HB"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THBTB00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THBTB00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HB"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2THBTB00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2THBTB00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "HB"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TLVMJ00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVMJ00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "LV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TLVMJ00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVMJ00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "LV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TLVTJ00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVTJ00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "LV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TLVTJ00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TLVTJ00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "LV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVMB00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVMB00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMB00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVMJ00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVMJ00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVMJ00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Magnetic Coupling with Point & Jewel"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVTB00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTB00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Ball Bearing"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVTB00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTB00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Ball Bearing"
+        },
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVTJ00U00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTJ00U00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "United States"
+        }
+      ]
+    },
+    {
+      "code": "XDV2TRVTJ00W00",
+      "stock": {
+        "isValueRounded": false,
+        "stockLevel": 0
+      },
+      "url": "/Instruments/DV2T-Viscometer/p/XDV2TRVTJ00W00",
+      "variantOptionQualifiers": [
+        {
+          "name": "Torque Range",
+          "qualifier": "torque-range",
+          "value": "RV"
+        },
+        {
+          "name": "Suspension Options",
+          "qualifier": "suspension-options",
+          "value": "Threaded Coupling with Point & Jewel"
+        },
+        {
+          "name": "Cord Type",
+          "qualifier": "cord-type",
+          "value": "Without Cord"
+        }
+      ]
+    }
+  ],
+  "weight": 28
+}

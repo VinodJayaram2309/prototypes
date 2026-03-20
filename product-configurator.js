@@ -168,18 +168,23 @@ function mapToConfiguratorModel(variantOptions, variantMatrix) {
  * @returns {Record<string,string[]>}                   qualifier → valid values (sequence order)
  */
 function getAvailableOptions(model, currentSelections) {
-  // Keep only variants that satisfy every already-made selection
   console.log('Filtering variants with current selections:', currentSelections, model);
-  const matchingVariants = model.variants.filter(variant =>
-    Object.entries(currentSelections).every(
-      ([qualifier, value]) => variant.selections[qualifier] === value
-    )
-  );
 
   const available = {};
 
   for (const category of model.categories) {
-    if (currentSelections[category.qualifier] !== undefined) continue; // already selected — skip
+    // Filter variants using all selections EXCEPT the current category, so that
+    // re-opening an already-selected category still shows only upstream-filtered options.
+    const filterSelections = {};
+    for (const [q, v] of Object.entries(currentSelections)) {
+      if (q !== category.qualifier) filterSelections[q] = v;
+    }
+
+    const matchingVariants = model.variants.filter(variant =>
+      Object.entries(filterSelections).every(
+        ([qualifier, value]) => variant.selections[qualifier] === value
+      )
+    );
 
     const validValues = new Set(
       matchingVariants.map(v => v.selections[category.qualifier]).filter(Boolean)
