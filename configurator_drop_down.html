@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Configurator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f0f2f5;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 2rem 1rem;
+    }
+
+    .page {
+      max-width: 580px;
+      margin: 0 auto;
+    }
+
+    /* ── Load screen ──────────────────────────────────────────────────────── */
+
+    .load-screen {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.09);
+      padding: 3.5rem 2.5rem;
+      text-align: center;
+    }
+
+    .load-screen .icon {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .load-screen h1 {
+      font-size: 1.45rem;
+      font-weight: 700;
+      margin-bottom: 0.4rem;
+    }
+
+    .load-screen p {
+      color: #666;
+      font-size: 0.92rem;
+      margin-bottom: 2rem;
+    }
+
+    .load-btn {
+      display: inline-block;
+      padding: 0.7rem 1.6rem;
+      background: #1a6fc4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      transition: background 0.15s;
+    }
+
+    .load-btn:hover { background: #155da0; }
+
+    #file-input { display: none; }
+
+    .load-error {
+      margin-top: 1rem;
+      color: #c0392b;
+      font-size: 0.85rem;
+      min-height: 1.2em;
+    }
+
+    /* ── Product header ───────────────────────────────────────────────────── */
+
+    .product-header {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.09);
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .product-header .badge {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      background: #e8f0fb;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .product-header h1 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .product-header .sku {
+      font-size: 0.78rem;
+      color: #888;
+      font-family: 'Menlo', 'Consolas', monospace;
+      margin-top: 0.15rem;
+    }
+
+    /* ── Configurator card ────────────────────────────────────────────────── */
+
+    .card {
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.09);
+      padding: 1.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .card-header h2 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #444;
+    }
+
+    .progress-text {
+      font-size: 0.8rem;
+      color: #888;
+      font-weight: 500;
+    }
+
+    .reset-btn {
+      padding: 0.28rem 0.75rem;
+      background: transparent;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: #666;
+      font-weight: 500;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .reset-btn:hover { border-color: #aaa; color: #333; }
+
+    /* ── Option groups ────────────────────────────────────────────────────── */
+
+    .option-group {
+      margin-bottom: 1.1rem;
+    }
+
+    .option-group:last-of-type {
+      margin-bottom: 0;
+    }
+
+    .option-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      font-size: 0.7rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .step-badge.pending  { background: #eee;    color: #aaa; }
+    .step-badge.active   { background: #dbe8f8; color: #1a6fc4; }
+    .step-badge.done     { background: #d3f0e3; color: #1d8a58; }
+
+    .option-label-text {
+      font-size: 0.82rem;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #555;
+      transition: color 0.2s;
+    }
+
+    .option-label-text.active { color: #1a6fc4; }
+    .option-label-text.done   { color: #1d8a58; }
+    .option-label-text.pending { color: #bbb; }
+
+    .option-group select {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      border: 1.5px solid #ddd;
+      border-radius: 8px;
+      font-size: 0.93rem;
+      background: white;
+      color: #1a1a1a;
+      cursor: pointer;
+      appearance: auto;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      outline: none;
+    }
+
+    .option-group select:focus {
+      border-color: #1a6fc4;
+      box-shadow: 0 0 0 3px rgba(26,111,196,0.1);
+    }
+
+    .option-group select.is-selected {
+      border-color: #22a06b;
+      background: #f7fdf9;
+    }
+
+    .option-group select:disabled {
+      background: #f7f7f7;
+      color: #bbb;
+      border-color: #e8e8e8;
+      cursor: not-allowed;
+    }
+
+    /* connector line between groups */
+    .option-group + .option-group {
+      padding-top: 0.1rem;
+    }
+
+    /* ── Result panel ─────────────────────────────────────────────────────── */
+
+    .result-panel {
+      border-radius: 10px;
+      padding: 1.1rem 1.25rem;
+      margin-top: 1.5rem;
+      font-size: 0.88rem;
+      transition: all 0.2s;
+    }
+
+    .result-panel.incomplete {
+      background: #f8f8f8;
+      border: 1.5px dashed #d0d0d0;
+      color: #999;
+      text-align: center;
+      padding: 1.1rem;
+    }
+
+    .result-panel.complete {
+      background: #f0faf5;
+      border: 1.5px solid #22a06b;
+    }
+
+    .result-panel .result-heading {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #1d8a58;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .result-panel .result-heading::before {
+      content: '';
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      background: #22a06b;
+      border-radius: 50%;
+    }
+
+    .result-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      padding: 0.3rem 0;
+      border-bottom: 1px solid rgba(34,160,107,0.12);
+      font-size: 0.88rem;
+    }
+
+    .result-row:last-of-type { border-bottom: none; }
+
+    .result-row .r-key { color: #555; font-weight: 500; flex-shrink: 0; }
+
+    .result-row .r-val {
+      font-weight: 600;
+      color: #1a1a1a;
+      text-align: right;
+    }
+
+    .result-divider {
+      height: 1px;
+      background: rgba(34,160,107,0.25);
+      margin: 0.75rem 0;
+    }
+
+    .sku-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .sku-row .sku-label { font-size: 0.78rem; font-weight: 700; color: #1d8a58; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    .sku-code {
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      background: white;
+      border: 1px solid rgba(34,160,107,0.4);
+      border-radius: 5px;
+      padding: 0.2rem 0.6rem;
+      letter-spacing: 0.04em;
+    }
+
+    .copy-btn {
+      padding: 0.2rem 0.6rem;
+      font-size: 0.75rem;
+      background: white;
+      border: 1px solid rgba(34,160,107,0.4);
+      border-radius: 5px;
+      cursor: pointer;
+      color: #1d8a58;
+      font-weight: 600;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+
+    .copy-btn:hover { background: #e6f6f0; }
+
+    .view-link {
+      display: inline-block;
+      margin-top: 0.85rem;
+      color: #1a6fc4;
+      font-size: 0.85rem;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    .view-link:hover { text-decoration: underline; }
+
+    /* ── Utility ──────────────────────────────────────────────────────────── */
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="page">
+
+    <!-- ── Load screen ──────────────────────────────────────────────────── -->
+    <div id="load-screen" class="load-screen">
+      <div class="icon">⚙️</div>
+      <h1>Product Configurator</h1>
+      <p>Select the product JSON file to load the configurator</p>
+      <label for="file-input" class="load-btn">Load Product JSON</label>
+      <input type="file" id="file-input" accept=".json" />
+      <div id="load-error" class="load-error"></div>
+    </div>
+
+    <!-- ── Main app (hidden until data is loaded) ───────────────────────── -->
+    <div id="app" class="hidden">
+
+      <div class="product-header">
+        <div class="badge">🔬</div>
+        <div>
+          <h1 id="product-name"></h1>
+          <div class="sku" id="product-sku"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <h2>Configure</h2>
+          <div style="display:flex; align-items:center; gap:0.75rem;">
+            <span class="progress-text" id="progress-text"></span>
+            <button class="reset-btn" id="reset-btn">Reset</button>
+          </div>
+        </div>
+        <div id="dropdowns"></div>
+        <div id="result" class="result-panel incomplete">Select all options above to see your product code</div>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="product-configurator.js"></script>
+  <script>
+    // ─── App state ────────────────────────────────────────────────────────────
+    let model       = null;
+    let selections  = {};   // qualifier → chosen value (grows as user selects)
+    let productData = null; // raw API data (for linking back)
+
+    // ─── File loading ─────────────────────────────────────────────────────────
+    document.getElementById('file-input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        try {
+          const data = JSON.parse(event.target.result);
+
+          if (!Array.isArray(data.variantOptions) || !Array.isArray(data.variantMatrix)) {
+            showLoadError('JSON must contain variantOptions and variantMatrix arrays.');
+            return;
+          }
+          if (data.variantOptions.length === 0) {
+            showLoadError('variantOptions array is empty — nothing to configure.');
+            return;
+          }
+
+          initConfigurator(data);
+        } catch (err) {
+          showLoadError('Could not parse JSON: ' + err.message);
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    function showLoadError(msg) {
+      document.getElementById('load-error').textContent = msg;
+    }
+
+    function initConfigurator(data) {
+      productData = data;
+      model       = mapToConfiguratorModel(data.variantOptions, data.variantMatrix);
+      selections  = {};
+
+      document.getElementById('product-name').textContent = data.name  || 'Product';
+      document.getElementById('product-sku').textContent  = 'Code: ' + (data.code || '—');
+
+      document.getElementById('load-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('reset-btn').addEventListener('click', resetSelections);
+
+      render();
+    }
+
+    // ─── Render ───────────────────────────────────────────────────────────────
+    function render() {
+      renderDropdowns();
+      renderResult();
+      renderProgress();
+    }
+
+    function renderDropdowns() {
+      const container = document.getElementById('dropdowns');
+      container.innerHTML = '';
+
+      // Compute available options for every un-selected category in one pass
+      const available = getAvailableOptions(model, selections);
+
+      model.categories.forEach((category, index) => {
+        const prevCategory    = model.categories[index - 1];
+        const isFirst         = index === 0;
+        const isPrevSelected  = isFirst || selections[prevCategory.qualifier] !== undefined;
+        const isSelected      = selections[category.qualifier] !== undefined;
+        const isDisabled      = !isFirst && !isPrevSelected;
+
+        // Pick available values for this dropdown
+        let availableValues;
+        if (isFirst) {
+          availableValues = category.options.map(o => o.value);
+        } else if (isPrevSelected) {
+          availableValues = available[category.qualifier] || category.options.map(o => o.value);
+        } else {
+          availableValues = [];
+        }
+
+        // Determine state for styling
+        const state = isSelected ? 'done' : (isPrevSelected && !isDisabled ? 'active' : 'pending');
+
+        // Build DOM
+        const group = document.createElement('div');
+        group.className = 'option-group';
+
+        // Label row
+        const labelRow = document.createElement('div');
+        labelRow.className = 'option-label';
+
+        const badge = document.createElement('span');
+        badge.className = 'step-badge ' + state;
+        badge.textContent = isSelected ? '✓' : (index + 1);
+
+        const labelText = document.createElement('span');
+        labelText.className = 'option-label-text ' + state;
+        labelText.textContent = category.name;
+
+        labelRow.appendChild(badge);
+        labelRow.appendChild(labelText);
+
+        // Select element
+        const select = document.createElement('select');
+        select.id = 'cat-' + category.qualifier;
+        select.disabled = isDisabled;
+        if (isSelected) select.classList.add('is-selected');
+
+        // Placeholder option
+        const placeholder = document.createElement('option');
+        placeholder.value = '';
+        if (isDisabled) {
+          placeholder.textContent = 'Select ' + (prevCategory ? prevCategory.name : '') + ' first';
+        } else {
+          placeholder.textContent = '— Select ' + category.name + ' —';
+        }
+        select.appendChild(placeholder);
+
+        for (const value of availableValues) {
+          const opt = document.createElement('option');
+          opt.value = value;
+          opt.textContent = value;
+          if (value === selections[category.qualifier]) opt.selected = true;
+          select.appendChild(opt);
+        }
+
+        select.addEventListener('change', () => onSelectChange(category.qualifier, select.value, index));
+
+        group.appendChild(labelRow);
+        group.appendChild(select);
+        container.appendChild(group);
+      });
+    }
+
+    function renderResult() {
+      const panel   = document.getElementById('result');
+      const variant = getSelectedVariant(model, selections);
+
+      if (!variant) {
+        const total    = model.categories.length;
+        const selected = Object.keys(selections).length;
+        panel.className = 'result-panel incomplete';
+        panel.textContent = selected === 0
+          ? 'Select all options above to see your product code'
+          : selected + ' of ' + total + ' options selected — complete all to see your product code';
+        return;
+      }
+
+      // Build selection summary rows
+      const rowsHtml = model.categories.map(cat => `
+        <div class="result-row">
+          <span class="r-key">${cat.name}</span>
+          <span class="r-val">${selections[cat.qualifier]}</span>
+        </div>
+      `).join('');
+
+      const productUrl = 'https://www.brookfieldengineering.com' + variant.url;
+
+      panel.className = 'result-panel complete';
+      panel.innerHTML = `
+        <div class="result-heading">Configuration Complete</div>
+        ${rowsHtml}
+        <div class="result-divider"></div>
+        <div class="sku-row">
+          <span class="sku-label">Product Code</span>
+          <span class="sku-code" id="sku-code-val">${variant.code}</span>
+          <button class="copy-btn" onclick="copyCode('${variant.code}', this)">Copy</button>
+        </div>
+        <a class="view-link" href="${productUrl}" target="_blank" rel="noopener">View product page →</a>
+      `;
+    }
+
+    function renderProgress() {
+      const total    = model.categories.length;
+      const selected = Object.keys(selections).length;
+      const el = document.getElementById('progress-text');
+      el.textContent = selected + ' / ' + total + ' selected';
+      el.style.color = selected === total ? '#1d8a58' : '#aaa';
+    }
+
+    // ─── Interaction ──────────────────────────────────────────────────────────
+
+    function onSelectChange(qualifier, value, categoryIndex) {
+      const allQualifiers = model.categories.map(c => c.qualifier);
+
+      if (!value) {
+        delete selections[qualifier];
+      } else {
+        selections[qualifier] = value;
+      }
+
+      // Clear all downstream selections whenever a category changes
+      for (let i = categoryIndex + 1; i < allQualifiers.length; i++) {
+        delete selections[allQualifiers[i]];
+      }
+
+      render();
+    }
+
+    function resetSelections() {
+      selections = {};
+      render();
+    }
+
+    function copyCode(code, btn) {
+      navigator.clipboard.writeText(code).then(() => {
+        const original = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = original; }, 1500);
+      });
+    }
+  </script>
+</body>
+</html>

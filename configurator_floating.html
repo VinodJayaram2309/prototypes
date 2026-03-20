@@ -1,0 +1,947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Configurator</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f4f4f4;
+      color: #1a1a1a;
+    }
+
+    .hidden { display: none !important; }
+
+    /* ── Load screen ──────────────────────────────────────────────────────── */
+
+    #load-screen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f4f4f4;
+    }
+
+    .load-card {
+      background: white;
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      text-align: center;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.09);
+    }
+
+    .load-card .load-icon { font-size: 2.5rem; margin-bottom: 1rem; }
+    .load-card h1 { font-size: 1.45rem; font-weight: 700; margin-bottom: 0.4rem; }
+    .load-card p  { color: #666; font-size: 0.92rem; margin-bottom: 2rem; }
+
+    .load-btn {
+      display: inline-block;
+      padding: 0.75rem 1.75rem;
+      background: #E87722;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      transition: background 0.15s;
+      text-decoration: none;
+    }
+    .load-btn:hover { background: #c96510; }
+
+    #file-input { display: none; }
+    #load-error  { margin-top: 1rem; color: #c0392b; font-size: 0.85rem; min-height: 1.2em; }
+
+    /* ── App shell ────────────────────────────────────────────────────────── */
+
+    #app {
+      background: #f4f4f4;
+    }
+
+    /* ── Two-column layout ────────────────────────────────────────────────── */
+
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 440px;
+      align-items: start; /* each column is only as tall as its own content */
+    }
+
+    @media (max-width: 860px) {
+      .two-col { grid-template-columns: 1fr; }
+    }
+
+    /* ── Left panel ───────────────────────────────────────────────────────── */
+
+    .left-panel {
+      background: white;
+      border-right: 1px solid #e8e8e8;
+      padding: 2.5rem 3rem;
+      overflow-y: auto;
+    }
+
+    .product-eyebrow {
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #E87722;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+      font-size: 2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      color: #1a1a1a;
+      margin-bottom: 0.35rem;
+    }
+
+    .product-sku-label {
+      font-size: 0.82rem;
+      color: #999;
+      font-family: 'Menlo', 'Consolas', monospace;
+      margin-bottom: 1.25rem;
+    }
+
+    .product-desc {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #555;
+      margin-bottom: 2rem;
+    }
+
+    .product-desc ul {
+      padding-left: 1.2rem;
+      margin-top: 0.5rem;
+    }
+
+    .product-desc li {
+      margin-bottom: 0.2rem;
+    }
+
+    /* image + thumbnails row */
+    .image-area {
+      display: flex;
+      gap: 0.75rem;
+    }
+
+    .image-main {
+      flex: 1;
+      aspect-ratio: 4 / 3;
+      border-radius: 10px;
+      overflow: hidden;
+      background: #f0eeec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .image-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .image-thumbs {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      width: 64px;
+      flex-shrink: 0;
+    }
+
+    .thumb {
+      width: 64px;
+      height: 56px;
+      border-radius: 6px;
+      background: #f0eeec;
+      border: 2px solid transparent;
+      overflow: hidden;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+      flex-shrink: 0;
+    }
+
+    .thumb.active-thumb { border-color: #E87722; }
+    .thumb img { width: 100%; height: 100%; object-fit: contain; }
+
+    /* placeholder when no real image */
+    .img-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      color: #c0b8b0;
+      font-size: 0.8rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .img-placeholder svg { opacity: 0.4; }
+
+    /* ── Right panel ──────────────────────────────────────────────────────── */
+
+    .right-panel-header {
+      padding: 1.25rem 1.5rem;
+      background: white;
+      border-bottom: 1px solid #e8e8e8;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .right-panel-header h2 {
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #444;
+    }
+
+    .reset-btn {
+      padding: 0.3rem 0.85rem;
+      background: transparent;
+      border: 1.5px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      color: #666;
+      font-weight: 500;
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .reset-btn:hover { border-color: #999; color: #333; }
+
+    /* ── Accordion ────────────────────────────────────────────────────────── */
+
+    .acc-section {
+      border-bottom: 1px solid #ebebeb;
+      background: white;
+    }
+
+    .acc-header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 0.875rem;
+      padding: 1rem 1.5rem;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.1s;
+    }
+
+    .acc-header:hover { background: #fdf8f5; }
+
+    /* Step circle */
+    .acc-step {
+      flex-shrink: 0;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid #d0d0d0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #aaa;
+      transition: border-color 0.2s, background 0.2s, color 0.2s;
+    }
+
+    .acc-step.step-active {
+      border-color: #E87722;
+      color: #E87722;
+    }
+
+    .acc-step.step-done {
+      border-color: #E87722;
+      background: #E87722;
+      color: white;
+    }
+
+    /* checkmark inside done circle */
+    .acc-step.step-done::after {
+      content: '';
+      display: block;
+      width: 5px;
+      height: 9px;
+      border: 2px solid white;
+      border-top: none;
+      border-left: none;
+      transform: rotate(45deg) translate(-1px, -1px);
+    }
+
+    .acc-step.step-done .step-num { display: none; }
+
+    .acc-title-group { flex: 1; min-width: 0; }
+
+    .acc-title {
+      font-size: 0.93rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      line-height: 1.3;
+    }
+
+    .acc-selected-preview {
+      font-size: 0.78rem;
+      color: #E87722;
+      font-weight: 500;
+      margin-top: 0.15rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .acc-chevron {
+      flex-shrink: 0;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      transition: transform 0.22s ease;
+    }
+
+    .acc-chevron svg { display: block; }
+
+    .acc-section.open .acc-chevron { transform: rotate(180deg); }
+
+    /* Accordion body (collapsed by default) */
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.28s ease;
+    }
+
+    .acc-section.open .acc-body {
+      max-height: 800px;
+    }
+
+    .acc-options { padding: 0.2rem 0 0.85rem 0; }
+
+    .acc-empty {
+      padding: 0.9rem 1.5rem;
+      font-size: 0.85rem;
+      color: #b0b0b0;
+      font-style: italic;
+    }
+
+    /* ── Radio option rows ────────────────────────────────────────────────── */
+
+    .radio-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.7rem 1.5rem;
+      cursor: pointer;
+      transition: background 0.1s;
+      user-select: none;
+    }
+
+    .radio-row:hover { background: #fdf5ef; }
+
+    .radio-row input[type="radio"] { display: none; }
+
+    /* Custom radio circle */
+    .radio-dot {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      border: 2px solid #c8c8c8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.15s;
+    }
+
+    .radio-dot::after {
+      content: '';
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #E87722;
+      transform: scale(0);
+      transition: transform 0.15s ease;
+    }
+
+    .radio-row.is-checked .radio-dot {
+      border-color: #E87722;
+    }
+
+    .radio-row.is-checked .radio-dot::after {
+      transform: scale(1);
+    }
+
+    .radio-text {
+      flex: 1;
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.35;
+    }
+
+    .radio-row.is-checked .radio-text {
+      color: #E87722;
+      font-weight: 500;
+    }
+
+    /* ── Right panel ─────────────────────────────────────────────────────── */
+
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+      border-left: 1px solid #e8e8e8;
+      background: #fafafa;
+    }
+
+    #accordion {
+      /* flows naturally — no scroll container, no fixed height */
+    }
+
+    /* ── Result panel (inline, below accordion in right column) ───────────── */
+
+    #result-panel {
+      flex-shrink: 0;
+      border-top: 1px solid #ebebeb;
+      background: white;
+    }
+
+    .res-incomplete {
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .res-incomplete-label {
+      font-size: 0.8rem;
+      color: #bbb;
+      text-align: center;
+    }
+
+    .res-progress-track {
+      height: 3px;
+      background: #f0f0f0;
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .res-progress-fill {
+      height: 100%;
+      background: #E87722;
+      border-radius: 2px;
+      transition: width 0.3s ease;
+    }
+
+    .res-complete {
+      padding: 1.1rem 1.5rem 1.25rem;
+    }
+
+    .res-heading {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #E87722;
+      margin-bottom: 0.85rem;
+    }
+
+    .res-heading::before {
+      content: '';
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #E87722;
+      flex-shrink: 0;
+    }
+
+    .res-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.28rem 0;
+      border-bottom: 1px solid rgba(232, 119, 34, 0.1);
+      font-size: 0.84rem;
+    }
+
+    .res-row:last-of-type { border-bottom: none; }
+    .res-key { color: #777; }
+    .res-val { font-weight: 600; color: #1a1a1a; text-align: right; }
+
+    .res-divider {
+      height: 1px;
+      background: rgba(232, 119, 34, 0.18);
+      margin: 0.8rem 0 0.75rem;
+    }
+
+    .res-sku-row {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 0.9rem;
+    }
+
+    .res-sku-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #E87722;
+      flex-shrink: 0;
+    }
+
+    .res-sku-code {
+      flex: 1;
+      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #1a1a1a;
+      background: #fff8f3;
+      border: 1px solid rgba(232, 119, 34, 0.3);
+      border-radius: 5px;
+      padding: 0.2rem 0.55rem;
+      letter-spacing: 0.04em;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .res-copy-btn {
+      flex-shrink: 0;
+      padding: 0.2rem 0.55rem;
+      background: transparent;
+      border: 1px solid rgba(232, 119, 34, 0.35);
+      border-radius: 5px;
+      cursor: pointer;
+      color: #E87722;
+      font-size: 0.72rem;
+      font-weight: 600;
+      transition: background 0.12s;
+    }
+    .res-copy-btn:hover { background: #fff0e6; }
+
+    .quote-btn {
+      width: 100%;
+      padding: 0.72rem 1.5rem;
+      background: #E87722;
+      color: white;
+      border: none;
+      border-radius: 24px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.15s;
+      letter-spacing: 0.01em;
+    }
+    .quote-btn:hover { background: #c96510; }
+  </style>
+</head>
+<body>
+
+  <!-- ── Load screen ──────────────────────────────────────────────────────── -->
+  <div id="load-screen">
+    <div class="load-card">
+      <div class="load-icon">⚙️</div>
+      <h1>Product Configurator</h1>
+      <p>Load the product JSON file to start configuring</p>
+      <label for="file-input" class="load-btn">Load Product JSON</label>
+      <input type="file" id="file-input" accept=".json" />
+      <div id="load-error"></div>
+    </div>
+  </div>
+
+  <!-- ── Main app ─────────────────────────────────────────────────────────── -->
+  <div id="app" class="hidden">
+
+    <div class="two-col">
+
+      <!-- Left: product info + image -->
+      <div class="left-panel">
+        <div class="product-eyebrow" id="left-eyebrow">Viscometer</div>
+        <h1 class="product-title" id="left-name"></h1>
+        <div class="product-sku-label" id="left-sku"></div>
+        <div class="product-desc" id="left-desc"></div>
+        <div class="image-area">
+          <div class="image-main" id="image-main"></div>
+          <div class="image-thumbs" id="image-thumbs"></div>
+        </div>
+      </div>
+
+      <!-- Right: accordion configurator + inline result panel -->
+      <div class="right-panel">
+        <div class="right-panel-header">
+          <h2>Configure Your Product</h2>
+          <button class="reset-btn" id="reset-btn">&#8635; Reset</button>
+        </div>
+        <div id="accordion"></div>
+        <div id="result-panel"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="product-configurator.js"></script>
+  <script>
+    // ─── State ────────────────────────────────────────────────────────────────
+    let model             = null;
+    let selections        = {};
+    let expandedQualifier = null;
+    let productData       = null;
+
+    // ─── Dummy fallback data (used when JSON lacks description/images) ────────
+    const DUMMY_IMAGES = [
+      'https://placehold.co/480x360/f0eeec/b0a898?text=Product+Image',
+      'https://placehold.co/480x360/f0eeec/b0a898?text=View+2',
+      'https://placehold.co/480x360/f0eeec/b0a898?text=View+3',
+    ];
+
+    const DUMMY_DESC = `
+      <p>This instrument is designed for accurate and reliable measurements in laboratory
+      and industrial environments. Configure your unit below by selecting the options
+      that best match your application requirements.</p>
+      <ul>
+        <li>High-precision measurement technology</li>
+        <li>Intuitive touch-screen interface</li>
+        <li>Multiple torque range options</li>
+        <li>Flexible suspension configurations</li>
+      </ul>
+    `;
+
+    // ─── File loading ─────────────────────────────────────────────────────────
+    document.getElementById('file-input').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function (event) {
+        try {
+          const data = JSON.parse(event.target.result);
+          if (!Array.isArray(data.variantOptions) || !Array.isArray(data.variantMatrix)) {
+            document.getElementById('load-error').textContent =
+              'JSON must contain variantOptions and variantMatrix arrays.';
+            return;
+          }
+          if (data.variantOptions.length === 0) {
+            document.getElementById('load-error').textContent =
+              'variantOptions is empty — nothing to configure.';
+            return;
+          }
+          initConfigurator(data);
+        } catch (err) {
+          document.getElementById('load-error').textContent =
+            'Could not parse JSON: ' + err.message;
+        }
+      };
+      reader.readAsText(file);
+    });
+
+    // ─── Init ─────────────────────────────────────────────────────────────────
+    function initConfigurator(data) {
+      productData = data;
+      model       = mapToConfiguratorModel(data.variantOptions, data.variantMatrix);
+      selections  = {};
+      expandedQualifier = model.categories[0]?.qualifier || null;
+
+      // ── Left panel ──
+      const name = data.name || 'Product';
+      document.getElementById('left-name').textContent = name;
+      document.getElementById('left-sku').textContent  = data.code ? 'SKU: ' + data.code : '';
+
+      // Description — use real HTML or dummy fallback
+      const descEl = document.getElementById('left-desc');
+      const rawDesc = (data.description || '').trim();
+      descEl.innerHTML = rawDesc || DUMMY_DESC;
+
+      // Eyebrow — derive from categories if available
+      if (data.categories && data.categories.length > 0) {
+        const last = data.categories[data.categories.length - 1];
+        const label = (last.name || last.code || 'Instrument');
+        document.getElementById('left-eyebrow').textContent =
+          label.charAt(0).toUpperCase() + label.slice(1);
+      }
+
+      // Images — try real data, fall back to dummies
+      const images = (data.images && data.images.length > 0)
+        ? data.images.map(img => img.url || img)
+        : DUMMY_IMAGES;
+
+      buildImageGallery(images);
+
+      // ── Wire up reset ──
+      document.getElementById('reset-btn').addEventListener('click', resetSelections);
+
+      document.getElementById('load-screen').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+
+      render();
+    }
+
+    // ─── Image gallery ────────────────────────────────────────────────────────
+    function buildImageGallery(images) {
+      const mainEl   = document.getElementById('image-main');
+      const thumbsEl = document.getElementById('image-thumbs');
+      mainEl.innerHTML   = '';
+      thumbsEl.innerHTML = '';
+
+      function setMain(src) {
+        mainEl.innerHTML = '';
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Product image';
+        mainEl.appendChild(img);
+      }
+
+      setMain(images[0]);
+
+      images.forEach((src, i) => {
+        const thumb = document.createElement('div');
+        thumb.className = 'thumb' + (i === 0 ? ' active-thumb' : '');
+
+        const img = document.createElement('img');
+        img.src = src;
+        img.alt = 'Thumbnail ' + (i + 1);
+        thumb.appendChild(img);
+
+        thumb.addEventListener('click', () => {
+          setMain(src);
+          thumbsEl.querySelectorAll('.thumb').forEach(t => t.classList.remove('active-thumb'));
+          thumb.classList.add('active-thumb');
+        });
+
+        thumbsEl.appendChild(thumb);
+      });
+    }
+
+    // ─── Render ───────────────────────────────────────────────────────────────
+    function render() {
+      renderAccordion();
+      renderSummary();
+    }
+
+    // ─── Accordion ────────────────────────────────────────────────────────────
+    function renderAccordion() {
+      const container = document.getElementById('accordion');
+      container.innerHTML = '';
+
+      const available = getAvailableOptions(model, selections);
+
+      model.categories.forEach((category, index) => {
+        const isFirst        = index === 0;
+        const prevCat        = model.categories[index - 1];
+        const isPrevSelected = isFirst || selections[prevCat.qualifier] !== undefined;
+        const isSelected     = selections[category.qualifier] !== undefined;
+        const isOpen         = expandedQualifier === category.qualifier;
+
+        // Options to display
+        let opts;
+        if (isFirst) {
+          opts = category.options.map(o => o.value);
+        } else if (isPrevSelected) {
+          opts = available[category.qualifier] || category.options.map(o => o.value);
+        } else {
+          opts = [];
+        }
+
+        // Step state
+        const stepState = isSelected ? 'step-done' : (isPrevSelected ? 'step-active' : '');
+
+        // ── Section wrapper ──
+        const section = document.createElement('div');
+        section.className = 'acc-section' + (isOpen ? ' open' : '');
+
+        // ── Header ──
+        const header = document.createElement('button');
+        header.className = 'acc-header';
+        header.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+
+        const stepEl = document.createElement('span');
+        stepEl.className = 'acc-step ' + stepState;
+        if (!isSelected) {
+          const numEl = document.createElement('span');
+          numEl.className = 'step-num';
+          numEl.textContent = index + 1;
+          stepEl.appendChild(numEl);
+        }
+
+        const titleGroup = document.createElement('div');
+        titleGroup.className = 'acc-title-group';
+
+        const titleEl = document.createElement('div');
+        titleEl.className = 'acc-title';
+        titleEl.textContent = category.name;
+        titleGroup.appendChild(titleEl);
+
+        if (isSelected) {
+          const preview = document.createElement('div');
+          preview.className = 'acc-selected-preview';
+          preview.textContent = selections[category.qualifier];
+          titleGroup.appendChild(preview);
+        }
+
+        const chevron = document.createElement('span');
+        chevron.className = 'acc-chevron';
+        chevron.innerHTML = `<svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+          <path d="M2 4L6 8L10 4" stroke="#999" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+
+        header.appendChild(stepEl);
+        header.appendChild(titleGroup);
+        header.appendChild(chevron);
+        header.addEventListener('click', () => toggleSection(category.qualifier));
+
+        // ── Body ──
+        const body = document.createElement('div');
+        body.className = 'acc-body';
+
+        const optionsWrap = document.createElement('div');
+        optionsWrap.className = 'acc-options';
+
+        if (opts.length === 0) {
+          const msg = document.createElement('div');
+          msg.className = 'acc-empty';
+          msg.textContent = isPrevSelected
+            ? 'No options available for this combination.'
+            : 'Select ' + (prevCat ? prevCat.name : 'previous option') + ' first.';
+          optionsWrap.appendChild(msg);
+        } else {
+          opts.forEach(value => {
+            const isChecked = selections[category.qualifier] === value;
+
+            const row = document.createElement('label');
+            row.className = 'radio-row' + (isChecked ? ' is-checked' : '');
+
+            const input = document.createElement('input');
+            input.type    = 'radio';
+            input.name    = category.qualifier;
+            input.value   = value;
+            if (isChecked) input.checked = true;
+
+            const dot = document.createElement('span');
+            dot.className = 'radio-dot';
+
+            const text = document.createElement('span');
+            text.className = 'radio-text';
+            text.textContent = value;
+
+            row.appendChild(input);
+            row.appendChild(dot);
+            row.appendChild(text);
+
+            row.addEventListener('click', (e) => {
+              e.preventDefault();
+              onRadioChange(category.qualifier, value, index);
+            });
+
+            optionsWrap.appendChild(row);
+          });
+        }
+
+        body.appendChild(optionsWrap);
+        section.appendChild(header);
+        section.appendChild(body);
+        container.appendChild(section);
+      });
+    }
+
+    // ─── Result panel ─────────────────────────────────────────────────────────
+    function renderSummary() {
+      const panel   = document.getElementById('result-panel');
+      const variant = getSelectedVariant(model, selections);
+      const total   = model.categories.length;
+      const done    = Object.keys(selections).length;
+
+      if (!variant) {
+        const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+        panel.innerHTML = `
+          <div class="res-incomplete">
+            <div class="res-incomplete-label">${done} of ${total} options selected</div>
+            <div class="res-progress-track">
+              <div class="res-progress-fill" style="width:${pct}%"></div>
+            </div>
+          </div>`;
+        return;
+      }
+
+      const selRows = model.categories.map(cat => `
+        <div class="res-row">
+          <span class="res-key">${cat.name}</span>
+          <span class="res-val">${selections[cat.qualifier]}</span>
+        </div>`).join('');
+
+      const productUrl = 'https://www.brookfieldengineering.com' + variant.url;
+
+      panel.innerHTML = `
+        <div class="res-complete">
+          <div class="res-heading">Configuration Complete</div>
+          ${selRows}
+          <div class="res-divider"></div>
+          <div class="res-sku-row">
+            <span class="res-sku-label">Product Code</span>
+            <span class="res-sku-code" title="${variant.code}">${variant.code}</span>
+            <button class="res-copy-btn" onclick="copyCode('${variant.code}', this)">Copy</button>
+          </div>
+          <button class="quote-btn" onclick="handleQuote('${productUrl}')">Request a Quote</button>
+        </div>`;
+    }
+
+    // ─── Interaction ──────────────────────────────────────────────────────────
+    function toggleSection(qualifier) {
+      expandedQualifier = (expandedQualifier === qualifier) ? null : qualifier;
+      render();
+    }
+
+    function onRadioChange(qualifier, value, categoryIndex) {
+      selections[qualifier] = value;
+
+      // Clear all downstream selections
+      const allQualifiers = model.categories.map(c => c.qualifier);
+      for (let i = categoryIndex + 1; i < allQualifiers.length; i++) {
+        delete selections[allQualifiers[i]];
+      }
+
+      // Auto-advance: open the next unselected category
+      const next = model.categories[categoryIndex + 1];
+      expandedQualifier = next ? next.qualifier : null;
+
+      render();
+    }
+
+    function resetSelections() {
+      selections        = {};
+      expandedQualifier = model.categories[0]?.qualifier || null;
+      render();
+    }
+
+    function copyCode(code, btn) {
+      navigator.clipboard.writeText(code).then(() => {
+        const orig = btn.textContent;
+        btn.textContent = 'Copied!';
+        setTimeout(() => { btn.textContent = orig; }, 1500);
+      });
+    }
+
+    function handleQuote(url) {
+      window.open(url, '_blank', 'noopener');
+    }
+  </script>
+</body>
+</html>
