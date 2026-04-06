@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Frame Rate Data – Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* ── Header ────────────────────────────────────── */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-icon {
+            width: 36px; height: 36px;
+            background: #c0392b;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-icon i { color: #fff; font-size: 1em; }
+        .header-title { font-size: 1.05em; font-weight: 700; color: #111; }
+
+        /* ── Page wrapper ───────────────────────────────── */
+        .page-wrapper { padding: 28px 32px; }
+
+        /* ── Main card ──────────────────────────────────── */
+        .main-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.09);
+            padding: 28px 32px;
+            max-width: 1060px;
+            margin: 0 auto;
+        }
+
+        /* ── Back button ────────────────────────────────── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #c0392b;
+            color: #fff;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-weight: 600;
+            margin-bottom: 22px;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: #a93226; }
+
+        /* ── Section title / subtitle ───────────────────── */
+        .section-title { font-size: 1.2em; font-weight: 700; color: #111; margin-bottom: 6px; }
+        .section-subtitle { font-size: 0.875em; color: #6b7280; margin-bottom: 22px; }
+
+        /* ── Upload zone ────────────────────────────────── */
+        .upload-zone {
+            border: 2px dashed #f0a0a0;
+            border-radius: 12px;
+            background: #fff5f5;
+            padding: 48px 24px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .upload-zone:hover { background: #fde8e8; border-color: #e07070; }
+        .upload-zone.drag-over { background: #fde8e8; border-color: #c0392b; }
+        .upload-zone input[type="file"] {
+            position: absolute; inset: 0; opacity: 0;
+            pointer-events: none;
+        }
+        .upload-circle {
+            width: 52px; height: 52px;
+            background: #c0392b;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+        }
+        .upload-circle i { color: #fff; font-size: 1.15em; }
+        .upload-main-text { font-size: 0.92em; font-weight: 600; color: #111; margin-bottom: 6px; }
+        .upload-sub-text { font-size: 0.8em; color: #9ca3af; }
+
+        /* ── Upload zone – disabled ─────────────────────── */
+        .upload-zone.disabled {
+            background: #f9f9f9;
+            border: 2px dashed #d1d5db;
+            cursor: not-allowed;
+            padding: 28px 24px;
+        }
+        .upload-zone.disabled:hover { background: #f9f9f9; border-color: #d1d5db; }
+        .upload-circle.gray { background: #d1d5db; }
+        .upload-circle.gray i { color: #9ca3af; }
+        .upload-disabled-text { font-size: 0.85em; color: #9ca3af; margin-top: 10px; }
+
+        /* ── Preview header row ─────────────────────────── */
+        .preview-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+        .preview-label {
+            font-size: 0.97em; font-weight: 700; color: #111;
+            display: flex; align-items: center; gap: 7px;
+            margin-bottom: 4px;
+        }
+        .preview-label i { color: #6b7280; font-size: 0.85em; }
+        .preview-filename { font-size: 0.78em; color: #6b7280; }
+        .preview-actions { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+        /* ── Buttons ────────────────────────────────────── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 16px;
+            border-radius: 7px;
+            font-size: 0.84em; font-weight: 600;
+            border: none; cursor: pointer;
+            transition: opacity 0.18s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .btn:hover { opacity: 0.86; transform: translateY(-1px); }
+        .btn:active { transform: none; }
+        .btn-blue { background: #2563eb; color: #fff; }
+        .btn-dark { background: #374151; color: #fff; }
+        .btn-red  { background: #c0392b; color: #fff; }
+
+        /* ── Live header row ────────────────────────────── */
+        .live-header-row {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 18px; flex-wrap: wrap; gap: 14px;
+        }
+        .live-label {
+            font-size: 0.97em; font-weight: 700; color: #111;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .live-dot {
+            width: 9px; height: 9px; border-radius: 50%; background: #16a34a;
+            animation: livePulse 1.6s infinite;
+        }
+        @keyframes livePulse {
+            0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.5); }
+            70%  { box-shadow: 0 0 0 7px rgba(22,163,74,0); }
+            100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+        }
+
+        /* ── Success banner ─────────────────────────────── */
+        .success-banner {
+            display: flex; align-items: center; gap: 10px;
+            background: #f0fdf4; border: 1px solid #bbf7d0;
+            border-radius: 8px; padding: 12px 18px;
+            color: #16a34a; font-size: 0.88em; font-weight: 600;
+            margin-bottom: 18px;
+        }
+
+        /* ── Table ──────────────────────────────────────── */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8em; min-width: 960px; }
+        thead tr { background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+        thead th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.73em; font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+        tbody tr { border-bottom: 1px solid #f3f4f6; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        tbody td { padding: 10px 12px; color: #374151; white-space: nowrap; }
+        .td-id    { color: #9ca3af; }
+        .td-code  { color: #2563eb; font-weight: 600; }
+
+        /* Status pills */
+        .pill {
+            display: inline-block; padding: 3px 10px;
+            border-radius: 20px; font-size: 0.74em; font-weight: 700;
+        }
+        .pill-active      { background: #dcfce7; color: #16a34a; }
+        .pill-inactive    { background: #f3f4f6; color: #6b7280; }
+        .pill-maintenance { background: #fef9c3; color: #ca8a04; }
+        .pill-error       { background: #fee2e2; color: #dc2626; }
+
+        /* ── Pagination ─────────────────────────────────── */
+        .pagination-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 14px; padding-top: 14px; border-top: 1px solid #f3f4f6;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .page-info { font-size: 0.8em; color: #6b7280; }
+        .page-btns { display: flex; gap: 8px; }
+        .page-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 7px 14px;
+            border: 1px solid #d1d5db; border-radius: 6px;
+            background: #fff; color: #374151;
+            font-size: 0.8em; font-weight: 600; cursor: pointer;
+            transition: all 0.18s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
+        .page-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+        /* ── Utility ────────────────────────────────────── */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- ── Header ───────────────────────────────────────────── -->
+<div class="header">
+    <div class="header-icon"><i class="fas fa-film"></i></div>
+    <span class="header-title">Upload Frame Rate Data</span>
+</div>
+
+<!-- ── Page ─────────────────────────────────────────────── -->
+<div class="page-wrapper">
+<div class="main-card">
+
+    <!-- Back button (always visible) -->
+    <a href="admin.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+    <!-- ══════════════ INITIAL STATE ══════════════ -->
+    <div id="stateInitial">
+        <p class="section-title">Upload Frame Rate Data</p>
+        <p class="section-subtitle">Upload your frame rate data file to preview and publish to live.</p>
+
+        <div class="upload-zone" id="uploadZone"
+             onclick="document.getElementById('fileInput').click()">
+            <input type="file" id="fileInput" accept=".csv,.json,.xml" onchange="handleFile(event)">
+            <div class="upload-circle"><i class="fas fa-upload"></i></div>
+            <p class="upload-main-text">Drag and drop frame rate data files here, or click to select files</p>
+            <p class="upload-sub-text">Supported formats: CSV, JSON, XML</p>
+        </div>
+    </div>
+
+    <!-- ══════════════ PREVIEW STATE ══════════════ -->
+    <div id="statePreview" class="hidden">
+
+        <!-- Header row -->
+        <div class="preview-header-row">
+            <div>
+                <div class="preview-label"><i class="fas fa-eye"></i> Preview Data</div>
+                <div class="preview-filename" id="previewFilename">File: —</div>
+            </div>
+            <div class="preview-actions">
+                <button class="btn btn-blue" onclick="resetToLive()">
+                    <i class="fas fa-sync-alt"></i> Reset to Live
+                </button>
+                <button class="btn btn-dark" onclick="discardPreview()">
+                    <i class="fas fa-trash-alt"></i> Discard
+                </button>
+                <button class="btn btn-red" onclick="publishToLive()">
+                    <i class="fas fa-cloud-upload-alt"></i> Publish to Live
+                </button>
+            </div>
+        </div>
+
+        <!-- Disabled upload zone -->
+        <div class="upload-zone disabled">
+            <div class="upload-circle gray"><i class="fas fa-upload"></i></div>
+            <p class="upload-disabled-text">Upload disabled during preview</p>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Format Code</th><th>Format Name</th>
+                        <th>Frame Rate</th><th>Resolution</th><th>Bitrate</th>
+                        <th>Color Space</th><th>HDR Support</th><th>Codec</th>
+                        <th>Container</th><th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="previewTbody"></tbody>
+            </table>
+        </div>
+        <div class="pagination-bar">
+            <span class="page-info" id="previewPageInfo"></span>
+            <div class="page-btns">
+                <button class="page-btn" id="previewPrev" onclick="changePage('preview',-1)">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <button class="page-btn" id="previewNext" onclick="changePage('preview',1)">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ══════════════ LIVE STATE ══════════════ -->
+    <div id="stateLive" class="hidden">
+
+        <div class="live-header-row">
+            <div class="live-label">
+                <span class="live-dot"></span> Live Data
+            </div>
+            <button class="btn btn-red" onclick="startFreshUpload()">
+                <i class="fas fa-plus"></i> Start Fresh Upload
+            </button>
+        </div>
+
+        <div class="success-banner" id="successBanner">
+            <i class="fas fa-check-circle"></i> Frame rate data successfully published to live!
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th><th>Format Code</th><th>Format Name</th>
+                        <th>Frame Rate</th><th>Resolution</th><th>Bitrate</th>
+                        <th>Color Space</th><th>HDR Support</th><th>Codec</th>
+                        <th>Container</th><th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="liveTbody"></tbody>
+            </table>
+        </div>
+        <div class="pagination-bar">
+            <span class="page-info" id="livePageInfo"></span>
+            <div class="page-btns">
+                <button class="page-btn" id="livePrev" onclick="changePage('live',-1)">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <button class="page-btn" id="liveNext" onclick="changePage('live',1)">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /.main-card -->
+</div><!-- /.page-wrapper -->
+
+<script>
+    /* ── Constants ─────────────────────────────────────── */
+    const ROWS = 20;
+    let previewPage = 1, livePage = 1;
+    let liveData = null;
+
+    /* ── Dummy data ────────────────────────────────────── */
+    const FORMAT_NAMES  = ['Cinema 4K','UHD 4K','2K DCI','1080p HD','720p HD','8K UHD','4K UHD','2K Flat','1080p Raw'];
+    const FRAME_RATES   = ['23.976 fps','24 fps','25 fps','29.97 fps','30 fps','48 fps','50 fps','59.94 fps','60 fps','120 fps'];
+    const RESOLUTIONS   = ['4096×2160','3840×2160','2048×1080','1920×1080','1280×720','7680×4320','2048×858'];
+    const CODECS        = ['H.264','H.265 (HEVC)','ProRes 422','ProRes 4444','RAW','DNxHD','BRAW','AVC-Intra'];
+    const COLOR_SPACES  = ['Rec. 709','Rec. 2020','DCI-P3','S-Log3','V-Log','Log C','Rec. 2100 HLG'];
+    const CONTAINERS    = ['MP4','MOV','MXF','MKV','R3D','BRAW'];
+    const HDR_OPTS      = ['Yes','No','Optional'];
+    const STATUSES      = ['Active','Inactive','Maintenance','Error'];
+
+    function rnd(a)      { return a[Math.floor(Math.random()*a.length)]; }
+    function rndNum(a,b) { return Math.floor(Math.random()*(b-a+1))+a; }
+
+    const previewData = Array.from({length:60}, (_,i) => ({
+        id:         i+1,
+        code:       `FRM-${String(i+1).padStart(4,'0')}`,
+        name:       rnd(FORMAT_NAMES),
+        frameRate:  rnd(FRAME_RATES),
+        resolution: rnd(RESOLUTIONS),
+        bitrate:    `${rndNum(10,800)} Mbps`,
+        colorSpace: rnd(COLOR_SPACES),
+        hdr:        rnd(HDR_OPTS),
+        codec:      rnd(CODECS),
+        container:  rnd(CONTAINERS),
+        status:     rnd(STATUSES)
+    }));
+
+    /* ── Helpers ───────────────────────────────────────── */
+    const pillClass = { Active:'pill-active', Inactive:'pill-inactive', Maintenance:'pill-maintenance', Error:'pill-error' };
+
+    function renderTable(tbodyId, data, page) {
+        const start = (page-1)*ROWS;
+        document.getElementById(tbodyId).innerHTML =
+            data.slice(start, start+ROWS).map(r => `
+            <tr>
+                <td class="td-id">${r.id}</td>
+                <td class="td-code">${r.code}</td>
+                <td>${r.name}</td>
+                <td>${r.frameRate}</td>
+                <td>${r.resolution}</td>
+                <td>${r.bitrate}</td>
+                <td>${r.colorSpace}</td>
+                <td>${r.hdr}</td>
+                <td>${r.codec}</td>
+                <td>${r.container}</td>
+                <td><span class="pill ${pillClass[r.status]}">${r.status}</span></td>
+            </tr>`).join('');
+    }
+
+    function updatePagination(infoId, prevId, nextId, page, data) {
+        const total = Math.ceil(data.length / ROWS);
+        document.getElementById(infoId).textContent = `Page ${page} of ${total}`;
+        document.getElementById(prevId).disabled = page === 1;
+        document.getElementById(nextId).disabled = page === total;
+    }
+
+    /* ── State transitions ─────────────────────────────── */
+    function show(id) {
+        ['stateInitial','statePreview','stateLive'].forEach(s =>
+            document.getElementById(s).classList.toggle('hidden', s !== id));
+    }
+
+    function handleFile(e) {
+        const f = e.target.files[0];
+        if (!f) return;
+        document.getElementById('previewFilename').textContent = `File: ${f.name}`;
+        previewPage = 1;
+        renderTable('previewTbody', previewData, previewPage);
+        updatePagination('previewPageInfo','previewPrev','previewNext', previewPage, previewData);
+        show('statePreview');
+    }
+
+    function discardPreview() {
+        document.getElementById('fileInput').value = '';
+        show('stateInitial');
+    }
+
+    function resetToLive() {
+        if (liveData) {
+            livePage = 1;
+            renderTable('liveTbody', liveData, livePage);
+            updatePagination('livePageInfo','livePrev','liveNext', livePage, liveData);
+            document.getElementById('successBanner').style.display = 'none';
+            show('stateLive');
+        } else {
+            discardPreview();
+        }
+    }
+
+    function publishToLive() {
+        liveData = [...previewData];
+        livePage = 1;
+        renderTable('liveTbody', liveData, livePage);
+        updatePagination('livePageInfo','livePrev','liveNext', livePage, liveData);
+        document.getElementById('successBanner').style.display = 'flex';
+        show('stateLive');
+    }
+
+    function startFreshUpload() {
+        document.getElementById('fileInput').value = '';
+        show('stateInitial');
+    }
+
+    function changePage(which, dir) {
+        if (which === 'preview') {
+            const max = Math.ceil(previewData.length / ROWS);
+            previewPage = Math.max(1, Math.min(max, previewPage + dir));
+            renderTable('previewTbody', previewData, previewPage);
+            updatePagination('previewPageInfo','previewPrev','previewNext', previewPage, previewData);
+        } else {
+            const max = Math.ceil(liveData.length / ROWS);
+            livePage = Math.max(1, Math.min(max, livePage + dir));
+            renderTable('liveTbody', liveData, livePage);
+            updatePagination('livePageInfo','livePrev','liveNext', livePage, liveData);
+        }
+    }
+
+    /* ── Drag and drop ─────────────────────────────────── */
+    const zone = document.getElementById('uploadZone');
+    zone.addEventListener('dragover',  e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', e => {
+        e.preventDefault();
+        zone.classList.remove('drag-over');
+        const f = e.dataTransfer.files[0];
+        if (f) {
+            document.getElementById('previewFilename').textContent = `File: ${f.name}`;
+            previewPage = 1;
+            renderTable('previewTbody', previewData, previewPage);
+            updatePagination('previewPageInfo','previewPrev','previewNext', previewPage, previewData);
+            show('statePreview');
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* ── Header ─────────────────────────────────────── */
+        .header {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 40px;
+            background-color: #ffffff;
+            border-bottom: 1px solid #e8e8e8;
+        }
+
+        .header-logo {
+            font-size: 1.15em;
+            font-weight: 700;
+            color: #1a1a1a;
+            letter-spacing: 0.1px;
+        }
+
+        .signout-btn {
+            background-color: #c0392b;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background-color 0.2s;
+        }
+        .signout-btn:hover { background-color: #a93226; }
+
+        /* ── Page wrapper ────────────────────────────────── */
+        .page-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 40px;
+        }
+
+        /* ── Welcome banner ──────────────────────────────── */
+        .welcome-banner {
+            background-color: #c0392b;
+            border-radius: 14px;
+            padding: 28px 32px;
+            margin-bottom: 32px;
+        }
+        .welcome-banner h1 {
+            font-size: 1.55em;
+            font-weight: 700;
+            color: #ffffff;
+            margin: 0 0 6px 0;
+        }
+        .welcome-banner p {
+            font-size: 0.95em;
+            color: rgba(255,255,255,0.88);
+            margin: 0;
+            font-weight: 400;
+        }
+
+        /* ── Cards grid ──────────────────────────────────── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+        }
+
+        /* ── Card ────────────────────────────────────────── */
+        .card {
+            background-color: #ffffff;
+            border-radius: 14px;
+            padding: 24px 24px 20px 24px;
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+            border-bottom: 3px solid transparent;
+            transition: box-shadow 0.25s, border-color 0.25s, transform 0.2s;
+        }
+        .card:hover {
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+            border-bottom-color: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        /* decorative quarter-circle in top-right */
+        .card::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: rgba(192, 57, 43, 0.10);
+            pointer-events: none;
+        }
+
+        /* ── Card icon box ───────────────────────────────── */
+        .card-icon-box {
+            width: 48px;
+            height: 48px;
+            background-color: #c0392b;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            flex-shrink: 0;
+        }
+        .card-icon-box i {
+            font-size: 1.25em;
+            color: #ffffff;
+        }
+
+        /* ── Card text ───────────────────────────────────── */
+        .card-title {
+            font-size: 1em;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin: 0 0 6px 0;
+            transition: color 0.2s;
+        }
+        .card:hover .card-title {
+            color: #c0392b;
+        }
+        .card-desc {
+            font-size: 0.82em;
+            color: #888888;
+            margin: 0;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ── Header ─────────────────────────────────────────── -->
+    <div class="header">
+        <div class="header-logo">Admin Portal</div>
+        <button class="signout-btn">
+            <i class="fas fa-sign-out-alt"></i> Sign Out
+        </button>
+    </div>
+
+    <!-- ── Page wrapper ───────────────────────────────────── -->
+    <div class="page-wrapper">
+
+        <!-- Welcome banner -->
+        <div class="welcome-banner">
+            <h1>Welcome to Admin Portal</h1>
+            <p>John Doe</p>
+        </div>
+
+        <!-- Cards -->
+        <div class="cards-grid">
+
+            <a class="card" href="upload-camera-data.html">
+                <div class="card-icon-box">
+                    <i class="fas fa-camera"></i>
+                </div>
+                <p class="card-title">Upload Camera Data</p>
+                <p class="card-desc">Click to access upload camera data functionality</p>
+            </a>
+
+            <a class="card" href="upload-frame-rate-data.html">
+                <div class="card-icon-box">
+                    <i class="fas fa-film"></i>
+                </div>
+                <p class="card-title">Upload Frame Rate Data</p>
+                <p class="card-desc">Click to access upload frame rate data functionality</p>
+            </a>
+
+            <a class="card" href="modify-live-data.html">
+                <div class="card-icon-box">
+                    <i class="fas fa-pen"></i>
+                </div>
+                <p class="card-title">Modify Live Data</p>
+                <p class="card-desc">Click to access modify live data functionality</p>
+            </a>
+
+        </div>
+    </div>
+
+</body>
+</html>

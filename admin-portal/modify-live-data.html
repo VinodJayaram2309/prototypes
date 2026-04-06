@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modify Live Data – Admin Portal</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+        }
+
+        /* ── Header ────────────────────────────────────── */
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 14px 32px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-icon {
+            width: 36px; height: 36px;
+            background: #c0392b;
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .header-icon i { color: #fff; font-size: 1em; }
+        .header-title { font-size: 1.05em; font-weight: 700; color: #111; }
+
+        /* ── Page wrapper ───────────────────────────────── */
+        .page-wrapper { padding: 28px 32px; }
+
+        /* ── Main card ──────────────────────────────────── */
+        .main-card {
+            background: #fff;
+            border-radius: 14px;
+            box-shadow: 0 2px 14px rgba(0,0,0,0.09);
+            padding: 28px 32px;
+            max-width: 1160px;
+            margin: 0 auto;
+        }
+
+        /* ── Back button ─────────────────────────────────── */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #c0392b;
+            color: #fff;
+            text-decoration: none;
+            padding: 9px 18px;
+            border-radius: 8px;
+            font-size: 0.88em;
+            font-weight: 600;
+            margin-bottom: 22px;
+            transition: background 0.2s;
+        }
+        .back-btn:hover { background: #a93226; }
+
+        /* ── Toolbar ─────────────────────────────────────── */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 10px; }
+        .toolbar-title {
+            font-size: 1em; font-weight: 700; color: #111;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .live-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: #dcfce7; color: #16a34a;
+            border-radius: 20px; padding: 3px 10px;
+            font-size: 0.75em; font-weight: 700;
+        }
+        .live-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #16a34a;
+            animation: livePulse 1.6s infinite;
+        }
+        @keyframes livePulse {
+            0%   { box-shadow: 0 0 0 0 rgba(22,163,74,0.5); }
+            70%  { box-shadow: 0 0 0 6px rgba(22,163,74,0); }
+            100% { box-shadow: 0 0 0 0 rgba(22,163,74,0); }
+        }
+        .toolbar-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+        /* ── Tabs ─────────────────────────────────────────── */
+        .tabs {
+            display: flex;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 7px;
+            overflow: hidden;
+        }
+        .tab-btn {
+            padding: 8px 16px;
+            border: none; background: #fff;
+            color: #6b7280;
+            font-size: 0.84em; font-weight: 600;
+            cursor: pointer;
+            transition: background 0.18s, color 0.18s;
+            border-right: 1px solid #e5e7eb;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn:last-child { border-right: none; }
+        .tab-btn.active  { background: #c0392b; color: #fff; }
+        .tab-btn:hover:not(.active) { background: #fff5f5; color: #c0392b; }
+
+        /* ── Search ─────────────────────────────────────── */
+        .search-box {
+            display: flex; align-items: center;
+            border: 1.5px solid #e5e7eb; border-radius: 7px;
+            overflow: hidden; background: #fafafa;
+            transition: border-color 0.2s;
+        }
+        .search-box:focus-within { border-color: #c0392b; background: #fff; }
+        .search-box i { padding: 0 10px; color: #9ca3af; font-size: 0.88em; }
+        .search-box input {
+            border: none; outline: none; background: transparent;
+            padding: 8px 10px 8px 0; font-size: 0.84em;
+            width: 190px; color: #374151;
+        }
+
+        /* ── Buttons ─────────────────────────────────────── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 7px;
+            padding: 9px 16px; border-radius: 7px;
+            font-size: 0.84em; font-weight: 600;
+            border: none; cursor: pointer;
+            transition: opacity 0.18s, transform 0.15s;
+            white-space: nowrap;
+        }
+        .btn:hover { opacity: 0.86; transform: translateY(-1px); }
+        .btn:active { transform: none; }
+        .btn-red    { background: #c0392b; color: #fff; }
+        .btn-green  { background: #16a34a; color: #fff; }
+        .btn-gray   { background: #f3f4f6; color: #374151; }
+        .btn-gray:hover { background: #e5e7eb; }
+        .btn-edit-sm {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 11px; border-radius: 6px;
+            font-size: 0.78em; font-weight: 600;
+            background: #fef9c3; color: #ca8a04;
+            border: 1px solid #fde68a; cursor: pointer;
+            transition: background 0.18s;
+        }
+        .btn-edit-sm:hover { background: #fef08a; }
+        .btn-save-sm {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 11px; border-radius: 6px;
+            font-size: 0.78em; font-weight: 600;
+            background: #dcfce7; color: #16a34a;
+            border: 1px solid #bbf7d0; cursor: pointer;
+            transition: background 0.18s;
+        }
+        .btn-save-sm:hover { background: #bbf7d0; }
+        .btn-cancel-sm {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 11px; border-radius: 6px;
+            font-size: 0.78em; font-weight: 600;
+            background: #f3f4f6; color: #6b7280;
+            border: 1px solid #e5e7eb; cursor: pointer;
+            transition: background 0.18s;
+        }
+        .btn-cancel-sm:hover { background: #e5e7eb; }
+
+        /* ── Add Row Form ─────────────────────────────────── */
+        .add-form-card {
+            background: #fffbea;
+            border: 1.5px solid #fde68a;
+            border-radius: 10px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .add-form-card.visible { display: block; }
+        .add-form-title { font-size: 0.9em; font-weight: 700; color: #ca8a04; margin-bottom: 14px; display: flex; align-items: center; gap: 6px; }
+        .add-form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .form-field label {
+            display: block; font-size: 0.72em; font-weight: 700;
+            color: #6b7280; margin-bottom: 4px;
+            text-transform: uppercase; letter-spacing: 0.4px;
+        }
+        .form-field input, .form-field select {
+            width: 100%; border: 1.5px solid #e5e7eb;
+            border-radius: 5px; padding: 7px 10px;
+            font-size: 0.84em; outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-field input:focus, .form-field select:focus { border-color: #c0392b; }
+        .form-actions { display: flex; gap: 10px; }
+
+        /* ── Divider ─────────────────────────────────────── */
+        .divider { border: none; border-top: 1px solid #f3f4f6; margin: 4px 0 20px; }
+
+        /* ── Table ──────────────────────────────────────── */
+        .table-wrapper {
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+        }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8em; min-width: 960px; }
+        thead tr { background: #f9fafb; border-bottom: 1px solid #e5e7eb; }
+        thead th {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 0.73em; font-weight: 700;
+            color: #6b7280;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            white-space: nowrap; user-select: none;
+        }
+        thead th.sortable { cursor: pointer; }
+        thead th.sortable:hover { background: #f3f4f6; color: #374151; }
+        tbody tr { border-bottom: 1px solid #f3f4f6; transition: background 0.12s; }
+        tbody tr:last-child { border-bottom: none; }
+        tbody tr:hover { background: #fafafa; }
+        tbody tr.editing-row { background: #fffbea !important; outline: 2px solid #fde68a; outline-offset: -2px; }
+        tbody td { padding: 10px 12px; color: #374151; white-space: nowrap; vertical-align: middle; }
+        .td-id    { color: #9ca3af; }
+        .td-code  { color: #2563eb; font-weight: 600; }
+
+        /* inline edit inputs */
+        .edit-input {
+            border: 1.5px solid #fde68a; border-radius: 4px;
+            padding: 4px 8px; font-size: 0.88em;
+            width: 100%; min-width: 80px; outline: none; background: #fff;
+        }
+        .edit-input:focus { border-color: #c0392b; }
+        .edit-select {
+            border: 1.5px solid #fde68a; border-radius: 4px;
+            padding: 4px 6px; font-size: 0.88em; outline: none; background: #fff;
+        }
+        .edit-select:focus { border-color: #c0392b; }
+
+        /* Status pills */
+        .pill {
+            display: inline-block; padding: 3px 10px;
+            border-radius: 20px; font-size: 0.74em; font-weight: 700;
+        }
+        .pill-active      { background: #dcfce7; color: #16a34a; }
+        .pill-inactive    { background: #f3f4f6; color: #6b7280; }
+        .pill-pending     { background: #fef9c3; color: #ca8a04; }
+        .pill-error       { background: #fee2e2; color: #dc2626; }
+
+        /* ── Pagination ─────────────────────────────────── */
+        .pagination-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 14px; padding-top: 14px; border-top: 1px solid #f3f4f6;
+            flex-wrap: wrap; gap: 10px;
+        }
+        .page-info { font-size: 0.8em; color: #6b7280; }
+        .page-btns { display: flex; gap: 8px; }
+        .page-btn {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 7px 14px;
+            border: 1px solid #d1d5db; border-radius: 6px;
+            background: #fff; color: #374151;
+            font-size: 0.8em; font-weight: 600; cursor: pointer;
+            transition: all 0.18s;
+        }
+        .page-btn:hover:not(:disabled) { border-color: #c0392b; color: #c0392b; background: #fff5f5; }
+        .page-btn:disabled { opacity: 0.38; cursor: not-allowed; }
+
+        /* ── Toast ──────────────────────────────────────── */
+        .toast-container {
+            position: fixed; bottom: 28px; right: 28px;
+            display: flex; flex-direction: column; gap: 10px; z-index: 9999;
+        }
+        .toast {
+            display: flex; align-items: center; gap: 10px;
+            padding: 12px 18px; border-radius: 8px;
+            font-weight: 600; font-size: 0.88em;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+            animation: slideIn 0.3s ease; min-width: 240px;
+        }
+        .toast-success { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
+        @keyframes slideIn { from { opacity:0; transform:translateX(36px); } to { opacity:1; transform:translateX(0); } }
+
+        /* ── Utility ─────────────────────────────────────── */
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- ── Toasts ───────────────────────────────────────────── -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- ── Header ───────────────────────────────────────────── -->
+<div class="header">
+    <div class="header-icon"><i class="fas fa-pen"></i></div>
+    <span class="header-title">Modify Live Data</span>
+</div>
+
+<!-- ── Page ─────────────────────────────────────────────── -->
+<div class="page-wrapper">
+<div class="main-card">
+
+    <!-- Back button -->
+    <a href="admin.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Home</a>
+
+    <!-- ── Toolbar ───────────────────────────────────── -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <div class="toolbar-title">Live Data</div>
+            <span class="live-badge"><span class="live-dot"></span> Live</span>
+        </div>
+        <div class="toolbar-right">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('camera', this)">
+                    <i class="fas fa-camera"></i> Camera
+                </button>
+                <button class="tab-btn" onclick="switchTab('framerate', this)">
+                    <i class="fas fa-film"></i> Frame Rate
+                </button>
+            </div>
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Search…" oninput="applySearch()">
+            </div>
+            <button class="btn btn-red" onclick="toggleAddForm()">
+                <i class="fas fa-plus"></i> Add Row
+            </button>
+        </div>
+    </div>
+
+    <!-- ── Add Row Inline Form ───────────────────────── -->
+    <div class="add-form-card" id="addFormCard">
+        <div class="add-form-title"><i class="fas fa-plus-circle"></i> New Record</div>
+        <div class="add-form-grid" id="addFormGrid"></div>
+        <div class="form-actions">
+            <button class="btn btn-green" onclick="saveNewRow()"><i class="fas fa-check"></i> Save</button>
+            <button class="btn btn-gray"  onclick="cancelAdd()"><i class="fas fa-times"></i> Cancel</button>
+        </div>
+    </div>
+
+    <hr class="divider">
+
+    <!-- ── Table ─────────────────────────────────────── -->
+    <div class="table-wrapper">
+        <table>
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+
+    <div class="pagination-bar">
+        <span class="page-info" id="pageInfo"></span>
+        <div class="page-btns">
+            <button class="page-btn" id="btnPrev" onclick="changePage(-1)">
+                <i class="fas fa-chevron-left"></i> Previous
+            </button>
+            <button class="page-btn" id="btnNext" onclick="changePage(1)">
+                Next <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<script>
+    /* ── Constants ─────────────────────────────────────── */
+    const ROWS_PER_PAGE = 20;
+    let currentPage  = 1;
+    let activeTab    = 'camera';
+    let searchQuery  = '';
+    let editingRowId = null;
+    let sortCol = null, sortDir = 'asc';
+    let nextId  = { camera: 21, framerate: 21 };
+
+    /* ── Helpers ─────────────────────────────────────── */
+    function rand(a)     { return a[Math.floor(Math.random()*a.length)]; }
+    function randNum(a,b){ return Math.floor(Math.random()*(b-a+1))+a; }
+    function escHtml(s)  { return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+    /* ── Schemas ─────────────────────────────────────── */
+    const cameraSchema = [
+        { key:'model',       label:'Camera Model',    type:'text'   },
+        { key:'camType',     label:'Camera Type',     type:'select', options:['Main Entrance','Parking Lot A','Parking Lot B','Lobby','Hallway 1','Hallway 2','Emergency Exit','Loading Dock'] },
+        { key:'sensorMode',  label:'Sensor Mode',     type:'select', options:['15','24','30','60','80'] },
+        { key:'memType',     label:'Memory Type',     type:'select', options:['1','2','4','8','16'] },
+        { key:'memSize',     label:'Memory Size',     type:'select', options:['2K','4K','720p','1080p'] },
+        { key:'fastOption',  label:'Fast Option',     type:'text'   },
+        { key:'bitDepth',    label:'Bit Depth',       type:'number' },
+        { key:'shutterMode', label:'Shutter Mode',    type:'number' },
+        { key:'cxpBank',     label:'CXP Bank',        type:'text'   },
+        { key:'status',      label:'Status',          type:'select', options:['Active','Inactive','Pending','Error'] },
+    ];
+
+    const framerateSchema = [
+        { key:'code',       label:'Format Code',    type:'text' },
+        { key:'name',       label:'Format Name',    type:'select', options:['Cinema 4K','UHD 4K','2K DCI','1080p HD','720p HD','8K UHD','4K UHD'] },
+        { key:'frameRate',  label:'Frame Rate',     type:'select', options:['23.976 fps','24 fps','25 fps','29.97 fps','30 fps','48 fps','50 fps','59.94 fps','60 fps','120 fps'] },
+        { key:'resolution', label:'Resolution',     type:'select', options:['4096×2160','3840×2160','2048×1080','1920×1080','1280×720','7680×4320'] },
+        { key:'bitrate',    label:'Bitrate',        type:'text' },
+        { key:'colorSpace', label:'Color Space',    type:'select', options:['Rec. 709','Rec. 2020','DCI-P3','S-Log3','V-Log','Log C'] },
+        { key:'hdr',        label:'HDR Support',    type:'select', options:['Yes','No','Optional'] },
+        { key:'codec',      label:'Codec',          type:'select', options:['H.264','H.265 (HEVC)','ProRes 422','ProRes 4444','RAW','DNxHD','BRAW'] },
+        { key:'container',  label:'Container',      type:'select', options:['MP4','MOV','MXF','MKV','R3D'] },
+        { key:'status',     label:'Status',         type:'select', options:['Active','Inactive','Pending','Error'] },
+    ];
+
+    /* ── Live data ───────────────────────────────────── */
+    const CAM_TYPES = ['Main Entrance','Parking Lot A','Parking Lot B','Lobby','Hallway 1','Hallway 2','Emergency Exit','Loading Dock'];
+    const STATUSES  = ['Active','Inactive','Pending','Error'];
+
+    const cameraData = Array.from({length:20}, (_,i) => ({
+        id:         i+1,
+        model:      `CAM-${String(i+1).padStart(4,'0')}`,
+        camType:    rand(CAM_TYPES),
+        sensorMode: rand([15,24,30,60,80]),
+        memType:    rand([1,2,4,8,16]),
+        memSize:    rand(['2K','4K','720p','1080p']),
+        fastOption: `${(Math.random()*11+1).toFixed(2)} Mbps`,
+        bitDepth:   randNum(0,8),
+        shutterMode:randNum(0,7),
+        cxpBank:    `${randNum(100,600)} GB`,
+        status:     rand(STATUSES)
+    }));
+
+    const framerateData = Array.from({length:20}, (_,i) => ({
+        id:         i+1,
+        code:       `FRM-${String(i+1).padStart(4,'0')}`,
+        name:       rand(['Cinema 4K','UHD 4K','2K DCI','1080p HD','720p HD','8K UHD','4K UHD']),
+        frameRate:  rand(['23.976 fps','24 fps','25 fps','29.97 fps','30 fps','48 fps','50 fps','59.94 fps','60 fps','120 fps']),
+        resolution: rand(['4096×2160','3840×2160','2048×1080','1920×1080','1280×720','7680×4320']),
+        bitrate:    `${randNum(10,800)} Mbps`,
+        colorSpace: rand(['Rec. 709','Rec. 2020','DCI-P3','S-Log3','V-Log','Log C']),
+        hdr:        rand(['Yes','No','Optional']),
+        codec:      rand(['H.264','H.265 (HEVC)','ProRes 422','ProRes 4444','RAW','DNxHD','BRAW']),
+        container:  rand(['MP4','MOV','MXF','MKV','R3D']),
+        status:     rand(STATUSES)
+    }));
+
+    /* ── Active data/schema ──────────────────────────── */
+    function getSchema() { return activeTab === 'camera' ? cameraSchema : framerateSchema; }
+    function getData()   { return activeTab === 'camera' ? cameraData   : framerateData;   }
+
+    function getFiltered() {
+        const q = searchQuery.toLowerCase();
+        if (!q) return getData();
+        return getData().filter(r => Object.values(r).some(v => String(v).toLowerCase().includes(q)));
+    }
+
+    function getSorted() {
+        let data = getFiltered();
+        if (!sortCol) return data;
+        return [...data].sort((a,b) => {
+            const av = String(a[sortCol]??'').toLowerCase();
+            const bv = String(b[sortCol]??'').toLowerCase();
+            const n1 = parseFloat(av), n2 = parseFloat(bv);
+            const cmp = (!isNaN(n1)&&!isNaN(n2)) ? n1-n2 : av.localeCompare(bv);
+            return sortDir === 'asc' ? cmp : -cmp;
+        });
+    }
+
+    /* ── Tab switch ──────────────────────────────────── */
+    function switchTab(tab, el) {
+        activeTab    = tab;
+        currentPage  = 1;
+        editingRowId = null;
+        searchQuery  = '';
+        sortCol = null; sortDir = 'asc';
+        document.getElementById('searchInput').value = '';
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        el.classList.add('active');
+        cancelAdd();
+        renderAll();
+    }
+
+    /* ── Search ──────────────────────────────────────── */
+    function applySearch() {
+        searchQuery = document.getElementById('searchInput').value.trim();
+        currentPage = 1;
+        renderAll();
+    }
+
+    /* ── Sort ────────────────────────────────────────── */
+    function sortBy(key) {
+        sortDir = sortCol === key ? (sortDir === 'asc' ? 'desc' : 'asc') : 'asc';
+        sortCol = key;
+        renderAll();
+    }
+
+    /* ── Render all ──────────────────────────────────── */
+    function renderAll() { renderHead(); renderBody(); renderPagination(); }
+
+    /* ── Render head ─────────────────────────────────── */
+    function renderHead() {
+        const schema = getSchema();
+        document.getElementById('tableHead').innerHTML = `<tr>
+            <th style="width:44px">CID</th>
+            ${schema.map(col => `
+                <th class="sortable" onclick="sortBy('${col.key}')" title="Sort by ${col.label}">
+                    ${col.label}
+                    <i class="fas fa-sort${sortCol===col.key ? (sortDir==='asc'?'-up':'-down') : ''}"
+                       style="margin-left:4px;opacity:${sortCol===col.key?'1':'0.35'};font-size:0.75em;"></i>
+                </th>`).join('')}
+            <th style="width:80px; text-align:center;">Action</th>
+        </tr>`;
+    }
+
+    /* ── Status pill ─────────────────────────────────── */
+    function pillClass(status) {
+        return { Active:'pill-active', Inactive:'pill-inactive', Pending:'pill-pending', Error:'pill-error' }[status] || 'pill-inactive';
+    }
+
+    /* ── Render body ─────────────────────────────────── */
+    function renderBody() {
+        const schema = getSchema();
+        const all    = getSorted();
+        const start  = (currentPage-1) * ROWS_PER_PAGE;
+        const rows   = all.slice(start, start+ROWS_PER_PAGE);
+        const tbody  = document.getElementById('tableBody');
+        const firstKey = schema[0].key; // first data column gets blue styling
+
+        if (!rows.length) {
+            tbody.innerHTML = `<tr><td colspan="${schema.length+2}" style="text-align:center;padding:32px;color:#9ca3af;">No records found.</td></tr>`;
+            return;
+        }
+
+        tbody.innerHTML = rows.map((row, idx) => {
+            const isEditing = editingRowId === row.id;
+            return `<tr${isEditing?' class="editing-row"':''}>
+                <td class="td-id">${start+idx+1}</td>
+                ${schema.map(col => `<td>${
+                    isEditing
+                        ? col.type === 'select'
+                            ? `<select class="edit-select" id="edit_${col.key}">${col.options.map(o=>`<option${String(row[col.key])===o?' selected':''}>${o}</option>`).join('')}</select>`
+                            : `<input class="edit-input" id="edit_${col.key}" type="${col.type==='number'?'number':'text'}" value="${escHtml(String(row[col.key]??''))}">`
+                        : col.key === 'status'
+                            ? `<span class="pill ${pillClass(row.status)}">${row.status}</span>`
+                            : col.key === firstKey
+                                ? `<span class="td-code">${escHtml(String(row[col.key]??''))}</span>`
+                                : escHtml(String(row[col.key]??''))
+                }</td>`).join('')}
+                <td style="text-align:center;">
+                    ${isEditing
+                        ? `<button class="btn-save-sm"   onclick="saveEdit(${row.id})"><i class="fas fa-check"></i> Save</button>
+                           &nbsp;
+                           <button class="btn-cancel-sm" onclick="cancelEdit()"><i class="fas fa-times"></i></button>`
+                        : `<button class="btn-edit-sm" onclick="startEdit(${row.id})"><i class="fas fa-pen"></i> Edit</button>`
+                    }
+                </td>
+            </tr>`;
+        }).join('');
+    }
+
+    /* ── Pagination ──────────────────────────────────── */
+    function renderPagination() {
+        const total      = getSorted().length;
+        const totalPages = Math.max(1, Math.ceil(total / ROWS_PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
+        const start = (currentPage-1)*ROWS_PER_PAGE + 1;
+        const end   = Math.min(currentPage*ROWS_PER_PAGE, total);
+
+        document.getElementById('pageInfo').textContent =
+            total === 0 ? 'No records' : `Page ${currentPage} of ${totalPages}`;
+        document.getElementById('btnPrev').disabled = currentPage === 1;
+        document.getElementById('btnNext').disabled = currentPage === totalPages;
+    }
+
+    function changePage(dir) {
+        const totalPages = Math.max(1, Math.ceil(getSorted().length / ROWS_PER_PAGE));
+        currentPage = Math.max(1, Math.min(totalPages, currentPage+dir));
+        renderAll();
+    }
+
+    /* ── Edit row ─────────────────────────────────────── */
+    function startEdit(id) { editingRowId = id; renderBody(); }
+    function cancelEdit()  { editingRowId = null; renderBody(); }
+
+    function saveEdit(id) {
+        const schema = getSchema();
+        const data   = getData();
+        const idx    = data.findIndex(r => r.id === id);
+        if (idx === -1) return;
+        const updated = { ...data[idx] };
+        schema.forEach(col => {
+            const el = document.getElementById('edit_' + col.key);
+            if (el) updated[col.key] = col.type === 'number' ? Number(el.value) : el.value;
+        });
+        data[idx]    = updated;
+        editingRowId = null;
+        renderAll();
+        showToast('Record updated successfully.');
+    }
+
+    /* ── Add row form ─────────────────────────────────── */
+    function toggleAddForm() {
+        const card = document.getElementById('addFormCard');
+        card.classList.contains('visible') ? cancelAdd() : buildAddForm();
+    }
+
+    function buildAddForm() {
+        document.getElementById('addFormGrid').innerHTML = getSchema().map(col => `
+            <div class="form-field">
+                <label>${col.label}</label>
+                ${col.type === 'select'
+                    ? `<select id="new_${col.key}">${col.options.map(o=>`<option>${o}</option>`).join('')}</select>`
+                    : `<input id="new_${col.key}" type="${col.type==='number'?'number':'text'}" placeholder="${col.label}">`
+                }
+            </div>`).join('');
+        document.getElementById('addFormCard').classList.add('visible');
+    }
+
+    function saveNewRow() {
+        const schema = getSchema();
+        const data   = getData();
+        const id     = nextId[activeTab]++;
+        const row    = { id };
+        let valid    = true;
+        schema.forEach(col => {
+            const el  = document.getElementById('new_' + col.key);
+            const val = el ? el.value.trim() : '';
+            if (!val) { valid = false; if(el) el.style.borderColor = '#c0392b'; }
+            else       { if(el) el.style.borderColor = ''; row[col.key] = col.type==='number' ? Number(val) : val; }
+        });
+        if (!valid) { showToast('Please fill in all required fields.', true); return; }
+        data.unshift(row);
+        currentPage = 1;
+        cancelAdd();
+        renderAll();
+        showToast('New record added to live data.');
+    }
+
+    function cancelAdd() {
+        document.getElementById('addFormCard').classList.remove('visible');
+        document.getElementById('addFormGrid').innerHTML = '';
+    }
+
+    /* ── Toast ───────────────────────────────────────── */
+    function showToast(msg, isError = false) {
+        const c = document.getElementById('toastContainer');
+        const t = document.createElement('div');
+        t.className = `toast toast-success`;
+        t.innerHTML = `<i class="fas fa-check-circle"></i> ${msg}`;
+        c.appendChild(t);
+        setTimeout(() => { t.style.transition='opacity 0.4s'; t.style.opacity='0'; setTimeout(()=>t.remove(),400); }, 3000);
+    }
+
+    /* ── Init ────────────────────────────────────────── */
+    renderAll();
+</script>
+</body>
+</html>
