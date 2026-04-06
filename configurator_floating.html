@@ -69,10 +69,16 @@
       display: grid;
       grid-template-columns: 1fr 440px;
       align-items: start; /* each column is only as tall as its own content */
+      transition: grid-template-columns 0.35s ease;
+    }
+
+    .two-col.right-collapsed {
+      grid-template-columns: 1fr 0px;
     }
 
     @media (max-width: 860px) {
       .two-col { grid-template-columns: 1fr; }
+      .two-col.right-collapsed { grid-template-columns: 1fr; }
     }
 
     /* ── Left panel ───────────────────────────────────────────────────────── */
@@ -405,8 +411,11 @@
       display: flex;
       flex-direction: column;
       border-left: 1px solid #e8e8e8;
-      background: #fafafa;
+      background: #fafafa;      overflow: hidden;
     }
+
+    .two-col.right-collapsed .right-panel {
+      border-left: none;    }
 
     #accordion {
       /* flows naturally — no scroll container, no fixed height */
@@ -552,6 +561,36 @@
       letter-spacing: 0.01em;
     }
     .quote-btn:hover { background: #c96510; }
+
+    /* ── Floating toggle button ────────────────────────────────────────────── */
+
+    .floating-toggle {
+      position: fixed;
+      right: var(--toggle-right, 0px);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 28px;
+      height: 48px;
+      background: #E87722;
+      color: white;
+      border: none;
+      border-radius: 6px 0 0 6px;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      box-shadow: -2px 2px 8px rgba(0,0,0,0.18);
+      z-index: 1000;
+      transition: right 0.35s ease;
+    }
+
+    .floating-toggle.visible { display: flex; }
+    .floating-toggle:hover { background: #c96510; }
+
+    @media (max-width: 860px) {
+      .floating-toggle { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -567,6 +606,9 @@
       <div id="load-error"></div>
     </div>
   </div>
+
+  <!-- ── Floating toggle button ────────────────────────────────────────────── -->
+  <button id="floating-toggle" class="floating-toggle" title="Collapse panel">◀</button>
 
   <!-- ── Main app ─────────────────────────────────────────────────────────── -->
   <div id="app" class="hidden">
@@ -588,8 +630,12 @@
       <!-- Right: accordion configurator + inline result panel -->
       <div class="right-panel">
         <div class="right-panel-header">
-          <h2>Configure Your Product</h2>
-          <button class="reset-btn" id="reset-btn">&#8635; Reset</button>
+          <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0;">
+            <h2>Configure Your Product</h2>
+          </div>
+          <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="reset-btn" id="reset-btn">&#8635; Reset</button>
+          </div>
         </div>
         <div id="accordion"></div>
         <div id="result-panel"></div>
@@ -606,6 +652,7 @@
     let selections        = {};
     let expandedQualifier = null;
     let productData       = null;
+    let rightPanelCollapsed = false;
 
     // ─── Dummy fallback data (used when JSON lacks description/images) ────────
     const DUMMY_IMAGES = [
@@ -689,8 +736,16 @@
       // ── Wire up reset ──
       document.getElementById('reset-btn').addEventListener('click', resetSelections);
 
+      // ── Wire up floating toggle ──
+      const floatingBtn = document.getElementById('floating-toggle');
+      floatingBtn.addEventListener('click', toggleRightPanel);
+
       document.getElementById('load-screen').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
+
+      // Show button and initialise position (panel starts expanded)
+      floatingBtn.classList.add('visible');
+      document.documentElement.style.setProperty('--toggle-right', '440px');
 
       render();
     }
@@ -929,6 +984,24 @@
       selections        = {};
       expandedQualifier = model.categories[0]?.qualifier || null;
       render();
+    }
+
+    function toggleRightPanel() {
+      rightPanelCollapsed = !rightPanelCollapsed;
+      const twoCol = document.querySelector('.two-col');
+      const floatingBtn = document.getElementById('floating-toggle');
+
+      if (rightPanelCollapsed) {
+        twoCol.classList.add('right-collapsed');
+        document.documentElement.style.setProperty('--toggle-right', '0px');
+        floatingBtn.textContent = '▶';
+        floatingBtn.title = 'Expand panel';
+      } else {
+        twoCol.classList.remove('right-collapsed');
+        document.documentElement.style.setProperty('--toggle-right', '440px');
+        floatingBtn.textContent = '◀';
+        floatingBtn.title = 'Collapse panel';
+      }
     }
 
     function copyCode(code, btn) {
