@@ -91,26 +91,21 @@
     }
 
     .product-eyebrow {
-      font-size: 0.72rem;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-      color: #E87722;
-      margin-bottom: 0.5rem;
+      display: none;
     }
 
     .product-title {
-      font-size: 2rem;
+      font-size: 1.85rem;
       font-weight: 800;
       line-height: 1.2;
       color: #1a1a1a;
-      margin-bottom: 0.35rem;
+      margin-bottom: 0.3rem;
     }
 
     .product-sku-label {
-      font-size: 0.82rem;
-      color: #999;
-      font-family: 'Menlo', 'Consolas', monospace;
+      font-size: 0.85rem;
+      color: #888;
+      font-family: inherit;
       margin-bottom: 1.25rem;
     }
 
@@ -133,7 +128,9 @@
     /* image + thumbnails row */
     .image-area {
       display: flex;
-      gap: 0.75rem;
+      gap: 1rem;
+      align-items: flex-start;
+      margin-bottom: 1.1rem;
     }
 
     .image-main {
@@ -141,7 +138,7 @@
       aspect-ratio: 4 / 3;
       border-radius: 10px;
       overflow: hidden;
-      background: #f0eeec;
+      background: #f8f7f6;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -153,17 +150,47 @@
       object-fit: contain;
     }
 
+    /* thumbnail column */
     .image-thumbs {
       display: flex;
       flex-direction: column;
-      gap: 0.5rem;
-      width: 64px;
+      align-items: center;
+      width: 72px;
       flex-shrink: 0;
     }
 
+    .thumb-nav-btn {
+      width: 100%;
+      height: 26px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: #999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: color 0.15s;
+      border-radius: 4px;
+    }
+    .thumb-nav-btn:hover:not(:disabled) { color: #333; background: #f0f0f0; }
+    .thumb-nav-btn:disabled { color: #d8d8d8; cursor: default; }
+
+    .thumb-scroll-window {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .thumb-scroll-inner {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: transform 0.25s ease;
+    }
+
     .thumb {
-      width: 64px;
-      height: 56px;
+      width: 72px;
+      height: 60px;
       border-radius: 6px;
       background: #f0eeec;
       border: 2px solid transparent;
@@ -179,22 +206,15 @@
     .thumb.active-thumb { border-color: #E87722; }
     .thumb img { width: 100%; height: 100%; object-fit: contain; }
 
-    /* placeholder when no real image */
-    .img-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 0.5rem;
-      color: #c0b8b0;
-      font-size: 0.8rem;
-      text-align: center;
-      padding: 1rem;
+    /* image caption */
+    .image-caption {
+      font-size: 0.84rem;
+      color: #555;
+      line-height: 1.6;
+      padding-top: 0.85rem;
+      border-top: 1px solid #ebebeb;
     }
-
-    .img-placeholder svg { opacity: 0.4; }
+    .image-caption strong { color: #1a1a1a; font-weight: 700; }
 
     /* ── Right panel ──────────────────────────────────────────────────────── */
 
@@ -625,6 +645,7 @@
           <div class="image-main" id="image-main"></div>
           <div class="image-thumbs" id="image-thumbs"></div>
         </div>
+        <div class="image-caption" id="image-caption"></div>
       </div>
 
       <!-- Right: accordion configurator + inline result panel -->
@@ -727,11 +748,11 @@
       }
 
       // Images — try real data, fall back to dummies
-      const images = (data.images && data.images.length > 0)
-        ? data.images.map(img => img.url || img)
-        : DUMMY_IMAGES;
+      const imgMeta   = (data.images && data.images.length > 0) ? data.images : null;
+      const images    = imgMeta ? imgMeta.map(img => img.url || img) : DUMMY_IMAGES;
+      const captions  = imgMeta ? imgMeta.map(img => img.altText || img.alt || '') : [];
 
-      buildImageGallery(images);
+      buildImageGallery(images, captions);
 
       // ── Wire up reset ──
       document.getElementById('reset-btn').addEventListener('click', resetSelections);
@@ -751,38 +772,96 @@
     }
 
     // ─── Image gallery ────────────────────────────────────────────────────────
-    function buildImageGallery(images) {
-      const mainEl   = document.getElementById('image-main');
-      const thumbsEl = document.getElementById('image-thumbs');
+    function buildImageGallery(images, captions) {
+      const VISIBLE  = 4;
+      const THUMB_H  = 60;
+      const THUMB_GAP = 8; // 0.5rem
+      const ITEM_H   = THUMB_H + THUMB_GAP;
+      let thumbOffset = 0;
+
+      const mainEl    = document.getElementById('image-main');
+      const thumbsEl  = document.getElementById('image-thumbs');
+      const captionEl = document.getElementById('image-caption');
       mainEl.innerHTML   = '';
       thumbsEl.innerHTML = '';
 
-      function setMain(src) {
+      function setCaption(index) {
+        const text = captions && captions[index];
+        if (captionEl) {
+          if (text) {
+            captionEl.innerHTML = '<strong>Image description:</strong> ' + text;
+            captionEl.style.display = '';
+          } else {
+            captionEl.style.display = 'none';
+          }
+        }
+      }
+
+      function setMain(src, index) {
         mainEl.innerHTML = '';
         const img = document.createElement('img');
         img.src = src;
         img.alt = 'Product image';
         mainEl.appendChild(img);
+        setCaption(index);
       }
 
-      setMain(images[0]);
+      setMain(images[0], 0);
 
+      // ── Up button ──
+      const upBtn = document.createElement('button');
+      upBtn.className = 'thumb-nav-btn';
+      upBtn.title = 'Previous';
+      upBtn.disabled = true;
+      upBtn.innerHTML = '<svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 6.5L6 1.5L11 6.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      thumbsEl.appendChild(upBtn);
+
+      // ── Scroll window ──
+      const visibleCount = Math.min(images.length, VISIBLE);
+      const windowH = visibleCount * THUMB_H + (visibleCount - 1) * THUMB_GAP;
+      const scrollWindow = document.createElement('div');
+      scrollWindow.className = 'thumb-scroll-window';
+      scrollWindow.style.height = windowH + 'px';
+
+      const scrollInner = document.createElement('div');
+      scrollInner.className = 'thumb-scroll-inner';
+      scrollWindow.appendChild(scrollInner);
+      thumbsEl.appendChild(scrollWindow);
+
+      // ── Down button ──
+      const downBtn = document.createElement('button');
+      downBtn.className = 'thumb-nav-btn';
+      downBtn.title = 'Next';
+      downBtn.disabled = images.length <= VISIBLE;
+      downBtn.innerHTML = '<svg width="12" height="8" viewBox="0 0 12 8" fill="none"><path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+      thumbsEl.appendChild(downBtn);
+
+      function updateScroll() {
+        scrollInner.style.transform = 'translateY(-' + (thumbOffset * ITEM_H) + 'px)';
+        upBtn.disabled   = thumbOffset === 0;
+        downBtn.disabled = thumbOffset >= images.length - VISIBLE;
+      }
+
+      upBtn.addEventListener('click',   () => { if (thumbOffset > 0) { thumbOffset--; updateScroll(); } });
+      downBtn.addEventListener('click', () => { if (thumbOffset < images.length - VISIBLE) { thumbOffset++; updateScroll(); } });
+
+      // ── Thumbnails ──
       images.forEach((src, i) => {
         const thumb = document.createElement('div');
         thumb.className = 'thumb' + (i === 0 ? ' active-thumb' : '');
 
         const img = document.createElement('img');
         img.src = src;
-        img.alt = 'Thumbnail ' + (i + 1);
+        img.alt = (captions && captions[i]) || ('Thumbnail ' + (i + 1));
         thumb.appendChild(img);
 
         thumb.addEventListener('click', () => {
-          setMain(src);
-          thumbsEl.querySelectorAll('.thumb').forEach(t => t.classList.remove('active-thumb'));
+          setMain(src, i);
+          scrollInner.querySelectorAll('.thumb').forEach(t => t.classList.remove('active-thumb'));
           thumb.classList.add('active-thumb');
         });
 
-        thumbsEl.appendChild(thumb);
+        scrollInner.appendChild(thumb);
       });
     }
 
