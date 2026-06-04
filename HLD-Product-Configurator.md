@@ -502,9 +502,86 @@ Browser             Next.js Server           Vercel Cache          Sitecore API
 |---|---|
 | **Product Info ← → Configurator** | Parent page passes `onVariantResolved(variant)` to `ProductConfigurator`. When a full SKU is resolved, the callback fires with the variant object (code, price, stock, URL). Product Info can use this to update displayed price or stock status. |
 | **Sitecore Rendering** | `ProductConfigurator` is registered as a Sitecore component rendering. It receives the product code from the Sitecore route/context and fetches variant data via the service layer. |
-| **Quote / Cart** | The "Request a Quote" button in `ConfigurationSummary` constructs the product URL from `variant.url` and navigates to the quote page (or triggers an add-to-cart action via existing commerce hooks). |
+| **Third-Party Quote Form** | When "Request a Quote" is clicked, open the third-party form URL and pass attributes including `skuId` and all user-selected options (qualifier/value pairs). This replaces plain navigation-only behavior. |
 | **Clipboard** | "Copy" button uses `navigator.clipboard.writeText()` with a brief "Copied!" feedback state managed locally. |
 | **On-demand cache invalidation** | A Sitecore publish webhook calls a Next.js API route that runs `revalidateTag('product-{code}')` to bust the Vercel cache for updated products. |
+
+---
+
+## 12.1 Third-Party Quote Form Attribute Contract
+
+On complete configuration, `ConfigurationSummary` should send a normalized payload to a quote form service helper.
+
+### Trigger
+
+- User clicks "Request a Quote".
+- Guard condition: `selectedVariant !== null`.
+
+### Payload Shape
+
+```typescript
+interface QuoteFormPayload {
+  skuId: string;
+  productCode: string;
+  productName: string;
+  productUrl: string;
+  selectedOptions: Array<{
+    qualifier: string;
+    categoryName: string;
+    value: string;
+  }>;
+}
+```
+
+### Mapping Rules
+
+1. `skuId` = `selectedVariant.code`.
+2. `productCode` = base product code from API response.
+3. `productName` = product display name from API response.
+4. `productUrl` = absolute URL resolved from `selectedVariant.url`.
+5. `selectedOptions` = every configured category in display order using `model.categories` and `selections`.
+
+### Service Contract
+
+```typescript
+export function openQuoteForm(payload: QuoteFormPayload): void;
+```
+
+Implementation can use one of these patterns based on third-party capability:
+
+- Query-string prefill: `window.open(`${formUrl}?skuId=...&torque-range=...`)`
+- POST bridge endpoint: submit payload to a Next.js route that forwards values securely
+- Embedded script API: call vendor-provided prefill method before modal open
+
+### Recommended Implementation Notes
+
+- URL-encode all values; preserve special characters from option text.
+- Include both machine keys (`qualifier`) and human-readable labels (`categoryName`) for downstream analytics.
+- Add fallback handling when the third-party form is unreachable: show toast and retain current configurator state.
+- Emit analytics event `quote_form_opened` with `skuId` and selected option keys.
+
+### Example Builder
+
+```typescript
+function buildQuoteFormPayload(
+  model: ProductConfiguratorModel,
+  selections: Record<string, string>,
+  selectedVariant: ConfiguratorVariant,
+  product: { code: string; name: string; url: string },
+): QuoteFormPayload {
+  return {
+    skuId: selectedVariant.code,
+    productCode: product.code,
+    productName: product.name,
+    productUrl: new URL(selectedVariant.url, product.url).toString(),
+    selectedOptions: model.categories.map((category) => ({
+      qualifier: category.qualifier,
+      categoryName: category.name,
+      value: selections[category.qualifier],
+    })),
+  };
+}
+```
 
 ---
 
