@@ -1,526 +1,277 @@
-# High-Level Design — Product Configurator Component
+# High-Level Design - Product Configurator Component
 
-## Next.js + Sitecore Implementation
-
----
-
-## 1. Overview
-
-This document describes the architecture for implementing the **Product Configurator** as a set of composable React components within an existing Next.js + Sitecore project. The configurator allows users to make cascading selections across multiple product dimensions (e.g., Torque Range → Suspension Options → Cord Type) and resolves to a unique SKU once all choices are made.
-
-**Scope:** Right-side configurator panel only. The left-side Product Info component is already developed and out of scope. The configurator will be rendered alongside it and will communicate the final selected variant (SKU, URL, price) upward via callback props or shared context.
+## Next.js (Pages Router) + Sitecore Content SDK Implementation
 
 ---
 
-## 2. Component Architecture
+## 1. Purpose and Scope
 
-### 2.1 Component Tree
+This document defines the implementation approach for a new Product Configurator panel that must follow patterns already used in this repository.
 
+The configurator:
+- Supports cascading variant selection (example: Torque Range -> Suspension Options -> Cord Type).
+- Resolves to one final SKU when all required selections are complete.
+- Works with the existing Product Info area on PDP pages.
+
+In scope:
+- Sitecore rendering wrapper.
+- Frontend content component.
+- API route, service, mapping, and types.
+- Authoring templates/rendering registration.
+
+Out of scope:
+- Rebuilding existing Product Info component behavior.
+
+---
+
+## 2. Project Standards Applied
+
+This HLD is aligned to established project patterns visible in current features such as Product Comparison and Product Info:
+
+1. Sitecore wrapper layer and frontend component layer are separate.
+- Sitecore wrapper: `src/sitecore/PageContent/*`
+- Frontend component: `src/components/content/*`
+
+2. Pages Router conventions are used.
+- Data-loading is not based on App Router Server Components.
+- Runtime feature APIs are implemented under `src/pages/api/*`.
+
+3. Data/cache helpers are implemented in `src/lib/*` and use shared cache utilities.
+- Use `createVercelCache` or `fetchWithCache` from `src/lib/cache/vercelDataCache.ts`.
+
+4. Sitecore rendering registration follows generated component map and serialized item modules.
+- Runtime registration: `.sitecore/component-map.ts`
+- Authoring serialization: `authoring/items/<FeatureName>/*.module.json`
+
+5. Edit-mode safety is required.
+- Wrapper/component should provide an author-friendly message in Pages when required runtime data is unavailable.
+
+---
+
+## 3. Target Architecture
+
+### 3.1 Layered Component Design
+
+```text
+Sitecore Rendering (componentName: ProductConfigurator)
+    -> src/sitecore/PageContent/ProductConfigurator.tsx (wrapper)
+        -> src/components/content/ProductConfigurator/ProductConfigurator.tsx (UI orchestrator)
+            -> child UI parts (accordion, summary, toggle)
+            -> useProductConfigurator hook
+                -> /api/products/configurator
+                    -> productConfiguratorService (Commerce API + cache)
+                    -> mapper utils (internal model + resolver helpers)
 ```
-<ProductPage>                          ← existing page (Sitecore rendering)
-├── <ProductInfo />                    ← already developed (out of scope)
-└── <ProductConfigurator>              ← new top-level configurator shell
-    ├── <ConfiguratorHeader />         ← title bar + Reset button
-    ├── <ConfiguratorAccordion>        ← accordion container managing open/close state
-    │   └── <AccordionSection />       ← one per category (repeating)
-    │       ├── <AccordionHeader />    ← step indicator + title + chevron
-    │       └── <AccordionBody />      ← collapsible option list
-    │           └── <OptionRow />      ← radio-style selectable row (repeating)
-    ├── <ConfigurationSummary />       ← progress bar OR completed config result
-    └── <CollapseToggle />             ← floating button to expand/collapse panel
-```
 
-### 2.2 Component Responsibilities
+### 3.2 Responsibilities
 
-| Component | Responsibility |
+| Layer | Responsibility |
 |---|---|
-| **ProductConfigurator** | Top-level orchestrator. Owns configurator state (selections, expanded section). Fetches data via service, maps it with utility, passes down props. Manages expand/collapse of the entire panel. |
-| **ConfiguratorHeader** | Renders "Configure Your Product" title and the Reset button. Calls `onReset` callback. |
-| **ConfiguratorAccordion** | Iterates over `model.categories`, renders one `AccordionSection` per category. Passes available options (derived from cascading filter logic) to each section. |
-| **AccordionSection** | Single collapsible section. Composed of `AccordionHeader` + `AccordionBody`. Manages its own open/close animation via CSS `max-height` transition. |
-| **AccordionHeader** | Renders step circle (numbered / active / done with checkmark), category name, selected-value preview, and chevron. Click toggles the section. |
-| **AccordionBody** | Wraps the list of `OptionRow` items. Renders an empty-state message when no options are available (upstream not selected yet, or no valid combinations). |
-| **OptionRow** | Single selectable radio-style row. Renders custom radio dot + option label. Fires `onSelect(qualifier, value)` on click. |
-| **ConfigurationSummary** | When incomplete: shows progress bar (X of N selected). When complete: shows all selections, resolved SKU code with copy-to-clipboard, and "Request a Quote" CTA. |
-| **CollapseToggle** | Fixed-position button on the panel edge. Toggles the right panel between expanded (440px) and collapsed (0px) states. |
+| Sitecore wrapper | Maps datasource fields to frontend props, handles edit-mode fallback messaging, passes site/page context when required. |
+| Frontend configurator component | Owns interactive state: selections, expanded section, collapsed panel, copy state, quote CTA behavior. |
+| Hook (`useProductConfigurator`) | Reads product code, calls internal API, controls loading/error states, exposes normalized model + selected variant. |
+| API route (`/api/products/configurator`) | Validates query, calls service, maps Commerce payload, returns normalized response for UI. |
+| Service layer | Calls Commerce API endpoint and applies cache strategy based on project standards. |
+| Mapper utilities | Converts Commerce response into stable internal model and resolves available options/SKU. |
 
 ---
 
-## 3. Data Flow
+## 4. Recommended File Structure (Aligned to Repo)
 
-### 3.1 API Integration
+```text
+apps/website/src/
+  components/
+    content/
+      ProductConfigurator/
+        ProductConfigurator.tsx
+        ProductConfiguratorHeader.tsx
+        ProductConfiguratorAccordion.tsx
+        ProductConfiguratorSection.tsx
+        ProductConfiguratorOptionRow.tsx
+        ProductConfiguratorSummary.tsx
+        ProductConfiguratorCollapseToggle.tsx
+        useProductConfigurator.ts
+        productConfigurator.module.scss
 
-```
-Sitecore CMS  →  Commerce API  →  Next.js API Route / Server Component
-                                         │
-                                    Vercel Cache
-                                         │
-                                 ProductConfigurator
-```
+  sitecore/
+    PageContent/
+      ProductConfigurator.tsx
 
-**API Endpoint:** The product variant data (`variantOptions`, `variantMatrix`) is fetched from the existing Sitecore Commerce API (the same endpoint that serves the JSON structure seen in `get_product_response.json`).
+  pages/
+    api/
+      products/
+        configurator.ts
 
-**Fetching strategy:** Data is fetched at the **page level** (in a Server Component or `getServerSideProps` / RSC `fetch`) and passed down to `ProductConfigurator` as props. This allows Vercel's data cache to handle deduplication and revalidation.
-
-### 3.2 Data Model
-
-The API response is transformed into an internal model consumed by the UI:
-
-```typescript
-// Internal model used by the configurator components
-
-interface ProductConfiguratorModel {
-  categories: ConfiguratorCategory[];
-  variants:   ConfiguratorVariant[];
-}
-
-interface ConfiguratorCategory {
-  name:      string;                   // "Torque Range"
-  qualifier: string;                   // "torque-range" (machine key)
-  order:     number;                   // 0-based position in selection flow
-  options:   ConfiguratorOptionValue[];
-}
-
-interface ConfiguratorOptionValue {
-  label:    string;   // display text
-  value:    string;   // selection key
-  sequence: number;   // display order within category
-}
-
-interface ConfiguratorVariant {
-  code:       string;                          // SKU code e.g. "XDV2TLVTJ00U00"
-  url:        string;                          // PDP path
-  stock:      StockInfo;
-  price?:     PriceData;
-  selections: Record<string, string>;          // qualifier → value
-}
+  lib/
+    sitecoreQueries/
+      ProductConfigurator/
+        productConfiguratorService.ts
+        mapper.ts
+        types.ts
+        quoteForm.ts
 ```
 
-### 3.3 State Management
-
-All configurator state is local to `ProductConfigurator` using React hooks — no global store needed.
-
-```typescript
-// State within ProductConfigurator
-
-const [selections, setSelections]           = useState<Record<string, string>>({});
-const [expandedQualifier, setExpandedQualifier] = useState<string | null>(firstCategoryQualifier);
-const [isPanelCollapsed, setIsPanelCollapsed]   = useState(false);
-```
-
-**Derived state (computed on each render, not stored):**
-
-| Derived Value | Source |
-|---|---|
-| `availableOptions` | `getAvailableOptions(model, selections)` — cascading filter |
-| `selectedVariant`  | `getSelectedVariant(model, selections)` — resolved SKU or null |
-| `completionCount`  | `Object.keys(selections).length` |
-| `totalSteps`       | `model.categories.length` |
-
-### 3.4 Selection Flow (Cascading Logic)
-
-1. User selects a value in category at index `i`.
-2. `selections[qualifier] = value` is set.
-3. All downstream selections at index > `i` are **cleared**.
-4. `expandedQualifier` auto-advances to category at index `i + 1`.
-5. On next render, `getAvailableOptions()` filters all variants matching current selections and returns only valid values for each remaining category.
-6. When all categories are selected, `getSelectedVariant()` resolves the matching SKU.
+Notes:
+- Keep style files as component-scoped SCSS modules in the component folder.
+- Keep feature-specific service/mapper/types together under `lib/sitecoreQueries/ProductConfigurator` to match existing feature organization.
 
 ---
 
-## 4. File Structure
+## 5. Sitecore Component Design (Wrapper + Rendering Item)
 
-```
-src/
-├── components/
-│   └── product-configurator/
-│       ├── ProductConfigurator.tsx           ← top-level orchestrator
-│       ├── ConfiguratorHeader.tsx
-│       ├── ConfiguratorAccordion.tsx
-│       ├── AccordionSection.tsx
-│       ├── AccordionHeader.tsx
-│       ├── AccordionBody.tsx
-│       ├── OptionRow.tsx
-│       ├── ConfigurationSummary.tsx
-│       ├── CollapseToggle.tsx
-│       ├── ProductConfigurator.module.scss   ← scoped styles (CSS Modules)
-│       └── index.ts                          ← barrel export
-│
-├── services/
-│   └── product-configurator.service.ts      ← API fetch + Vercel cache config
-│
-├── utils/
-│   └── product-configurator.mapper.ts       ← mapToConfiguratorModel + helpers
-│
-└── types/
-    └── product-configurator.types.ts        ← all TypeScript interfaces
-```
+### 5.1 Wrapper Component
+
+Create Sitecore wrapper:
+- `src/sitecore/PageContent/ProductConfigurator.tsx`
+
+Wrapper contract should follow existing conventions:
+- Accept `rendering`, `params`, and `fields` from Sitecore Content SDK.
+- Map author-configurable text/messages into frontend props.
+- Pass product code and optional quote form URL from datasource fields.
+- In edit mode, render informational placeholder when live API data is not available.
+
+### 5.2 Frontend Component
+
+Create frontend UI component:
+- `src/components/content/ProductConfigurator/ProductConfigurator.tsx`
+
+Expected behavior:
+- Render the right panel UI.
+- Maintain state for cascading option selection.
+- Emit `onVariantResolved(variant | null)` when selection changes.
+- Support summary state and quote CTA behavior.
+
+### 5.3 Sitecore Rendering Registration
+
+Required updates:
+1. Add wrapper export so codegen includes it in `.sitecore/component-map.ts`.
+2. Ensure `componentName` on rendering item is `ProductConfigurator`.
+3. Add authoring serialization module similar to existing features:
+- `authoring/items/ProductConfigurator/ProductConfigurator.module.json`
+
+Rendering item should be under:
+- `/sitecore/layout/Renderings/Feature/Ametek/Page Content/Product Configurator`
+
+Use conventions already present in this repo:
+- `Datasource Template` set to the feature template.
+- `Datasource Location` typically `query:./Data`.
 
 ---
 
-## 5. Service Layer — API Fetch + Vercel Caching
+## 6. Data Flow and API Strategy
 
-### 5.1 Service File
+### 6.1 Runtime Flow (Pages Router)
 
-```
-src/services/product-configurator.service.ts
-```
-
-```typescript
-import { ProductApiResponse } from '@/types/product-configurator.types';
-
-const PRODUCT_API_BASE = process.env.NEXT_PUBLIC_COMMERCE_API_URL;
-
-/**
- * Fetches product data from Sitecore Commerce API.
- * Uses Next.js extended fetch with Vercel cache control.
- *
- * Called from a Server Component or page-level data fetching.
- */
-export async function fetchProductData(productCode: string): Promise<ProductApiResponse> {
-  const url = `${PRODUCT_API_BASE}/products/${productCode}`;
-
-  const response = await fetch(url, {
-    next: {
-      revalidate: 3600,           // ISR — revalidate every 60 minutes
-      tags: [`product-${productCode}`],  // on-demand revalidation tag
-    },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch product data: ${response.status}`);
-  }
-
-  return response.json();
-}
+```text
+Browser -> ProductConfigurator component -> /api/products/configurator?code={productCode}
+       -> productConfiguratorService -> Commerce API
+       -> mapper -> normalized response -> component state
 ```
 
-### 5.2 Caching Strategy (Vercel)
+### 6.2 Why Internal API Route
 
-| Concern | Approach |
-|---|---|
-| **Cache layer** | Vercel Data Cache via Next.js `fetch` with `next.revalidate` |
-| **Time-based revalidation** | `revalidate: 3600` — stale data served while revalidating in background every 60 min |
-| **On-demand revalidation** | Tag-based: `revalidateTag('product-XDV2T')` called from a Sitecore webhook or admin action when product data changes in CMS |
-| **Cache key** | Automatic — based on URL + headers. Each product code gets its own cache entry |
-| **Client-side** | No client-side data fetching. Data is fetched server-side and passed as props. The configurator is a Client Component that receives pre-fetched, cached data. |
+Using internal API route matches existing project patterns and provides:
+- Centralized validation and error handling.
+- Better control of caching and transformation.
+- No Commerce credentials or implementation details exposed to browser code.
 
-### 5.3 Server Component Integration
+### 6.3 API Response Shape (Internal)
 
-```typescript
-// In the page or layout Server Component:
-
-import { fetchProductData } from '@/services/product-configurator.service';
-import { mapToConfiguratorModel } from '@/utils/product-configurator.mapper';
-import { ProductConfigurator } from '@/components/product-configurator';
-
-export default async function ProductPage({ params }: { params: { code: string } }) {
-  const productData = await fetchProductData(params.code);
-  const configuratorModel = mapToConfiguratorModel(
-    productData.variantOptions,
-    productData.variantMatrix,
-  );
-
-  return (
-    <div className="product-page two-col">
-      <ProductInfo data={productData} />
-      <ProductConfigurator model={configuratorModel} productCode={productData.code} />
-    </div>
-  );
+```ts
+interface ProductConfiguratorApiResult {
+  success: boolean;
+  model?: ProductConfiguratorModel;
+  product?: {
+    code: string;
+    name: string;
+    url: string;
+  };
+  error?: string;
 }
 ```
 
 ---
 
-## 6. Mapper Utility
+## 7. Caching Strategy (Aligned to Current Project)
 
-### 6.1 File
+Use project cache helpers from `src/lib/cache/vercelDataCache.ts`.
 
-```
-src/utils/product-configurator.mapper.ts
-```
+Recommended approach:
+1. In service layer, wrap Commerce fetch in `createVercelCache` for deterministic keys and tags.
+2. Use feature tag naming convention, for example:
+- `product-configurator`
+- `product-configurator-{productCode}`
+3. Use moderate revalidation window (example: 3600 seconds) unless business requires faster freshness.
+4. Revalidate by tag via existing admin endpoint:
+- `/api/admin/revalidateCacheTags`
 
-### 6.2 Functions
-
-| Function | Signature | Purpose |
-|---|---|---|
-| `mapToConfiguratorModel` | `(variantOptions, variantMatrix) → ProductConfiguratorModel` | Transforms raw API arrays into the clean internal model. Extracts category order from variantMatrix tree depth, option sequences from tree nodes, and builds variant list from variantOptions. |
-| `getAvailableOptions` | `(model, selections) → Record<string, string[]>` | Filters variants matching current selections; returns valid remaining values per category in sequence order. Drives the cascading dropdown logic. |
-| `getSelectedVariant` | `(model, selections) → ConfiguratorVariant \| null` | Returns the single matching variant when all categories are selected; `null` otherwise. |
-
-### 6.3 Mapping Logic Summary
-
-```
-API variantMatrix (tree)
-  ├─ Walk first root→leaf path  → category ORDER (depth = selection position)
-  └─ Walk all nodes             → option SEQUENCES (display sort order)
-
-API variantOptions (flat array)
-  ├─ Extract qualifiers + values → categories with machine keys
-  └─ Flatten each variant        → { code, url, stock, selections: { qualifier→value } }
-
-Merge order + sequence into categories → sort categories by order → sort options by sequence
-```
+This aligns better with current repo patterns than relying only on ad hoc page-level fetch caching.
 
 ---
 
-## 7. Expand / Collapse Behaviour
+## 8. Internal Model and Selection Logic
 
-### 7.1 Accordion Sections (Individual)
+### 8.1 Types
 
-Each `AccordionSection` toggles between expanded and collapsed via `expandedQualifier` state.
+Keep all feature types in:
+- `src/lib/sitecoreQueries/ProductConfigurator/types.ts`
 
-| Trigger | Result |
-|---|---|
-| Click on `AccordionHeader` | Toggle: if already open, close it (`expandedQualifier = null`); otherwise open it and close others |
-| User selects an option | Auto-advance: next category expands, current closes |
-| Reset clicked | First category expands, all others collapse |
+Core types:
+- Raw Commerce response types.
+- Internal UI model (`ProductConfiguratorModel`, `ConfiguratorCategory`, `ConfiguratorVariant`).
+- API route result contract.
+- Quote payload contract.
 
-**CSS transition:** `max-height` from `0` to a sufficient value (e.g., `800px`) with `overflow: hidden` and `transition: max-height 0.28s ease`.
+### 8.2 Mapper Functions
 
-### 7.2 Entire Right Panel (Collapse Toggle)
+Implement in:
+- `src/lib/sitecoreQueries/ProductConfigurator/mapper.ts`
 
-The floating `CollapseToggle` button controls the entire right configurator panel.
+Functions:
+- `mapToConfiguratorModel(raw)`
+- `getAvailableOptions(model, selections)`
+- `getSelectedVariant(model, selections)`
 
-| State | Panel Width | Button Position | Button Icon |
-|---|---|---|---|
-| Expanded (default) | `440px` | Fixed at right edge of panel | `◀` |
-| Collapsed | `0px` | Fixed at right edge of viewport | `▶` |
-
-**Implementation:**
-
-- The parent `two-col` grid uses `grid-template-columns: 1fr 440px`.
-- When collapsed, class `right-collapsed` changes it to `1fr 0px`.
-- CSS transition on `grid-template-columns` with `0.35s ease`.
-- The toggle button uses a CSS custom property `--toggle-right` transitioned between `440px` and `0px` to stay glued to the panel edge.
-- On screens ≤ 860px (mobile), the toggle button is hidden; layout switches to single-column stack.
-
-### 7.3 Responsive Behaviour
-
-| Breakpoint | Layout |
-|---|---|
-| > 860px | Two-column grid. Panel toggle visible. |
-| ≤ 860px | Single-column stack. Panel always visible (full width). Toggle hidden. |
+Rules:
+1. Upstream selections constrain downstream options.
+2. Selecting step `i` clears steps `i + 1 ... n`.
+3. Variant resolves only when all required categories are selected.
 
 ---
 
-## 8. TypeScript Interfaces
+## 9. UI Behavior Requirements
 
-```
-src/types/product-configurator.types.ts
-```
+### 9.1 Accordion and Step Flow
 
-```typescript
-// ── API Response Types (raw from Sitecore Commerce) ──
+- Single expanded section at a time.
+- On selection, auto-open next section.
+- Reset returns to initial state and first section expanded.
 
-export interface ProductApiResponse {
-  code:           string;
-  name:           string;
-  description?:   string;
-  url:            string;
-  categories?:    { code: string; name?: string }[];
-  images?:        { url: string; altText?: string }[];
-  stock:          StockInfo;
-  price?:         PriceData;
-  priceRange?:    PriceRange;
-  variantOptions: ApiVariantOption[];
-  variantMatrix:  ApiVariantMatrixNode[];
-}
+### 9.2 Panel Collapse
 
-export interface ApiVariantOption {
-  code:  string;
-  url:   string;
-  stock: StockInfo;
-  priceData?: PriceData;
-  variantOptionQualifiers: ApiQualifier[];
-}
+- Desktop/tablet: configurable right panel can collapse.
+- Mobile: panel remains visible and stacked; collapse toggle hidden.
 
-export interface ApiQualifier {
-  name?:      string;
-  qualifier?: string;
-  value?:     string;
-  image?:     Record<string, unknown>;
-}
+### 9.3 Accessibility
 
-export interface ApiVariantMatrixNode {
-  elements:              ApiVariantMatrixNode[];
-  isLeaf:                boolean;
-  parentVariantCategory: { name: string; hasImage: boolean; priority: number };
-  variantValueCategory:  { name: string; sequence: number };
-  variantOption?:        ApiVariantOption;
-}
-
-export interface StockInfo {
-  isValueRounded: boolean;
-  stockLevel?:    number;
-  stockLevelStatus?: string;
-}
-
-export interface PriceData {
-  currencyIso?: string;
-  formattedValue?: string;
-  value: number;
-}
-
-export interface PriceRange {
-  minPrice?: PriceData;
-  maxPrice?: PriceData;
-}
-
-// ── Internal Configurator Model ──
-
-export interface ProductConfiguratorModel {
-  categories: ConfiguratorCategory[];
-  variants:   ConfiguratorVariant[];
-}
-
-export interface ConfiguratorCategory {
-  name:      string;
-  qualifier: string;
-  order:     number;
-  options:   ConfiguratorOptionValue[];
-}
-
-export interface ConfiguratorOptionValue {
-  label:    string;
-  value:    string;
-  sequence: number;
-}
-
-export interface ConfiguratorVariant {
-  code:       string;
-  url:        string;
-  stock:      StockInfo;
-  price?:     PriceData;
-  selections: Record<string, string>;
-}
-
-// ── Component Props ──
-
-export interface ProductConfiguratorProps {
-  model:       ProductConfiguratorModel;
-  productCode: string;
-  onVariantResolved?: (variant: ConfiguratorVariant | null) => void;
-}
-
-export interface ConfiguratorHeaderProps {
-  onReset: () => void;
-}
-
-export interface AccordionSectionProps {
-  category:     ConfiguratorCategory;
-  stepIndex:    number;
-  stepState:    'default' | 'active' | 'done';
-  isOpen:       boolean;
-  selectedValue?: string;
-  availableValues: string[];
-  emptyMessage: string;
-  onToggle:     () => void;
-  onSelect:     (qualifier: string, value: string) => void;
-}
-
-export interface OptionRowProps {
-  value:      string;
-  isChecked:  boolean;
-  onSelect:   () => void;
-}
-
-export interface ConfigurationSummaryProps {
-  model:        ProductConfiguratorModel;
-  selections:   Record<string, string>;
-  variant:      ConfiguratorVariant | null;
-  totalSteps:   number;
-  completedSteps: number;
-}
-```
+Required:
+- Header buttons with `aria-expanded` and `aria-controls`.
+- Section body with `role="region"`.
+- Semantic radio inputs for options.
+- Keyboard support for option selection and section navigation.
+- Clear labels for copy and quote actions.
 
 ---
 
-## 9. Sequence Diagram — User Selection Flow
+## 10. Third-Party Quote Integration
 
-```
-User            AccordionSection       ProductConfigurator        mapper utility
- │                   │                        │                        │
- │── click option ──►│                        │                        │
- │                   │── onSelect(q, val) ───►│                        │
- │                   │                        │── setSelections(...)   │
- │                   │                        │── clear downstream     │
- │                   │                        │── setExpandedQualifier │
- │                   │                        │                        │
- │                   │                        │── getAvailableOptions()─►│
- │                   │                        │◄── filtered options ─────│
- │                   │                        │                        │
- │                   │                        │── getSelectedVariant()──►│
- │                   │                        │◄── variant | null ──────│
- │                   │                        │                        │
- │                   │◄── re-render ──────────│                        │
- │◄── updated UI ───│                        │                        │
-```
+Implement quote helper under:
+- `src/lib/sitecoreQueries/ProductConfigurator/quoteForm.ts`
 
----
+Contract:
 
-## 10. Sequence Diagram — Data Fetch + Caching
-
-```
-Browser             Next.js Server           Vercel Cache          Sitecore API
-  │                      │                       │                      │
-  │── page request ─────►│                       │                      │
-  │                      │── fetch(product) ────►│                      │
-  │                      │                       │── MISS ─────────────►│
-  │                      │                       │◄── API response ─────│
-  │                      │                       │── store (TTL=3600s)  │
-  │                      │◄── cached response ──│                      │
-  │                      │── mapToConfiguratorModel()                   │
-  │                      │── render SSR ─────────                      │
-  │◄── HTML + hydrate ──│                       │                      │
-  │                      │                       │                      │
-  │── next request ─────►│                       │                      │
-  │                      │── fetch(product) ────►│                      │
-  │                      │                       │── HIT (stale) ──────►│ (background)
-  │                      │◄── cached response ──│                      │
-```
-
----
-
-## 11. Key Design Decisions
-
-| # | Decision | Rationale |
-|---|---|---|
-| 1 | **Mapper runs server-side** | Raw API data is transformed in the Server Component before being passed to the client. This keeps the Client Component bundle lean and avoids shipping mapper logic to the browser. |
-| 2 | **`ProductConfigurator` is a Client Component** (`"use client"`) | Selection state, accordion toggling, and clipboard API require browser interactivity. |
-| 3 | **No global state store** | Configurator state is self-contained. Local `useState` hooks suffice. The optional `onVariantResolved` callback allows the parent (Product Page) to react to SKU resolution if needed (e.g., updating price display on the left panel). |
-| 4 | **Cascading filter computed on render (not memoized in state)** | `getAvailableOptions()` is a pure function of `model` + `selections`. Deriving it on render avoids stale-state bugs. For large variant sets, wrap in `useMemo`. |
-| 5 | **Vercel Data Cache with ISR** | Product data changes infrequently. A 60-minute revalidation window provides freshness with minimal API load. On-demand revalidation via tags handles CMS publish events. |
-| 6 | **CSS Modules (SCSS)** | Scoped styles aligned with typical Next.js + Sitecore project conventions. No runtime CSS-in-JS overhead. |
-| 7 | **Panel collapse via CSS grid transition** | Pure CSS approach — no JS layout measurement. `grid-template-columns` transition provides smooth expand/collapse without reflow jank. |
-
----
-
-## 12. Integration Points
-
-| Integration | Details |
-|---|---|
-| **Product Info ← → Configurator** | Parent page passes `onVariantResolved(variant)` to `ProductConfigurator`. When a full SKU is resolved, the callback fires with the variant object (code, price, stock, URL). Product Info can use this to update displayed price or stock status. |
-| **Sitecore Rendering** | `ProductConfigurator` is registered as a Sitecore component rendering. It receives the product code from the Sitecore route/context and fetches variant data via the service layer. |
-| **Third-Party Quote Form** | When "Request a Quote" is clicked, open the third-party form URL and pass attributes including `skuId` and all user-selected options (qualifier/value pairs). This replaces plain navigation-only behavior. |
-| **Clipboard** | "Copy" button uses `navigator.clipboard.writeText()` with a brief "Copied!" feedback state managed locally. |
-| **On-demand cache invalidation** | A Sitecore publish webhook calls a Next.js API route that runs `revalidateTag('product-{code}')` to bust the Vercel cache for updated products. |
-
----
-
-## 12.1 Third-Party Quote Form Attribute Contract
-
-On complete configuration, `ConfigurationSummary` should send a normalized payload to a quote form service helper.
-
-### Trigger
-
-- User clicks "Request a Quote".
-- Guard condition: `selectedVariant !== null`.
-
-### Payload Shape
-
-```typescript
-interface QuoteFormPayload {
+```ts
+export interface QuoteFormPayload {
   skuId: string;
   productCode: string;
   productName: string;
@@ -531,77 +282,64 @@ interface QuoteFormPayload {
     value: string;
   }>;
 }
-```
 
-### Mapping Rules
-
-1. `skuId` = `selectedVariant.code`.
-2. `productCode` = base product code from API response.
-3. `productName` = product display name from API response.
-4. `productUrl` = absolute URL resolved from `selectedVariant.url`.
-5. `selectedOptions` = every configured category in display order using `model.categories` and `selections`.
-
-### Service Contract
-
-```typescript
 export function openQuoteForm(payload: QuoteFormPayload): void;
 ```
 
-Implementation can use one of these patterns based on third-party capability:
-
-- Query-string prefill: `window.open(`${formUrl}?skuId=...&torque-range=...`)`
-- POST bridge endpoint: submit payload to a Next.js route that forwards values securely
-- Embedded script API: call vendor-provided prefill method before modal open
-
-### Recommended Implementation Notes
-
-- URL-encode all values; preserve special characters from option text.
-- Include both machine keys (`qualifier`) and human-readable labels (`categoryName`) for downstream analytics.
-- Add fallback handling when the third-party form is unreachable: show toast and retain current configurator state.
-- Emit analytics event `quote_form_opened` with `skuId` and selected option keys.
-
-### Example Builder
-
-```typescript
-function buildQuoteFormPayload(
-  model: ProductConfiguratorModel,
-  selections: Record<string, string>,
-  selectedVariant: ConfiguratorVariant,
-  product: { code: string; name: string; url: string },
-): QuoteFormPayload {
-  return {
-    skuId: selectedVariant.code,
-    productCode: product.code,
-    productName: product.name,
-    productUrl: new URL(selectedVariant.url, product.url).toString(),
-    selectedOptions: model.categories.map((category) => ({
-      qualifier: category.qualifier,
-      categoryName: category.name,
-      value: selections[category.qualifier],
-    })),
-  };
-}
-```
+Behavior:
+- Only enabled when resolved variant exists.
+- Preserve both machine keys and human labels.
+- Provide fallback notification when quote endpoint is unavailable.
 
 ---
 
-## 13. Accessibility Considerations
+## 11. Authoring and Serialization Requirements
 
-| Area | Implementation |
-|---|---|
-| Accordion | `aria-expanded` on each header button. `role="region"` on body. `aria-controls` linking header to body `id`. |
-| Radio options | Semantic `<input type="radio">` (visually hidden) with `<label>` wrappers. Custom dot is decorative. Keyboard navigation (arrow keys within group). |
-| Focus management | After selecting an option and auto-advancing, focus moves to the newly expanded section header. |
-| Collapse toggle | `aria-label` describing current state ("Collapse configurator panel" / "Expand configurator panel"). |
+To be implementation-ready in XM Cloud, include all of the following:
+
+1. Feature template branch under:
+- `/sitecore/templates/Feature/Ametek/Product Configurator`
+
+2. Datasource template containing at minimum:
+- Product code source field (or explicit product code field).
+- UI labels/messages (title, reset label, empty-state text, error text, quote CTA label).
+- Optional quote-form endpoint field.
+
+3. Rendering item under Page Content with:
+- `componentName = ProductConfigurator`
+- `Datasource Template`
+- `Datasource Location = query:./Data`
+
+4. Authoring module file:
+- `authoring/items/ProductConfigurator/ProductConfigurator.module.json`
+
+5. Add module references in aggregate module manifests if required by current deployment workflow.
 
 ---
 
-## 14. Summary
+## 12. Integration with Existing Product Components
 
-The Product Configurator is decomposed into **8 focused components** that follow a unidirectional data flow:
+Product Configurator must coexist with existing product feature components:
+- Product Info remains the left-side presentation component.
+- Product Configurator is an independent Sitecore rendering that can be placed in a two-column layout.
+- Optional callback/event can be used so Product Info area updates price/stock display from resolved variant.
 
-1. **Server-side:** Fetch product data → cache via Vercel → transform with mapper utility.
-2. **Client-side:** `ProductConfigurator` receives the model as props → manages selection state → derived cascading logic filters options → resolves SKU on completion.
-3. **Expand/Collapse:** Individual accordion sections via `max-height` CSS transition; entire panel via CSS grid column transition with a floating toggle button.
+Recommended integration pattern:
+- Keep Product Info and Product Configurator loosely coupled.
+- Share only normalized `variant` output and avoid direct cross-component state mutation.
 
-All interactions are local. No external state management is required. The Vercel data cache ensures fast, fresh responses without overloading the Sitecore Commerce API.
+---
+
+## 13. Implementation Checklist
+
+1. Create frontend component folder and SCSS module under `components/content/ProductConfigurator`.
+2. Create Sitecore wrapper under `sitecore/PageContent/ProductConfigurator.tsx`.
+3. Add API route `pages/api/products/configurator.ts`.
+4. Add service, mapper, types, and quote helper under `lib/sitecoreQueries/ProductConfigurator`.
+5. Register rendering in Sitecore authoring items and ensure codegen includes it in `.sitecore/component-map.ts`.
+6. Add edit-mode fallback behavior for Pages editor.
+7. Validate keyboard and screen-reader behavior.
+8. Verify cache tagging and revalidation behavior through existing admin revalidation API.
+
+---
+
