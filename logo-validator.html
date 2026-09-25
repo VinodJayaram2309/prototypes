@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>AMETEK XMC — Logo Guideline Validator</title>
+<style>
+  :root{
+    --navy:#0b1f3a;
+    --navy-light:#12305c;
+    --orange:#f5821f;
+    --green:#1a9e5c;
+    --green-bg:#e8f8ef;
+    --red:#d0342c;
+    --red-bg:#fdecec;
+    --amber:#c9781a;
+    --amber-bg:#fdf3e1;
+    --gray-100:#f5f6f8;
+    --gray-200:#e7e9ee;
+    --gray-400:#9aa2b1;
+    --gray-600:#5b6472;
+    --radius:14px;
+    --shadow:0 8px 24px rgba(11,31,58,.08), 0 2px 6px rgba(11,31,58,.06);
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:linear-gradient(180deg,#eef1f7 0%,#f7f8fb 320px,#f7f8fb 100%);
+    color:#1c2433;
+    min-height:100vh;
+  }
+  header.hero{
+    background:linear-gradient(120deg,var(--navy) 0%, var(--navy-light) 55%, #1b4c8c 100%);
+    color:#fff;
+    padding:36px 24px 44px;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
+  }
+  header.hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background:radial-gradient(circle at 85% 20%, rgba(245,130,31,.35), transparent 45%);
+    pointer-events:none;
+  }
+  header.hero h1{
+    margin:0 0 8px;
+    font-size:clamp(22px,3vw,32px);
+    letter-spacing:.2px;
+  }
+  header.hero p{
+    margin:0 auto;
+    max-width:720px;
+    color:#cdd8ee;
+    font-size:14.5px;
+    line-height:1.6;
+  }
+  .badge-strip{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:10px;
+    margin-top:18px;
+  }
+  .badge-strip span{
+    background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.25);
+    padding:6px 14px;
+    border-radius:999px;
+    font-size:12.5px;
+    color:#fff;
+  }
+  .wrap{
+    max-width:1200px;
+    margin:-26px auto 60px;
+    padding:0 20px;
+  }
+  .panel{
+    background:#fff;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px 24px;
+    margin-bottom:24px;
+  }
+  .panel h2{
+    margin:0 0 14px;
+    font-size:18px;
+    display:flex; align-items:center; gap:8px;
+  }
+  .panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block;}
+  .guideline-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:14px;
+  }
+  .guideline-card{
+    background:var(--gray-100);
+    border:1px solid var(--gray-200);
+    border-radius:10px;
+    padding:14px 16px;
+  }
+  .guideline-card b{display:block;font-size:13px;color:var(--navy);margin-bottom:4px;}
+  .guideline-card span{font-size:12.5px;color:var(--gray-600);line-height:1.5;}
+  .guideline-card .metric{font-size:20px;font-weight:700;color:var(--orange);margin:2px 0;}
+
+  .known-issues{
+    background:var(--amber-bg);
+    border:1px solid #f1d49c;
+    border-radius:10px;
+    padding:14px 16px;
+    margin-top:16px;
+  }
+  .known-issues h3{margin:0 0 8px;font-size:14px;color:var(--amber);}
+  .known-issues ul{margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#4a3a17;}
+
+  .cards{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(340px,1fr));
+    gap:20px;
+  }
+  .card{
+    background:#fff;
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:20px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+    border-top:4px solid var(--navy);
+  }
+  .card.small{border-top-color:var(--orange);}
+  .card.current{border-top-color:var(--green);}
+  .card-title{display:flex; justify-content:space-between; align-items:baseline;}
+  .card-title h3{margin:0;font-size:15.5px;}
+  .card-title small{color:var(--gray-600);font-size:11.5px;}
+
+  .dropzone{
+    border:2px dashed var(--gray-400);
+    border-radius:10px;
+    padding:18px;
+    text-align:center;
+    cursor:pointer;
+    background:var(--gray-100);
+    transition:.15s;
+    font-size:13px;
+    color:var(--gray-600);
+  }
+  .dropzone:hover, .dropzone.drag{
+    border-color:var(--orange);
+    background:#fff7ee;
+    color:var(--navy);
+  }
+  .dropzone input{display:none;}
+  .dropzone .icon{font-size:22px;display:block;margin-bottom:4px;}
+
+  .nav-preview{
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--gray-200);
+  }
+  .nav-preview .bar{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 16px;
+    background:#fff;
+    min-height:56px;
+  }
+  .nav-preview .bar.dark{background:var(--navy);}
+  .nav-preview .bar img{
+    max-width:390px;
+    max-height:40px;
+    display:block;
+  }
+  .nav-preview .bar.compact img{ max-width:240px; max-height:40px; }
+  .nav-preview .links{
+    margin-left:auto;
+    display:flex; gap:14px;
+    font-size:11.5px; color:var(--gray-400);
+  }
+  .nav-preview .bar.dark .links{color:#93a2c2;}
+  .nav-preview .label{
+    font-size:11px; padding:4px 10px; background:var(--gray-100); color:var(--gray-600);
+    border-top:1px solid var(--gray-200);
+  }
+
+  .analysis{
+    display:flex; flex-direction:column; gap:12px;
+    background:var(--gray-100);
+    border-radius:10px;
+    padding:12px;
+  }
+  .analysis canvas{
+    background:
+      linear-gradient(45deg,#ddd 25%,transparent 25%) -8px 0/16px 16px,
+      linear-gradient(-45deg,#ddd 25%,transparent 25%) -8px 0/16px 16px,
+      linear-gradient(45deg,transparent 75%,#ddd 75%) 0 0/16px 16px,
+      linear-gradient(-45deg,transparent 75%,#ddd 75%) 0 0/16px 16px,
+      #fff;
+    border:1px solid var(--gray-200);
+    border-radius:8px;
+    max-width:100%;
+    max-height:160px;
+    width:auto;
+    height:auto;
+    align-self:center;
+  }
+  .metrics{
+    font-size:12px; color:var(--gray-600); line-height:1.6;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px;
+    width:100%;
+  }
+  .metrics .metric-row{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .metrics .metric-row{
+    background:#fff;
+    border:1px solid var(--gray-200);
+    border-radius:8px;
+    padding:6px 10px;
+  }
+  .metrics .metric-row .m-label{
+    display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.3px;
+    color:var(--gray-400); margin-bottom:2px;
+  }
+  .metrics .metric-row .m-value{color:#1c2433; font-weight:600; font-size:12.5px;}
+  .metrics b{color:#1c2433;}
+
+  .checklist{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .checklist li{
+    display:flex; gap:8px; align-items:flex-start;
+    font-size:12.8px; line-height:1.5;
+    padding:8px 10px;
+    border-radius:8px;
+  }
+  .checklist li.pass{background:var(--green-bg); color:#0e6b3d;}
+  .checklist li.warn{background:var(--amber-bg); color:#7a4d0c;}
+  .checklist li.fail{background:var(--red-bg); color:#8c211c;}
+  .checklist li .ic{font-weight:800;}
+
+  .suggestions{
+    background:#fff9f2;
+    border:1px solid #f3ddb8;
+    border-radius:10px;
+    padding:12px 14px;
+    font-size:12.8px;
+    color:#5a4321;
+    line-height:1.6;
+    display:none;
+  }
+  .suggestions.show{display:block;}
+  .suggestions h4{margin:0 0 6px;font-size:12.5px;color:var(--amber);}
+  .suggestions ul{margin:0;padding-left:16px;}
+
+  .empty-state{
+    font-size:12.5px; color:var(--gray-400); text-align:center; padding:20px 0;
+  }
+
+  .autofix{
+    border:1px solid #cdeedd;
+    background:linear-gradient(180deg,#f3fbf7,#fff);
+    border-radius:10px;
+    padding:14px;
+    display:none;
+  }
+  .autofix.show{display:block;}
+  .fix-btn{
+    width:100%;
+    border:none;
+    cursor:pointer;
+    padding:11px 14px;
+    border-radius:8px;
+    font-size:13px;
+    font-weight:700;
+    color:#fff;
+    background:linear-gradient(120deg,var(--green),#12b871);
+    box-shadow:0 4px 12px rgba(26,158,92,.25);
+    transition:.15s transform;
+  }
+  .fix-btn:hover{ transform:translateY(-1px); }
+  .fix-btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+  .fix-result{ margin-top:12px; display:none; }
+  .fix-result.show{ display:block; }
+  .fix-compare{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .fix-compare > div{ text-align:center; }
+  .fix-compare .tag{
+    display:block; font-size:10.5px; text-transform:uppercase; letter-spacing:.4px;
+    color:var(--gray-600); margin-bottom:4px; font-weight:700;
+  }
+  .mini-bar{
+    background:#fff;
+    border:1px solid var(--gray-200);
+    border-radius:8px;
+    padding:10px 8px;
+    min-height:52px;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .mini-bar.fixed{ border-color:#9fe0bd; background:var(--green-bg); }
+  .mini-bar img{ max-width:100%; max-height:36px; }
+  .download-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    font-size:12.5px; font-weight:700; color:var(--navy);
+    text-decoration:none;
+    background:var(--gray-100);
+    border:1px solid var(--gray-200);
+    padding:8px 12px; border-radius:8px;
+  }
+  .download-btn:hover{ background:#fff; border-color:var(--green); }
+  .fix-note{ font-size:11.5px; color:var(--gray-600); line-height:1.5; margin:8px 0 0; }
+
+  footer.note{
+    text-align:center; font-size:11.5px; color:var(--gray-400); padding:10px 0 40px;
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <h1>Logo Guideline Validator</h1>
+  <p>Upload the SVG (or PNG/JPG) logo assets used across AMETEK XMC sites and instantly check them against the
+     header/navigation export guidelines: tightly cropped canvas, no unnecessary whitespace, correct viewBox,
+     and the right pixel range for consistent rendering.</p>
+  <div class="badge-strip">
+    <span>Large logo target: 300–390 × 35–40 px</span>
+    <span>Small logo target: ~240 × 40 px</span>
+    <span>viewBox must match artwork bounds</span>
+    <span>No page-sized artboards</span>
+  </div>
+</header>
+
+<div class="wrap">
+
+  <section class="panel">
+    <h2><span class="dot"></span>Guideline reference</h2>
+    <div class="guideline-grid">
+      <div class="guideline-card">
+        <b>Large / desktop header logo</b>
+        <div class="metric">300–390 × 35–40 px</div>
+        <span>Used in the main desktop navigation. Export width should not exceed ~390px or fall under ~300px.</span>
+      </div>
+      <div class="guideline-card">
+        <b>Small / compact logo</b>
+        <div class="metric">~240 × 40 px</div>
+        <span>For mobile header, favicons-adjacent placements, or narrow containers — same height, tighter width.</span>
+      </div>
+      <div class="guideline-card">
+        <b>Canvas / viewBox</b>
+        <div class="metric">Tight crop only</div>
+        <span>viewBox should match the artwork's real bounds. Avoid large artboards or page-sized canvases — they shrink the visible mark when rendered.</span>
+      </div>
+      <div class="guideline-card">
+        <b>Format</b>
+        <div class="metric">SVG preferred</div>
+        <span>Vector keeps the logo crisp at any DPI. Raster (PNG/JPG) should be at least 2–3× the rendered size.</span>
+      </div>
+    </div>
+
+    <div class="known-issues">
+      <h3>⚠ Known issues found in the current AMETEK XMC header logo</h3>
+      <ul>
+        <li><b>Raster format:</b> <code>HeaderLogo.png</code> is a PNG, not an SVG — it will blur on high‑DPI / retina screens since it can't scale.</li>
+        <li><b>Intrinsic size is 159 × 26 px</b> — below the 300–390 × 35–40 guideline and only marginally larger than the ~159×32 render size used in <code>Header.tsx</code>, leaving no headroom for sharp @2x/@3x rendering.</li>
+        <li><b>No dedicated small/compact variant</b> — the same asset is reused and simply constrained with <code>max-width</code> at smaller breakpoints (see <code>header.module.scss</code>), instead of shipping a purpose-cropped small logo.</li>
+        <li><b>Combined lockup</b> (Abaco Systems + AMETEK) increases overall width — verify the spacing between the two marks is intentional design clear-space, not incidental canvas padding.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2><span class="dot"></span>Upload &amp; test your logos</h2>
+    <p style="font-size:12.8px;color:var(--gray-600);margin-top:-6px;">
+      Drop or browse for a file in each slot below. Each upload is rendered inside a mock navigation bar at its real
+      intended size, then pixel-scanned to detect the tight content bounding box vs. the canvas — so you can see
+      exactly how much (if any) empty space surrounds the artwork.
+    </p>
+
+    <div class="cards">
+
+      <!-- LARGE LOGO -->
+      <div class="card large" id="card-large">
+        <div class="card-title">
+          <h3>🖥️ Large / Desktop Header Logo</h3>
+          <small>target 300–390 × 35–40 px</small>
+        </div>
+        <label class="dropzone" id="drop-large">
+          <span class="icon">⬆️</span>
+          Click or drag an SVG / PNG here
+          <input type="file" accept=".svg,.png,.jpg,.jpeg" id="file-large" />
+        </label>
+        <div class="nav-preview">
+          <div class="bar" id="bar-large"><div class="empty-state" style="margin:auto;">No file yet</div></div>
+          <div class="label">Desktop header preview (max-width 390px / max-height 40px)</div>
+        </div>
+        <div class="analysis" id="analysis-large" style="display:none;">
+          <canvas id="canvas-large" width="260" height="120"></canvas>
+          <div class="metrics" id="metrics-large"></div>
+        </div>
+        <ul class="checklist" id="checklist-large"></ul>
+        <div class="suggestions" id="suggestions-large"></div>
+        <div class="autofix" id="autofix-large">
+          <button class="fix-btn" id="fixbtn-large">✨ Auto-crop to guideline (remove extra space)</button>
+          <div class="fix-result" id="fixresult-large">
+            <div class="fix-compare">
+              <div><span class="tag">Before</span><div class="mini-bar" id="before-bar-large"></div></div>
+              <div><span class="tag">After (fixed)</span><div class="mini-bar fixed" id="after-bar-large"></div></div>
+            </div>
+            <a class="download-btn" id="download-large" download>⬇ Download fixed logo</a>
+            <p class="fix-note">Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- SMALL LOGO -->
+      <div class="card small" id="card-small">
+        <div class="card-title">
+          <h3>📱 Small / Compact Logo</h3>
+          <small>target ~240 × 40 px</small>
+        </div>
+        <label class="dropzone" id="drop-small">
+          <span class="icon">⬆️</span>
+          Click or drag an SVG / PNG here
+          <input type="file" accept=".svg,.png,.jpg,.jpeg" id="file-small" />
+        </label>
+        <div class="nav-preview">
+          <div class="bar compact" id="bar-small"><div class="empty-state" style="margin:auto;">No file yet</div></div>
+          <div class="label">Mobile / compact preview (max-width 240px / max-height 40px)</div>
+        </div>
+        <div class="analysis" id="analysis-small" style="display:none;">
+          <canvas id="canvas-small" width="260" height="120"></canvas>
+          <div class="metrics" id="metrics-small"></div>
+        </div>
+        <ul class="checklist" id="checklist-small"></ul>
+        <div class="suggestions" id="suggestions-small"></div>
+        <div class="autofix" id="autofix-small">
+          <button class="fix-btn" id="fixbtn-small">✨ Auto-crop to guideline (remove extra space)</button>
+          <div class="fix-result" id="fixresult-small">
+            <div class="fix-compare">
+              <div><span class="tag">Before</span><div class="mini-bar" id="before-bar-small"></div></div>
+              <div><span class="tag">After (fixed)</span><div class="mini-bar fixed" id="after-bar-small"></div></div>
+            </div>
+            <a class="download-btn" id="download-small" download>⬇ Download fixed logo</a>
+            <p class="fix-note">Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- CURRENT LOGO -->
+      <div class="card current" id="card-current">
+        <div class="card-title">
+          <h3>✅ Current Production Logo</h3>
+          <small>auto-loaded from apps/website</small>
+        </div>
+        <label class="dropzone" id="drop-current">
+          <span class="icon">🔄</span>
+          Pre-loaded — click or drag to replace with a new candidate
+          <input type="file" accept=".svg,.png,.jpg,.jpeg" id="file-current" />
+        </label>
+        <div class="nav-preview">
+          <div class="bar dark" id="bar-current"></div>
+          <div class="label">Rendered exactly as in the live navigation (dark header variant)</div>
+        </div>
+        <div class="analysis" id="analysis-current" style="display:none;">
+          <canvas id="canvas-current" width="260" height="120"></canvas>
+          <div class="metrics" id="metrics-current"></div>
+        </div>
+        <ul class="checklist" id="checklist-current"></ul>
+        <div class="suggestions" id="suggestions-current"></div>
+        <div class="autofix" id="autofix-current">
+          <button class="fix-btn" id="fixbtn-current">✨ Auto-crop to guideline (remove extra space)</button>
+          <div class="fix-result" id="fixresult-current">
+            <div class="fix-compare">
+              <div><span class="tag">Before</span><div class="mini-bar" id="before-bar-current"></div></div>
+              <div><span class="tag">After (fixed)</span><div class="mini-bar fixed" id="after-bar-current"></div></div>
+            </div>
+            <a class="download-btn" id="download-current" download>⬇ Download fixed logo</a>
+            <p class="fix-note">Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</div>
+
+<footer class="note">Runs entirely in your browser — no files are uploaded anywhere.</footer>
+
+<script>
+const SPECS = {
+  large:   { minW: 300, maxW: 390, minH: 35, maxH: 40, name: 'Large logo' },
+  small:   { minW: 220, maxW: 260, minH: 34, maxH: 40, name: 'Small logo' },
+  current: { minW: 300, maxW: 390, minH: 35, maxH: 40, name: 'Current logo (checked vs. large spec)' }
+};
+
+const PADDING_WARN_PCT = 3;   // % of canvas side considered acceptable margin
+const PADDING_FAIL_PCT = 8;   // % of canvas side considered excessive whitespace
+
+const slotState = {}; // per-slot data needed to build the auto-cropped fixed logo later
+
+function $(id){ return document.getElementById(id); }
+
+// Detect the tight bounding box of "ink" pixels in an ImageData buffer.
+function detectBBox(imageData){
+  const { data, width, height } = imageData;
+  let minX = width, minY = height, maxX = -1, maxY = -1;
+  let hasAlpha = false;
+
+  // quick pass: does this image actually use transparency?
+  for (let i = 3; i < data.length; i += 4) {
+    if (data[i] < 250) { hasAlpha = true; break; }
+  }
+
+  if (hasAlpha) {
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const a = data[(y * width + x) * 4 + 3];
+        if (a > 10) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+  } else {
+    // no transparency: sample background color from the 4 corners and diff against it
+    const corners = [0, (width - 1) * 4, (height - 1) * width * 4, ((height - 1) * width + width - 1) * 4];
+    let br = 0, bg = 0, bb = 0;
+    corners.forEach(off => { br += data[off]; bg += data[off + 1]; bb += data[off + 2]; });
+    br /= 4; bg /= 4; bb /= 4;
+
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const off = (y * width + x) * 4;
+        const dist = Math.abs(data[off] - br) + Math.abs(data[off + 1] - bg) + Math.abs(data[off + 2] - bb);
+        if (dist > 24) {
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+        }
+      }
+    }
+  }
+
+  if (maxX < 0) { // nothing detected, fall back to full canvas
+    return { minX: 0, minY: 0, maxX: width - 1, maxY: height - 1, empty: true };
+  }
+  return { minX, minY, maxX, maxY, empty: false };
+}
+
+function fmt(n){ return Math.round(n * 10) / 10; }
+
+function addItem(ul, status, text){
+  const li = document.createElement('li');
+  li.className = status;
+  const ic = status === 'pass' ? '✓' : status === 'warn' ? '!' : '✕';
+  li.innerHTML = `<span class="ic">${ic}</span><span>${text}</span>`;
+  ul.appendChild(li);
+}
+
+function analyzeImage(img, slotKey){
+  const spec = SPECS[slotKey];
+  const analysisBox = $('analysis-' + slotKey);
+  const canvas = $('canvas-' + slotKey);
+  const metricsEl = $('metrics-' + slotKey);
+  const checklist = $('checklist-' + slotKey);
+  const suggestionsEl = $('suggestions-' + slotKey);
+
+  analysisBox.style.display = 'flex';
+  checklist.innerHTML = '';
+  suggestionsEl.innerHTML = '';
+  suggestionsEl.classList.remove('show');
+
+  const naturalW = img.naturalWidth;
+  const naturalH = img.naturalHeight;
+
+  // render at a fixed scale so small logos are still readable in the canvas preview
+  const scale = Math.min(4, 900 / Math.max(naturalW, 1));
+  const cw = Math.max(1, Math.round(naturalW * scale));
+  const ch = Math.max(1, Math.round(naturalH * scale));
+  canvas.width = cw;
+  canvas.height = ch;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, cw, ch);
+  ctx.drawImage(img, 0, 0, cw, ch);
+
+  let bbox, imgData;
+  try {
+    imgData = ctx.getImageData(0, 0, cw, ch);
+    bbox = detectBBox(imgData);
+  } catch (e) {
+    metricsEl.innerHTML = '<b>Pixel analysis unavailable</b> (cross-origin canvas restriction).';
+    return;
+  }
+
+  // overlay: full-canvas outline + detected tight bbox
+  ctx.save();
+  ctx.strokeStyle = 'rgba(11,31,58,.35)';
+  ctx.lineWidth = 1;
+  ctx.setLineDash([4, 3]);
+  ctx.strokeRect(0.5, 0.5, cw - 1, ch - 1);
+
+  ctx.strokeStyle = '#d0342c';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([6, 4]);
+  ctx.strokeRect(bbox.minX + 1, bbox.minY + 1, (bbox.maxX - bbox.minX) - 1, (bbox.maxY - bbox.minY) - 1);
+  ctx.restore();
+
+  const bboxW = bbox.maxX - bbox.minX + 1;
+  const bboxH = bbox.maxY - bbox.minY + 1;
+  const leftPad = bbox.minX;
+  const rightPad = cw - 1 - bbox.maxX;
+  const topPad = bbox.minY;
+  const bottomPad = ch - 1 - bbox.maxY;
+
+  const leftPct = (leftPad / cw) * 100;
+  const rightPct = (rightPad / cw) * 100;
+  const topPct = (topPad / ch) * 100;
+  const bottomPct = (bottomPad / ch) * 100;
+
+  // scale everything back down to the image's own natural pixel units for reporting
+  const nBboxW = fmt(bboxW / scale);
+  const nBboxH = fmt(bboxH / scale);
+  const nLeft = fmt(leftPad / scale);
+  const nRight = fmt(rightPad / scale);
+  const nTop = fmt(topPad / scale);
+  const nBottom = fmt(bottomPad / scale);
+  const aspect = fmt(nBboxW / nBboxH);
+
+  // remember the tight-crop bounds (in the image's own natural pixel units) for the auto-fix step
+  slotState[slotKey] = Object.assign(slotState[slotKey] || {}, {
+    naturalW, naturalH,
+    left: nLeft, top: nTop, bboxW: nBboxW, bboxH: nBboxH,
+    empty: bbox.empty
+  });
+  const autofixBox = $('autofix-' + slotKey);
+  const fixBtn = $('fixbtn-' + slotKey);
+  if (autofixBox && fixBtn) {
+    autofixBox.classList.toggle('show', !bbox.empty);
+    fixBtn.disabled = false;
+  }
+
+  const metricRow = (label, value) => `<div class="metric-row"><span class="m-label">${label}</span><span class="m-value">${value}</span></div>`;
+  metricsEl.innerHTML =
+    metricRow('Declared size', `${naturalW} × ${naturalH} px`) +
+    metricRow('Tight content bounds', `${nBboxW} × ${nBboxH} px`) +
+    metricRow('Aspect ratio', `${aspect} : 1`) +
+    metricRow('Left whitespace', `${nLeft}px (${fmt(leftPct)}%)`) +
+    metricRow('Right whitespace', `${nRight}px (${fmt(rightPct)}%)`) +
+    metricRow('Top whitespace', `${nTop}px (${fmt(topPct)}%)`) +
+    metricRow('Bottom whitespace', `${nBottom}px (${fmt(bottomPct)}%)`);
+
+  // ---- checklist ----
+  const suggestions = [];
+
+  // 1. declared canvas vs guideline width/height range
+  if (naturalW >= spec.minW && naturalW <= spec.maxW) {
+    addItem(checklist, 'pass', `Width ${naturalW}px is within the ${spec.minW}–${spec.maxW}px guideline.`);
+  } else if (naturalW < spec.minW) {
+    addItem(checklist, 'warn', `Width ${naturalW}px is below the ${spec.minW}–${spec.maxW}px guideline — logo may render smaller than intended.`);
+    suggestions.push(`Re-export at roughly ${spec.minW}–${spec.maxW}px wide (currently ${naturalW}px) to match the header guideline while keeping the same aspect ratio.`);
+  } else {
+    addItem(checklist, 'warn', `Width ${naturalW}px exceeds the ${spec.minW}–${spec.maxW}px guideline.`);
+    suggestions.push(`Trim the export width down toward ${spec.maxW}px — oversized canvases often hide unnecessary padding.`);
+  }
+
+  if (naturalH >= spec.minH && naturalH <= spec.maxH) {
+    addItem(checklist, 'pass', `Height ${naturalH}px is within the ${spec.minH}–${spec.maxH}px guideline.`);
+  } else {
+    addItem(checklist, 'warn', `Height ${naturalH}px is outside the ${spec.minH}–${spec.maxH}px guideline.`);
+    suggestions.push(`Adjust height to land between ${spec.minH}–${spec.maxH}px.`);
+  }
+
+  // 2. whitespace / tight-crop check
+  const maxPad = Math.max(leftPct, rightPct, topPct, bottomPct);
+  if (bbox.empty) {
+    addItem(checklist, 'fail', `Could not detect any visible artwork in this file.`);
+  } else if (maxPad <= PADDING_WARN_PCT) {
+    addItem(checklist, 'pass', `Canvas is tightly cropped to the artwork — no significant whitespace detected.`);
+  } else if (maxPad <= PADDING_FAIL_PCT) {
+    addItem(checklist, 'warn', `Some extra whitespace detected around the artwork (up to ${fmt(maxPad)}% of a side).`);
+    suggestions.push(`Crop the canvas/viewBox closer to the artwork bounds — trim roughly ${nLeft}px (left) / ${nRight}px (right) / ${nTop}px (top) / ${nBottom}px (bottom) of empty space.`);
+  } else {
+    addItem(checklist, 'fail', `Excessive whitespace/padding detected (up to ${fmt(maxPad)}% of a side) — this will make the logo look smaller than it should on the site.`);
+    suggestions.push(`This file has a padded/oversized canvas. Re-crop the SVG viewBox (or the raster canvas) tightly to x=${nLeft}, y=${nTop}, width=${nBboxW}, height=${nBboxH} in its own coordinate space, then re-export.`);
+  }
+
+  // 3. left/right symmetry (visual centering)
+  if (!bbox.empty && Math.abs(leftPct - rightPct) > 2) {
+    addItem(checklist, 'warn', `Left/right whitespace is uneven (${fmt(leftPct)}% vs ${fmt(rightPct)}%) — artwork may not be centered in its own canvas.`);
+    suggestions.push(`Re-center the artwork horizontally within the canvas so left and right clear-space match.`);
+  }
+
+  // 4. format check
+  const isSvg = img.src.startsWith('data:image/svg') || (img.dataset && img.dataset.isSvg === 'true');
+  if (isSvg) {
+    addItem(checklist, 'pass', `Vector SVG format — will stay crisp at any resolution/DPI.`);
+    if (naturalW === 300 && naturalH === 150) {
+      addItem(checklist, 'fail', `Browser fell back to the default 300×150 SVG canvas — this file is likely missing explicit width/height attributes matching its viewBox.`);
+      suggestions.push(`Add explicit width/height attributes to the root <svg> element that match the viewBox aspect ratio, instead of relying on default sizing.`);
+    }
+  } else {
+    addItem(checklist, 'warn', `Raster format (${naturalW}×${naturalH}px) — won't scale as sharply as SVG on high-DPI screens.`);
+    suggestions.push(`Prefer an SVG export for the header logo so it renders crisply across all screen densities.`);
+    if (naturalW < spec.maxW * 2) {
+      suggestions.push(`If staying raster, export at least 2–3× the rendered size (~${spec.maxW * 2}px+) for sharp retina rendering.`);
+    }
+  }
+
+  if (suggestions.length) {
+    suggestionsEl.classList.add('show');
+    suggestionsEl.innerHTML = `<h4>Suggested improvements</h4><ul>${suggestions.map(s => `<li>${s}</li>`).join('')}</ul>`;
+  }
+}
+
+// Builds a tightly-cropped version of the uploaded logo: same artwork, just the empty
+// canvas/viewBox space trimmed away and sized to the guideline range. For SVG this only
+// rewrites the viewBox/width/height — the vector artwork itself is never touched.
+function generateFix(slotKey){
+  const state = slotState[slotKey];
+  if (!state || state.empty) return;
+  const spec = SPECS[slotKey];
+
+  const aspect = state.bboxW / state.bboxH;
+
+  // Height drives the actual on-site size (header CSS uses max-height:40px, max-width is just
+  // a cap, not a floor) — so we fix height inside the guideline range first, then derive width
+  // from the artwork's real aspect ratio instead of forcing width into range and breaking height.
+  let targetH = spec.maxH;
+  let targetW = Math.round(targetH * aspect);
+  let aspectWarning = '';
+
+  if (targetW > spec.maxW) {
+    // too wide even at minimum height — cap width instead, height will land below spec.maxH
+    targetW = spec.maxW;
+    targetH = Math.round(targetW / aspect);
+    if (targetH < spec.minH) {
+      aspectWarning = `Heads up: at aspect ratio ${fmt(aspect)}:1, capping width at ${spec.maxW}px (so it doesn't overflow the header) pushes height down to ${targetH}px, under the ${spec.minH}–${spec.maxH}px target. Consider a tighter lockup with a lower width-to-height ratio.`;
+    }
+  } else if (targetW < spec.minW) {
+    aspectWarning = `Note: height is fixed at ${targetH}px (matches the ${spec.minH}–${spec.maxH}px guideline and the site's own max-height:40px rule), so width comes out to ${targetW}px — narrower than the ${spec.minW}–${spec.maxW}px reference range. That's expected for this mark's ${fmt(aspect)}:1 aspect ratio and renders correctly since the header only caps width, it doesn't enforce a minimum.`;
+  }
+
+  if (state.isSvg && state.svgText) {
+    try {
+      const doc = new DOMParser().parseFromString(state.svgText, 'image/svg+xml');
+      const svgEl = doc.documentElement;
+      const rawViewBox = (svgEl.getAttribute('viewBox') || `0 0 ${state.naturalW} ${state.naturalH}`).trim().split(/\s+/).map(Number);
+      const [ovx, ovy, ovw, ovh] = rawViewBox;
+      const scaleX = ovw / state.naturalW;
+      const scaleY = ovh / state.naturalH;
+
+      const newX = fmt(ovx + state.left * scaleX);
+      const newY = fmt(ovy + state.top * scaleY);
+      const newW = fmt(state.bboxW * scaleX);
+      const newH = fmt(state.bboxH * scaleY);
+
+      svgEl.setAttribute('viewBox', `${newX} ${newY} ${newW} ${newH}`);
+      svgEl.setAttribute('width', targetW);
+      svgEl.setAttribute('height', targetH);
+      svgEl.removeAttribute('style');
+
+      const newSvgText = new XMLSerializer().serializeToString(svgEl);
+      const blob = new Blob([newSvgText], { type: 'image/svg+xml' });
+      showFixed(slotKey, URL.createObjectURL(blob), targetW, targetH, `${slotKey}-logo-fixed.svg`, aspectWarning);
+    } catch (e) {
+      alert('Could not parse this SVG for auto-fixing. Try re-saving it from your design tool and upload again.');
+    }
+    return;
+  }
+
+  // raster: redraw the original image (clean, no overlay strokes) then crop to the tight bbox
+  const originalImg = document.querySelector('#bar-' + slotKey + ' img');
+  if (!originalImg) return;
+  const sourceCanvas = $('canvas-' + slotKey);
+  const sourceScale = sourceCanvas.width / state.naturalW;
+  const cleanCanvas = document.createElement('canvas');
+  cleanCanvas.width = sourceCanvas.width;
+  cleanCanvas.height = sourceCanvas.height;
+  cleanCanvas.getContext('2d').drawImage(originalImg, 0, 0, cleanCanvas.width, cleanCanvas.height);
+
+  const cropCanvas = document.createElement('canvas');
+  cropCanvas.width = targetW;
+  cropCanvas.height = targetH;
+  const ctx = cropCanvas.getContext('2d');
+  ctx.drawImage(
+    cleanCanvas,
+    state.left * sourceScale, state.top * sourceScale, state.bboxW * sourceScale, state.bboxH * sourceScale,
+    0, 0, targetW, targetH
+  );
+  cropCanvas.toBlob(blob => {
+    showFixed(slotKey, URL.createObjectURL(blob), targetW, targetH, `${slotKey}-logo-fixed.png`, aspectWarning);
+  });
+}
+
+function showFixed(slotKey, url, w, h, filename, aspectWarning){
+  const before = $('before-bar-' + slotKey);
+  const after = $('after-bar-' + slotKey);
+  const download = $('download-' + slotKey);
+  const resultBox = $('fixresult-' + slotKey);
+  const noteEl = resultBox.querySelector('.fix-note');
+
+  const originalImg = document.querySelector('#bar-' + slotKey + ' img');
+  before.innerHTML = '';
+  if (originalImg) {
+    const clone = originalImg.cloneNode();
+    before.appendChild(clone);
+  }
+
+  after.innerHTML = `<img src="${url}" alt="fixed logo" />`;
+  noteEl.innerHTML = aspectWarning
+    ? `⚠ ${aspectWarning}`
+    : `Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.`;
+  noteEl.style.color = aspectWarning ? 'var(--amber)' : '';
+  download.href = url;
+  download.download = filename;
+  download.textContent = `⬇ Download fixed logo (${w}×${h}px)`;
+  resultBox.classList.add('show');
+}
+
+function renderInBar(barEl, src, isSvg){
+  barEl.innerHTML = '';
+  const img = document.createElement('img');
+  img.src = src;
+  img.alt = 'logo preview';
+  if (isSvg) img.dataset.isSvg = 'true';
+  const links = document.createElement('div');
+  links.className = 'links';
+  links.innerHTML = '<span>Products</span><span>About</span><span>Contact</span>';
+  barEl.appendChild(img);
+  barEl.appendChild(links);
+  return img;
+}
+
+function wireSlot(slotKey, dropId, inputId, barId){
+  const drop = $(dropId);
+  const input = $(inputId);
+  const bar = $(barId);
+
+  function handleFile(file){
+    if (!file) return;
+    const isSvg = file.type === 'image/svg+xml' || /\.svg$/i.test(file.name);
+    const url = URL.createObjectURL(file);
+    slotState[slotKey] = { isSvg };
+    $('autofix-' + slotKey).classList.remove('show');
+    $('fixresult-' + slotKey).classList.remove('show');
+
+    const afterLoaded = () => {
+      const img = renderInBar(bar, url, isSvg);
+      img.onload = () => analyzeImage(img, slotKey);
+    };
+
+    if (isSvg) {
+      file.text().then(text => { slotState[slotKey].svgText = text; afterLoaded(); });
+    } else {
+      afterLoaded();
+    }
+  }
+
+  drop.addEventListener('click', (e) => { if (e.target !== input) input.click(); });
+  input.addEventListener('change', () => handleFile(input.files[0]));
+  ['dragover', 'dragenter'].forEach(evt => drop.addEventListener(evt, (e) => { e.preventDefault(); drop.classList.add('drag'); }));
+  ['dragleave', 'drop'].forEach(evt => drop.addEventListener(evt, (e) => { e.preventDefault(); drop.classList.remove('drag'); }));
+  drop.addEventListener('drop', (e) => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
+
+  $('fixbtn-' + slotKey).addEventListener('click', () => generateFix(slotKey));
+}
+
+wireSlot('large', 'drop-large', 'file-large', 'bar-large');
+wireSlot('small', 'drop-small', 'file-small', 'bar-small');
+wireSlot('current', 'drop-current', 'file-current', 'bar-current');
+
+// pre-load the current production logo (apps/website/src/assets/images/HeaderLogo.png) as base64
+const CURRENT_LOGO_BASE64 = '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';
+(function loadCurrentLogo(){
+  const src = 'data:image/png;base64,' + CURRENT_LOGO_BASE64;
+  const bar = $('bar-current');
+  const img = renderInBar(bar, src, false);
+  img.onload = () => analyzeImage(img, 'current');
+})();
+</script>
+
+</body>
+</html>
