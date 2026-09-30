@@ -125,7 +125,7 @@
   .panel h2 .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);display:inline-block;}
   .guideline-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:14px;
   }
   .guideline-card{
@@ -134,7 +134,14 @@
     border-left:4px solid var(--navy);
     border-radius:10px;
     padding:14px 16px;
+    display:flex;
+    flex-direction:column;
     transition:.15s transform,.15s box-shadow;
+  }
+  .guideline-card.featured{
+    background:#fff;
+    border-top:3px solid var(--orange);
+    box-shadow:0 4px 12px rgba(11,31,58,.07);
   }
   .guideline-card:hover{
     transform:translateY(-3px);
@@ -144,6 +151,26 @@
   .guideline-card b{display:block;font-size:13px;color:var(--navy);margin-bottom:4px;}
   .guideline-card span{font-size:12.5px;color:var(--gray-600);line-height:1.5;}
   .guideline-card .metric{font-size:20px;font-weight:700;color:var(--orange);margin:2px 0;}
+  .guideline-logo-preview{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:88px;
+    margin:10px 0 12px;
+    padding:10px;
+    background:#fff;
+    border:1px solid var(--gray-200);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .guideline-logo-preview img{
+    display:block;
+    width:100%;
+    height:auto;
+    object-fit:contain;
+  }
+  .guideline-logo-preview.large img{ max-width:360px; }
+  .guideline-logo-preview.compact img{ max-width:240px; }
 
   .known-issues{
     background:var(--amber-bg);
@@ -154,6 +181,68 @@
   }
   .known-issues h3{margin:0 0 8px;font-size:14px;color:var(--amber);}
   .known-issues ul{margin:0;padding-left:18px;font-size:13px;line-height:1.7;color:#4a3a17;}
+  .delivery-panel{
+    background:linear-gradient(135deg,#fff9f2,#fff);
+    border:1px solid #f1d49c;
+  }
+  .delivery-panel > p{
+    margin:-6px 0 16px;
+    color:var(--gray-600);
+    font-size:13px;
+    line-height:1.6;
+  }
+  .delivery-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:12px;
+  }
+  .delivery-item{
+    background:#fff;
+    border:1px solid #f1d49c;
+    border-radius:10px;
+    padding:14px;
+  }
+  .delivery-item strong{
+    display:block;
+    color:var(--navy);
+    font-size:13px;
+    margin-bottom:5px;
+  }
+  .delivery-item span{
+    display:block;
+    color:var(--gray-600);
+    font-size:12.5px;
+    line-height:1.55;
+  }
+  .workflow-intro{
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:10px;
+    margin:0 0 18px;
+  }
+  .workflow-step{
+    display:flex;
+    align-items:flex-start;
+    gap:9px;
+    padding:11px 12px;
+    background:var(--gray-100);
+    border:1px solid var(--gray-200);
+    border-radius:10px;
+  }
+  .workflow-step .step-number{
+    display:grid;
+    place-items:center;
+    flex:0 0 24px;
+    width:24px;
+    height:24px;
+    border-radius:50%;
+    background:var(--navy);
+    color:#fff;
+    font-size:11px;
+    font-weight:800;
+  }
+  .workflow-step strong{ display:block; color:var(--navy); font-size:12px; margin-bottom:2px; }
+  .workflow-step span{ display:block; color:var(--gray-600); font-size:11.5px; line-height:1.4; }
 
   .cards{
     display:grid;
@@ -186,8 +275,45 @@
     gap:12px;
   }
   .prod-preview-heading{
-    font-size:12.5px; font-weight:700; color:#1b5fad;
-    display:flex; align-items:center; gap:6px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    color:var(--navy);
+    font-size:16px;
+    font-weight:800;
+  }
+  .prod-preview-heading .preview-title{
+    display:flex;
+    align-items:center;
+    gap:7px;
+  }
+  .prod-preview-heading .preview-size{
+    flex:0 0 auto;
+    padding:5px 9px;
+    border-radius:999px;
+    background:#dceafb;
+    color:#1b5fad;
+    font-size:11px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .prod-preview-description{
+    margin:-5px 0 2px;
+    color:var(--gray-600);
+    font-size:12px;
+    line-height:1.45;
+  }
+  .preview-slot{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    min-width:0;
+  }
+  .preview-slot-heading{
+    color:var(--navy);
+    font-size:12px;
+    font-weight:800;
   }
   .upload-section{
     background:var(--gray-100);
@@ -201,6 +327,23 @@
   .upload-heading{
     font-size:12px; font-weight:700; color:var(--gray-600);
     text-transform:uppercase; letter-spacing:.3px;
+  }
+  .variant-select{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    font-size:11.5px;
+    font-weight:700;
+    color:var(--gray-600);
+  }
+  .variant-select select{
+    width:100%;
+    border:1px solid var(--gray-200);
+    border-radius:8px;
+    background:#fff;
+    color:#1c2433;
+    padding:9px 10px;
+    font:inherit;
   }
 
   .dropzone{
@@ -269,6 +412,17 @@
   .metrics-heading{
     font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:.5px;
     color:var(--gray-600); display:flex; align-items:center; gap:6px;
+  }
+  .stats-panel{
+    display:none;
+    background:linear-gradient(135deg,#f7faff,#fff);
+    border:1px solid #c9dcf5;
+    border-radius:12px;
+    padding:14px;
+  }
+  .stats-panel .metrics-heading{
+    color:#1b5fad;
+    margin-bottom:10px;
   }
   .metrics{
     display:flex;
@@ -360,6 +514,12 @@
     border-color:var(--navy);
     color:#fff;
   }
+  .priority-help{
+    margin:0 0 10px;
+    color:var(--gray-600);
+    font-size:11.5px;
+    line-height:1.5;
+  }
   .fix-btn{
     width:100%;
     border:none;
@@ -407,7 +567,41 @@
     padding:8px 12px; border-radius:8px;
   }
   .download-btn:hover{ background:#fff; border-color:var(--green); }
-  .fix-note{ font-size:11.5px; color:var(--gray-600); line-height:1.5; margin:8px 0 0; }
+  .fix-note{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+    font-size:11.5px;
+    color:var(--gray-600);
+    line-height:1.5;
+    margin:8px 0 0;
+  }
+  .fix-note.warning{
+    padding:10px 12px;
+    border:1px solid #f1d49c;
+    border-radius:8px;
+    background:var(--amber-bg);
+    color:#5a4321;
+  }
+  .fix-note .fix-note-title{ color:var(--amber); font-size:12px; font-weight:800; }
+  .fix-note .fix-next{ color:var(--navy); font-weight:700; }
+  .embed-note{
+    display:none;
+    margin:8px 0 0;
+    padding:8px 10px;
+    border-radius:8px;
+    background:#eef3fb;
+    color:#1b5fad;
+    font-size:11.5px;
+    line-height:1.45;
+  }
+  .embed-note.show{ display:block; }
+
+  @media (max-width:700px){
+    .workflow-intro{ grid-template-columns:1fr; }
+    .prod-preview-heading{ align-items:flex-start; flex-direction:column; }
+    .guideline-grid{ grid-template-columns:1fr; }
+  }
 
   footer.note{
     text-align:center; font-size:11.5px; color:var(--gray-400); padding:10px 0 40px;
@@ -422,7 +616,8 @@
      unnecessary whitespace, correct viewBox, and the right pixel range for consistent rendering.
      Pre-loaded with the current production logo — upload a new candidate anytime to compare.</p>
   <div class="badge-strip">
-    <span>Target: 300–390 × 35–40 px</span>
+    <span>Large preview: 360 × 39 px</span>
+    <span>Compact preview: 240 × 55 px</span>
     <span>viewBox must match artwork bounds</span>
     <span>No page-sized artboards</span>
     <span>No unnecessary whitespace</span>
@@ -440,15 +635,21 @@
     </h2>
     <div class="panel-body">
     <div class="guideline-grid">
-      <div class="guideline-card">
-        <b>Large / desktop header logo</b>
-        <div class="metric">300–390 × 35–40 px</div>
-        <span>Used in the main desktop navigation. Export width should not exceed ~390px or fall under ~300px.</span>
+      <div class="guideline-card featured">
+        <b>Large logo · primary header lockup</b>
+        <div class="guideline-logo-preview large">
+          <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDgwNy42MSA5Ny4wMyI+CiAgPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDMwLjguMSwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDIuMS40IEJ1aWxkIDEpICAtLT4KICA8ZyBpZD0iTG9nbyI+CiAgICA8Zz4KICAgICAgPGc+CiAgICAgICAgPHBhdGggZD0iTTM0Mi41NiwyMC45NWMxNS4xOCwwLDI3LjU3LDEyLjQzLDI3LjYyLDI3LjcuMDIsNy40MS0yLjg0LDE0LjQtOC4wNiwxOS42OC01LjIxLDUuMjYtMTIuMTIsOC4xNy0xOS40Nyw4LjE5bC0zNy41OC4xMi0uMTgtNTUuNTcsMzcuNTgtLjEyaC4wOU0zNDIuNTYsNS44NHMtLjA5LDAtLjE0LDBsLTUxLjEyLjE2Yy0uODYsMC0xLjU2LjcxLTEuNTYsMS41OGwuMjYsODIuNjRjMCwuODcuNywxLjU3LDEuNTcsMS41N2gwbDUxLjEyLS4xNmMyMy41Ni0uMDcsNDIuNjYtMTkuMzgsNDIuNTktNDMuMDMtLjA3LTIzLjYtMTkuMjMtNDIuNzYtNDIuNzItNDIuNzZoMFoiIGZpbGw9IiNlMzA2MTMiLz4KICAgICAgICA8cGF0aCBkPSJNNzUuMjMsNzguMjljMC0uODctLjcxLTEuNTctMS41Ny0xLjU3bC0zOS41NC4xM2MtNi44OS4wMi0xMi41Mi00LjkyLTEyLjU0LTExLjAybC0uMTgtNTguNDNjMC0uODctLjcxLTEuNTctMS41Ny0xLjU3bC0xMS43LjA0Yy0uODYsMC0xLjU2LjcxLTEuNTYsMS41OGwuMTgsNTguNDNjLjA0LDE0LjMyLDEyLjM0LDI1LjkzLDI3LjQyLDI1Ljg4bDM5LjU0LS4xM2MuODcsMCwxLjU2LS43MSwxLjU2LTEuNThsLS4wNC0xMS43NloiIGZpbGw9IiNlMzA2MTMiLz4KICAgICAgPC9nPgogICAgICA8cGF0aCBkPSJNMjc0Ljg0LDMxLjU4Yy0uMDQtMTQuMjUtMTEuNjgtMjUuODEtMjUuOTMtMjUuNzZsLTMzLjI2LjFjLTE0LjI1LjA0LTI1LjgxLDExLjY4LTI1Ljc2LDI1LjkzbC4xOCw1OC4xNmMwLC44Ni43MSwxLjU2LDEuNTcsMS41NmwxMS43LS4wNGMuNTksMCwxLjEtLjMzLDEuMzYtLjgydi01LjU4aC4wNGwtLjAzLTUzLjMzYy0uMDItNi4wNyw0LjktMTEuMDMsMTAuOTgtMTEuMDVsMzMuMjYtLjFjNi4wNy0uMDIsMTEuMDMsNC45LDExLjA1LDEwLjk4bC4wMyw1My41MWguMDJ2NC42NWgwYzAsLjg2Ljg1LDEuNTYsMS43MSwxLjU2bDExLjctLjA0Yy44NywwLDEuNTYtLjcxLDEuNTYtMS41N2wtLjE4LTU4LjE2WiIgZmlsbD0iI2UzMDYxMyIvPgogICAgICA8cGF0aCBkPSJNMTc0LjkxLDMxLjU4Yy0uMDQtMTQuMjUtMTEuNjgtMjUuODEtMjUuOTMtMjUuNzZsLTMzLjI2LjFjLTE0LjI1LjA1LTI1LjgxLDExLjY4LTI1Ljc2LDI1LjkzbC4xOCw1OC4xNmMwLC44Ni43MSwxLjU2LDEuNTcsMS41NmwxMS43LS4wNGMuNTksMCwxLjEtLjMzLDEuMzYtLjgydi01LjU4aC4wNHYtMjUuODhzNTUuMjcsMCw1NS4yNywwdjI1Ljg4aC4wM3Y0LjY1YzAsLjg2Ljg0LDEuNTYsMS43MSwxLjU2bDExLjctLjA0Yy44NiwwLDEuNTYtLjcxLDEuNTYtMS41N2wtLjE4LTU4LjE2Wk0xMDQuOCw0NC41OXYtMTIuNzljLS4wMy02LjA3LDQuOS0xMS4wMywxMC45Ny0xMS4wNWwzMy4yNi0uMWM2LjA3LS4wMiwxMS4wMyw0LjksMTEuMDUsMTAuOTh2MTIuOTdzLTU1LjI3LDAtNTUuMjcsMFoiIGZpbGw9IiNlMzA2MTMiLz4KICAgIDwvZz4KICAgIDxnPgogICAgICA8ZyBpZD0iX3gzMl9DX1N0YW5kYXJkX194QUVfIj4KICAgICAgICA8Zz4KICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iNDY2LjQzIDc1LjUyIDQ1Ny4xMyA5Mi4wNSA0NzUuNDMgOTIuMDUgNDg1LjAyIDc1LjUyIDQ2Ni40MyA3NS41MiIgZmlsbD0iI2UzMDYxMyIvPgogICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSI0ODUuNTIgMzkuOSA0NzQuOTcgNTguMzQgNDk0LjUzIDkyLjExIDUxNS41MiA5Mi4xMSA0ODUuNTIgMzkuOSIgZmlsbD0iIzFkMWQxYiIvPgogICAgICAgICAgPHBvbHlnb24gcG9pbnRzPSI1MTUuNDEgNDQuNDIgNTE1LjQxIDkyLjE0IDUzMi44MiA5Mi4xNCA1MzIuODIgNzAuNDggNTQyLjc3IDkyLjM0IDU1Ny4wMyA5Mi4zNCA1NjcuMTggNzAuNDggNTY3LjE4IDkyLjE0IDU4NC41NCA5Mi4xNCA1ODQuNTQgNDQuNDIgNTYwLjc4IDQ0LjQyIDU0OS43MiA2OC4yIDUzOC44NiA0NC4zNyA1MTUuNDEgNDQuNDIiIGZpbGw9IiMxZDFkMWIiLz4KICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iNTg5Ljg5IDQ0LjM2IDU4OS44OSA5Mi4wNyA2MzMuNyA5Mi4wNyA2MzMuNyA3OC42MyA2MDcuNTEgNzguNjMgNjA3LjUxIDcyLjc5IDYzMy43IDcyLjc5IDYzMy43IDYwLjQ5IDYwNy41MSA2MC40OSA2MDcuNTEgNTcuMTMgNjMzLjcgNTcuMTMgNjMzLjcgNDQuMzYgNTg5Ljg5IDQ0LjM2IiBmaWxsPSIjMWQxZDFiIi8+CiAgICAgICAgICA8cG9seWdvbiBwb2ludHM9IjY5MS4xNiA0NC4zOCA2OTEuMTYgOTIuMTEgNzM1LjEzIDkyLjExIDczNS4xMyA3OC42NiA3MDguODQgNzguNjYgNzA4Ljg0IDcyLjggNzM1LjEzIDcyLjggNzM1LjEzIDYwLjUzIDcwOC44NCA2MC41MyA3MDguODQgNTcuMTcgNzM1LjEzIDU3LjE3IDczNS4xMyA0NC4zOCA2OTEuMTYgNDQuMzgiIGZpbGw9IiMxZDFkMWIiLz4KICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iNjM2Ljg0IDQ0LjMyIDYzNi44NCA1Ny4wOSA2NTMuNDggNTcuMDkgNjUzLjQ4IDkyLjAzIDY3MSA5Mi4wMyA2NzEgNTcuMDkgNjg3Ljg1IDU3LjA5IDY4Ny44NSA0NC4zMiA2MzYuODQgNDQuMzIiIGZpbGw9IiMxZDFkMWIiLz4KICAgICAgICAgIDxwb2x5Z29uIHBvaW50cz0iNzcwLjE0IDQ0LjMyIDc1OC4yMiA1Ny40IDc1OC4yMiA0NC4zMiA3MzkuODkgNDQuMzIgNzM5Ljg5IDkyLjAzIDc1OC4yMiA5Mi4wMyA3NTguMjIgNzguNTkgNzYwLjIgNzYuMTYgNzY5LjY5IDkyLjAzIDc5MS42NyA5Mi4wMyA3NzIuMjMgNjMuNDUgNzg5LjYzIDQ0LjMyIDc3MC4xNCA0NC4zMiIgZmlsbD0iIzFkMWQxYiIvPgogICAgICAgICAgPGc+CiAgICAgICAgICAgIDxwYXRoIGQ9Ik03OTcuMTgsNTcuNTJjLTMuNjgsMC02LjY3LTIuOTktNi42Ny02LjY3czIuOTktNi42Nyw2LjY3LTYuNjcsNi42NywyLjk5LDYuNjcsNi42Ny0yLjk5LDYuNjctNi42Nyw2LjY3TTc5Ny4xOCw0NS4yOGMtMy4wOCwwLTUuNTcsMi41LTUuNTcsNS41N3MyLjUsNS41OCw1LjU3LDUuNTgsNS41Ny0yLjUsNS41Ny01LjU4LTIuNS01LjU3LTUuNTctNS41NyIgZmlsbD0iIzFkMWQxYiIvPgogICAgICAgICAgICA8cGF0aCBkPSJNNzk1LjQ1LDQ4LjE0aDIuMzljLjQ4LDAsMS4yOC4wOSwxLjI4LDEuMTlzLS43NCwxLjIzLTEuNDQsMS4yM2gtMi4yMnYtMi40MVpNNzk1LjQ1LDUxLjM3aDIuMzJjMS4xNSwwLDEuMjYuNjgsMS4yNiwxLjI2LDAsLjI3LjAzLDEuMzQuMTcsMS43OGgxLjE3di0uMTZjLS4yOS0uMTctLjM0LS4zMi0uMzUtLjcxbC0uMDYtMS4yOGMtLjA0LS45OS0uNDUtMS4xNy0uODUtMS4zMy40NS0uMjcuOTktLjY1Ljk5LTEuNywwLTEuNS0xLjE3LTEuOTEtMi4zMy0xLjkxaC0zLjI4djcuMDloLjk2di0zLjA0WiIgZmlsbD0iIzFkMWQxYiIvPgogICAgICAgICAgPC9nPgogICAgICAgIDwvZz4KICAgICAgPC9nPgogICAgICA8bGluZSB4MT0iNDQxLjM4IiB5MT0iNDAuOTYiIHgyPSI0MTMuMjkiIHkyPSI5MC42OCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZGFkYWRhIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1taXRlcmxpbWl0PSIxMCIgc3Ryb2tlLXdpZHRoPSIxLjg3Ii8+CiAgICA8L2c+CiAgPC9nPgogIDxnIGlkPSJSZWdpc3RlcmVkX01hcmsiPgogICAgPGc+CiAgICAgIDxwYXRoIGQ9Ik00MDcuMjksMTEuMjljLS45NC0xLjY3LTIuMjYtMi45OS0zLjk1LTMuOTctMS42OS0uOTgtMy42MS0xLjQ3LTUuNzQtMS40Ni0yLjE0LDAtNC4wNC41LTUuNzEsMS40Ny0xLjY3Ljk3LTIuOTcsMi4zLTMuOSwzLjk3LS45MywxLjY3LTEuMzksMy41NS0xLjM5LDUuNjJzLjUsNC4wMSwxLjQ3LDUuNzFjLjk3LDEuNywyLjI5LDMuMDUsMy45NSw0LjA1LDEuNjYsMSwzLjU1LDEuNDksNS42OSwxLjQ5czQuMDMtLjUxLDUuNjgtMS41MmMxLjY1LTEuMDEsMi45NS0yLjM2LDMuOS00LjA1Ljk1LTEuNjksMS40Mi0zLjU3LDEuNDEtNS42NHMtLjQ4LTMuOTktMS40Mi01LjY2Wk00MDUuNjIsMjEuNjRjLS44LDEuNDItMS44NywyLjU1LTMuMjIsMy4zNy0xLjM1LjgyLTIuOTMsMS4yNC00LjczLDEuMjRzLTMuMzQtLjQtNC43MS0xLjIxYy0xLjM3LS44MS0yLjQ1LTEuOTMtMy4yMi0zLjM1LS43Ny0xLjQyLTEuMTYtMy4wMS0xLjE3LTQuNzhzLjM3LTMuMjksMS4xNC00LjY2Yy43Ni0xLjM3LDEuODMtMi40NywzLjItMy4yOSwxLjM3LS44MiwyLjk0LTEuMjQsNC43MS0xLjI0LDEuOCwwLDMuMzguNCw0Ljc0LDEuMjEsMS4zNi44MiwyLjQ0LDEuOTEsMy4yNCwzLjI3LjgxLDEuMzcsMS4yMSwyLjkyLDEuMjIsNC42NnMtLjM5LDMuMzctMS4xOSw0Ljc5WiIgZmlsbD0iI2UzMDYxMyIvPgogICAgICA8cGF0aCBkPSJNNDAxLjAyLDE3LjAxYy42OC0uNTEsMS4wMi0xLjE4LDEuMDItMi4wM3MtLjM1LTEuNDgtMS4wMy0yYy0uNjktLjUyLTEuNTYtLjc3LTIuNjMtLjc3aC0yLjI2cy0uNiwwLS42LDBoLTEuNTVzLjAzLDkuNTMuMDMsOS41M2gyLjE2cy0uMDEtMy45Ny0uMDEtMy45N2guMzZzMy42NywzLjk1LDMuNjcsMy45NWgyLjY2cy0zLjgzLTQtMy44My00Yy44MS0uMDgsMS40OS0uMzIsMi4wMy0uNzNaTTM5Ni4xMiwxMy43NGgyLjA1Yy41MywwLC45NS4xMSwxLjI1LjM1LjMuMjQuNDUuNTQuNDUuOSwwLC40Mi0uMTUuNzUtLjQ1Ljk5LS4zLjI0LS43Mi4zNi0xLjI1LjM2aC0yLjA1czAtMi42MSwwLTIuNjFaIiBmaWxsPSIjZTMwNjEzIi8+CiAgICA8L2c+CiAgPC9nPgo8L3N2Zz4=" alt="Large logo reference preview" />
+        </div>
+        <div class="metric">360 × 39 px</div>
+        <span>Use this wide version at 360px wide. Its natural height is about 39px, so it fits the 35–40px header comfortably. Keep the artwork proportional and remove any extra canvas space.</span>
       </div>
-      <div class="guideline-card">
-        <b>Small / compact logo</b>
-        <div class="metric">~240 × 40 px</div>
-        <span>For mobile header, favicons-adjacent placements, or narrow containers — same height, tighter width.</span>
+      <div class="guideline-card featured">
+        <b>Compact logo · secondary lockup</b>
+        <div class="guideline-logo-preview compact">
+          <img src="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iUmVnaXN0ZXJlZF9NYXJrIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgdmlld0JveD0iMCAwIDM4Mi42OCA4Ny44Ij4KICA8IS0tIEdlbmVyYXRvcjogQWRvYmUgSWxsdXN0cmF0b3IgMzAuNy4wLCBTVkcgRXhwb3J0IFBsdWctSW4gLiBTVkcgVmVyc2lvbjogMi4xLjQgQnVpbGQgMTE0KSAgLS0+CiAgPGRlZnM+CiAgICA8c3R5bGU+CiAgICAgIC5zdDAgewogICAgICAgIGZpbGw6ICNlZDMxMzU7CiAgICAgIH0KCiAgICAgIC5zdDAsIC5zdDEgewogICAgICAgIGZpbGwtcnVsZTogZXZlbm9kZDsKICAgICAgfQoKICAgICAgLnN0MSB7CiAgICAgICAgZmlsbDogIzIzMWYyMDsKICAgICAgfQoKICAgICAgLnN0MiwgLnN0MywgLnN0NCB7CiAgICAgICAgaXNvbGF0aW9uOiBpc29sYXRlOwogICAgICB9CgogICAgICAuc3QyLCAuc3Q0IHsKICAgICAgICBmb250LWZhbWlseTogUm9ib3RvLUJvbGQsIFJvYm90bzsKICAgICAgICBmb250LXNpemU6IDI0LjA1cHg7CiAgICAgICAgZm9udC13ZWlnaHQ6IDcwMDsKICAgICAgfQoKICAgICAgLnN0NSB7CiAgICAgICAgZmlsbDogIzE5MTcxYzsKICAgICAgfQoKICAgICAgLnN0NCB7CiAgICAgICAgbGV0dGVyLXNwYWNpbmc6IC0uMDllbTsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGc+CiAgICA8cG9seWxpbmUgY2xhc3M9InN0MCIgcG9pbnRzPSIxMi43IDQwLjA1IDMzLjEgNDAuMDUgMjIuNTggNTguMTggMi41MSA1OC4xOCAxMi43IDQwLjA1Ii8+CiAgICA8Zz4KICAgICAgPHBvbHlsaW5lIGNsYXNzPSJzdDEiIHBvaW50cz0iMzMuNjQgMSA2Ni41NSA1OC4yNSA0My41MyA1OC4yNSAyMi4wNyAyMS4yMiAzMy42NCAxIi8+CiAgICAgIDxwb2x5bGluZSBjbGFzcz0ic3QxIiBwb2ludHM9IjY2LjQxIDUuOTcgOTIuMTIgNS45IDEwNC4wNCAzMi4wNCAxMTYuMTcgNS45NyAxNDIuMjIgNS45NyAxNDIuMjIgNTguMjggMTIzLjE4IDU4LjI4IDEyMy4xOCAzNC41MyAxMTIuMDUgNTguNTEgOTYuNDIgNTguNTEgODUuNTEgMzQuNTMgODUuNTEgNTguMjggNjYuNDEgNTguMjggNjYuNDEgNS45NyIvPgogICAgICA8cG9seWxpbmUgY2xhc3M9InN0MSIgcG9pbnRzPSIxNDguMDggNS45IDE5Ni4xMSA1LjkgMTk2LjExIDE5LjkgMTY3LjM5IDE5LjkgMTY3LjM5IDIzLjU4IDE5Ni4xMSAyMy41OCAxOTYuMTEgMzcuMDYgMTY3LjM5IDM3LjA2IDE2Ny4zOSA0My40NyAxOTYuMTEgNDMuNDcgMTk2LjExIDU4LjIxIDE0OC4wOCA1OC4yMSAxNDguMDggNS45Ii8+CiAgICAgIDxwb2x5bGluZSBjbGFzcz0ic3QxIiBwb2ludHM9IjI1OS4xMiA1LjkyIDMwNy4zMiA1LjkyIDMwNy4zMiAxOS45MyAyNzguNSAxOS45MyAyNzguNSAyMy42MSAzMDcuMzIgMjMuNjEgMzA3LjMyIDM3LjA4IDI3OC41IDM3LjA4IDI3OC41IDQzLjUgMzA3LjMyIDQzLjUgMzA3LjMyIDU4LjI1IDI1OS4xMiA1OC4yNSAyNTkuMTIgNS45MiIvPgogICAgICA8cG9seWxpbmUgY2xhc3M9InN0MSIgcG9pbnRzPSIxOTkuNTUgNS44NSAyNTUuNDkgNS44NSAyNTUuNDkgMTkuODQgMjM3LjAxIDE5Ljg0IDIzNy4wMSA1OC4xNiAyMTcuOCA1OC4xNiAyMTcuOCAxOS44NCAxOTkuNTUgMTkuODQgMTk5LjU1IDUuODUiLz4KICAgICAgPHBvbHlsaW5lIGNsYXNzPSJzdDEiIHBvaW50cz0iMzEyLjU0IDUuODUgMzMyLjY0IDUuODUgMzMyLjY0IDIwLjE5IDM0NS43MyA1Ljg1IDM2Ny4wOCA1Ljg1IDM0OC4wMSAyNi44MiAzNjkuMzIgNTguMTYgMzQ1LjIyIDU4LjE2IDMzNC44IDQwLjc2IDMzMi42NCA0My40MyAzMzIuNjQgNTguMTYgMzEyLjU0IDU4LjE2IDMxMi41NCA1Ljg1Ii8+CiAgICAgIDxwYXRoIGNsYXNzPSJzdDUiIGQ9Ik0zNzUuMzcsMjAuMzNjLTQuMDMsMC03LjMxLTMuMjgtNy4zMS03LjMxczMuMjgtNy4zMSw3LjMxLTcuMzEsNy4zMSwzLjI4LDcuMzEsNy4zMS0zLjI4LDcuMzEtNy4zMSw3LjMxTTM3NS4zNyw2LjljLTMuMzcsMC02LjEyLDIuNzQtNi4xMiw2LjExczIuNzQsNi4xMiw2LjEyLDYuMTIsNi4xMS0yLjc0LDYuMTEtNi4xMi0yLjc0LTYuMTEtNi4xMS02LjExWiIvPgogICAgICA8cGF0aCBjbGFzcz0ic3Q1IiBkPSJNMzczLjQ3LDEwLjA0aDIuNjJjLjUyLDAsMS40LjEsMS40LDEuMzFzLS44MiwxLjM0LTEuNTksMS4zNGgtMi40NHYtMi42M00zNzMuNDcsMTMuNThoMi41NWMxLjI2LDAsMS4zOC43NSwxLjM4LDEuMzgsMCwuMy4wMywxLjQ3LjE5LDEuOTVoMS4yOXYtLjE3Yy0uMzMtLjE5LS4zNy0uMzUtLjM4LS43OWwtLjA3LTEuNDFjLS4wMy0xLjA4LS40OS0xLjI3LS45Mi0xLjQ3LjQ5LS4zLDEuMDgtLjcyLDEuMDgtMS44NywwLTEuNjQtMS4yNy0yLjA5LTIuNTUtMi4wOWgtMy41OXY3Ljc4aDEuMDV2LTMuMzNsLS4wMi4wMloiLz4KICAgIDwvZz4KICA8L2c+CiAgPGcgY2xhc3M9InN0MyI+CiAgICA8dGV4dCBjbGFzcz0ic3QyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgwIDg3LjgpIHNjYWxlKDEuMzcgMSkiPjx0c3BhbiB4PSIwIiB5PSIwIj5TVVI8L3RzcGFuPjwvdGV4dD4KICAgIDx0ZXh0IGNsYXNzPSJzdDQiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDYzLjk0IDg3LjgpIHNjYWxlKDEuMzcgMSkiPjx0c3BhbiB4PSIwIiB5PSIwIj5GPC90c3Bhbj48L3RleHQ+CiAgICA8dGV4dCBjbGFzcz0ic3QyIiB0cmFuc2Zvcm09InRyYW5zbGF0ZSg3OC44NyA4Ny44KSBzY2FsZSgxLjM3IDEpIj48dHNwYW4geD0iMCIgeT0iMCI+QUNFIFZJU0lPTjwvdHNwYW4+PC90ZXh0PgogIDwvZz4KPC9zdmc+" alt="Compact logo reference preview" />
+        </div>
+        <div class="metric">240 × 55 px</div>
+        <span>Use this compact version at 240px wide for comparison. Its natural height is about 55px. If the header must stay within 35–40px high, reduce it to about 153–174px wide. Never stretch it.</span>
       </div>
       <div class="guideline-card">
         <b>Canvas / viewBox</b>
@@ -462,42 +663,52 @@
       </div>
     </div>
 
-    <div class="known-issues">
-      <h3>⚠ Known issues found in the current AMETEK XMC header logo</h3>
-      <ul>
-        <li><b>Raster format:</b> <code>HeaderLogo.png</code> is a PNG, not an SVG — it will blur on high‑DPI / retina screens since it can't scale.</li>
-        <li><b>Intrinsic size is 159 × 26 px</b> — below the 300–390 × 35–40 guideline and only marginally larger than the ~159×32 render size used in <code>Header.tsx</code>, leaving no headroom for sharp @2x/@3x rendering.</li>
-        <li><b>No dedicated small/compact variant</b> — the same asset is reused and simply constrained with <code>max-width</code> at smaller breakpoints (see <code>header.module.scss</code>), instead of shipping a purpose-cropped small logo.</li>
-        <li><b>Combined lockup</b> (Abaco Systems + AMETEK) increases overall width — verify the spacing between the two marks is intentional design clear-space, not incidental canvas padding.</li>
-      </ul>
-    </div>
     </div>
   </section>
 
   <section class="panel">
-    <h2><span class="dot"></span>Validate &amp; auto-crop your logo</h2>
-    <p style="font-size:12.8px;color:var(--gray-600);margin-top:-6px;">
-      Pre-loaded below with the current production logo. Drop a new SVG/PNG in to test a candidate instead — it's
-      rendered inside a mock navigation bar at its real size, then pixel-scanned to detect the tight content
-      bounding box vs. the canvas, so you can see exactly how much (if any) empty space surrounds the artwork.
-    </p>
+    <h2><span class="dot"></span>Test your logo in the header</h2>
+    <div class="workflow-intro" aria-label="Logo validation steps">
+      <div class="workflow-step">
+        <span class="step-number">1</span>
+        <div><strong>Upload</strong><span>Start with the production logo or add a candidate SVG/PNG.</span></div>
+      </div>
+      <div class="workflow-step">
+        <span class="step-number">2</span>
+        <div><strong>Review</strong><span>See the logo in the header and measure its real canvas space.</span></div>
+      </div>
+      <div class="workflow-step">
+        <span class="step-number">3</span>
+        <div><strong>Fix &amp; export</strong><span>Use the findings and auto-crop tool before delivery.</span></div>
+      </div>
+    </div>
 
     <div class="cards">
       <div class="card">
         <div class="prod-preview">
-          <div class="prod-preview-heading">🖥️ Live production preview — how it renders in the real header</div>
-          <div class="card-title">
-            <h3>🔍 Logo Validator — Header / Navigation</h3>
-            <small>target 300–390 × 35–40 px</small>
+          <div class="prod-preview-heading">
+            <div class="preview-title"><span aria-hidden="true">🖥️</span><span>Live header preview</span></div>
+            <span class="preview-size">360px reference</span>
           </div>
-          <div class="nav-preview">
-            <div class="bar" id="bar-large"></div>
-            <div class="label">Desktop header preview (max-width 390px / max-height 40px)</div>
+          <p class="prod-preview-description">See how the logo occupies the available header space. The preview preserves the artwork’s original proportions.</p>
+          <div class="preview-slot">
+            <div class="preview-slot-heading">Large logo placement</div>
+            <div class="nav-preview">
+              <div class="bar" id="bar-large"></div>
+              <div class="label">Preserve aspect ratio · height follows artwork</div>
+            </div>
           </div>
         </div>
 
         <div class="upload-section">
           <div class="upload-heading">⬆️ Test a candidate logo</div>
+          <label class="variant-select">
+            Logo variant
+            <select id="variant-large">
+              <option value="land">Large logo · primary header · preview at 360px wide</option>
+              <option value="asv">Compact logo · secondary · preview at 240px wide</option>
+            </select>
+          </label>
           <label class="dropzone" id="drop-large">
             <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -511,17 +722,20 @@
 
         <div class="analysis" id="analysis-large" style="display:none;">
           <canvas id="canvas-large" width="260" height="120"></canvas>
-          <div class="metrics-heading">📊 Measured stats — how this logo actually looks in production</div>
-          <div class="metrics" id="metrics-large"></div>
         </div>
         <div class="findings" id="findings-large"></div>
+        <div class="stats-panel" id="stats-large">
+          <div class="metrics-heading">📊 Logo measurements</div>
+          <div class="metrics" id="metrics-large"></div>
+        </div>
         <div class="autofix" id="autofix-large">
           <div class="priority-toggle" id="priority-large">
-            <span class="priority-label">Fit priority:</span>
+            <span class="priority-label">Auto-crop target</span>
             <button type="button" class="priority-btn active" data-priority="balanced">Balanced (recommended)</button>
-            <button type="button" class="priority-btn" data-priority="width">Width 300–390px</button>
-            <button type="button" class="priority-btn" data-priority="height">Height 35–40px</button>
+            <button type="button" class="priority-btn" id="priority-width-large" data-priority="width">Width target</button>
+            <button type="button" class="priority-btn" data-priority="height">Height target · 35–40px</button>
           </div>
+          <p class="priority-help" id="priority-help-large">Balanced keeps the artwork proportional and shares any unavoidable size difference between width and height.</p>
           <button class="fix-btn" id="fixbtn-large">✨ Auto-crop to guideline (remove extra space)</button>
           <div class="fix-result" id="fixresult-large">
             <div class="fix-compare">
@@ -530,8 +744,32 @@
             </div>
             <a class="download-btn" id="download-large" download>⬇ Download fixed logo</a>
             <p class="fix-note">Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.</p>
+            <p class="embed-note" id="embed-note-large">This page is embedded in an iframe. If download is blocked, add <code>allow-downloads</code> to the iframe sandbox or open the page directly.</p>
           </div>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel delivery-panel">
+    <h2><span class="dot"></span>Final logo delivery checklist</h2>
+    <p>Confirm these four items before handing the logo to the web or content team.</p>
+    <div class="delivery-grid">
+      <div class="delivery-item">
+        <strong>1. Choose the right version</strong>
+        <span>Use the large version for a wide primary header. Use the compact version where the available space is narrower.</span>
+      </div>
+      <div class="delivery-item">
+        <strong>2. Use the reference sizes</strong>
+        <span>Large preview: 360px wide and about 39px high. Compact preview: 240px wide and about 55px high.</span>
+      </div>
+      <div class="delivery-item">
+        <strong>3. Preserve the artwork</strong>
+        <span>Never stretch, squash, or crop the logo artwork. If the header needs 35–40px height, scale the compact version down proportionally.</span>
+      </div>
+      <div class="delivery-item">
+        <strong>4. Check the canvas</strong>
+        <span>Keep the SVG viewBox tight around the artwork. Remove unnecessary whitespace, then review the result in the browser before delivery.</span>
       </div>
     </div>
   </section>
@@ -542,7 +780,8 @@
 
 <script>
 const SPECS = {
-  large: { minW: 300, maxW: 390, minH: 35, maxH: 40 }
+  land: { minW: 320, maxW: 367, minH: 35, maxH: 40 },
+  asv: { minW: 153, maxW: 174, minH: 35, maxH: 40 }
 };
 
 const PADDING_WARN_PCT = 3;   // % of canvas side considered acceptable margin
@@ -554,6 +793,21 @@ const slotState = {}; // per-slot data needed to build the auto-cropped fixed lo
 const slotPriority = { large: 'balanced' };
 
 function $(id){ return document.getElementById(id); }
+
+const PRIORITY_HELP = {
+  balanced: 'Keeps the artwork proportional and shares any unavoidable size difference between width and height.',
+  width: 'Keeps the artwork proportional and prioritizes the selected width range. Height follows the logo aspect ratio.',
+  height: 'Keeps the artwork proportional and prioritizes the 35–40px height range. Width follows the logo aspect ratio.'
+};
+
+function updatePriorityControls(slotKey){
+  const variant = $('variant-' + slotKey).value;
+  const spec = SPECS[variant];
+  const widthButton = $('priority-width-' + slotKey);
+  const help = $('priority-help-' + slotKey);
+  widthButton.textContent = `Width target · ${spec.minW}–${spec.maxW}px`;
+  help.textContent = PRIORITY_HELP[slotPriority[slotKey] || 'balanced'];
+}
 
 // Detect the tight bounding box of "ink" pixels in an ImageData buffer.
 function detectBBox(imageData){
@@ -632,13 +886,16 @@ function renderFindings(container, findings){
 }
 
 function analyzeImage(img, slotKey){
-  const spec = SPECS[slotKey];
+  const state = slotState[slotKey] || {};
+  const spec = SPECS[state.variant || 'land'];
   const analysisBox = $('analysis-' + slotKey);
+  const statsBox = $('stats-' + slotKey);
   const canvas = $('canvas-' + slotKey);
   const metricsEl = $('metrics-' + slotKey);
   const findingsEl = $('findings-' + slotKey);
 
   analysisBox.style.display = 'flex';
+  statsBox.style.display = 'block';
   const findings = []; // { severity: 'good'|'high'|'low'|'info', text, tip }
   const addFinding = (severity, text, tip) => findings.push({ severity, text, tip });
 
@@ -651,7 +908,7 @@ function analyzeImage(img, slotKey){
   const ch = Math.max(1, Math.round(naturalH * scale));
   canvas.width = cw;
   canvas.height = ch;
-  const ctx = canvas.getContext('2d');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
   ctx.clearRect(0, 0, cw, ch);
   ctx.drawImage(img, 0, 0, cw, ch);
 
@@ -780,7 +1037,7 @@ function analyzeImage(img, slotKey){
 function generateFix(slotKey){
   const state = slotState[slotKey];
   if (!state || state.empty) return;
-  const spec = SPECS[slotKey];
+  const spec = SPECS[state.variant || 'land'];
   const priority = slotPriority[slotKey] || 'balanced';
 
   const aspect = state.bboxW / state.bboxH;
@@ -832,7 +1089,7 @@ function generateFix(slotKey){
     const hOff = targetH < spec.minH ? fmt(((spec.minH - targetH) / spec.minH) * 100)
       : targetH > spec.maxH ? fmt(((targetH - spec.maxH) / spec.maxH) * 100) : 0;
 
-    aspectWarning = `Balanced fit for this ${fmt(aspect)}:1 mark: ${targetW}×${targetH}px — width is ${wOff}% off its ${spec.minW}–${spec.maxW}px range and height is ${hOff}% off its ${spec.minH}–${spec.maxH}px range, split evenly instead of one dimension taking the full hit. Unstretched. A single non-stretched crop can't land fully inside both ranges unless the artwork's aspect ratio is ${fmt(minAspectForBox)}:1–${fmt(maxAspectForBox)}:1 (yours is ${fmt(aspect)}:1) — use the Width/Height toggle above to fully satisfy one range instead if you prefer.`;
+    aspectWarning = `Balanced result: ${targetW} × ${targetH}px. Width is ${wOff}% outside the ${spec.minW}–${spec.maxW}px range, and height is ${hOff}% outside the ${spec.minH}–${spec.maxH}px range. The logo remains proportional and unstretched. Both ranges can only be met when the artwork ratio is ${fmt(minAspectForBox)}:1–${fmt(maxAspectForBox)}:1; this logo is ${fmt(aspect)}:1.`;
   }
 
   if (state.isSvg && state.svgText) {
@@ -856,7 +1113,7 @@ function generateFix(slotKey){
 
       const newSvgText = new XMLSerializer().serializeToString(svgEl);
       const blob = new Blob([newSvgText], { type: 'image/svg+xml' });
-      showFixed(slotKey, URL.createObjectURL(blob), targetW, targetH, `${slotKey}-logo-fixed.svg`, aspectWarning);
+      showFixed(slotKey, blob, targetW, targetH, `${slotKey}-logo-fixed.svg`, aspectWarning);
     } catch (e) {
       alert('Could not parse this SVG for auto-fixing. Try re-saving it from your design tool and upload again.');
     }
@@ -883,16 +1140,21 @@ function generateFix(slotKey){
     0, 0, targetW, targetH
   );
   cropCanvas.toBlob(blob => {
-    showFixed(slotKey, URL.createObjectURL(blob), targetW, targetH, `${slotKey}-logo-fixed.png`, aspectWarning);
+    showFixed(slotKey, blob, targetW, targetH, `${slotKey}-logo-fixed.png`, aspectWarning);
   });
 }
 
-function showFixed(slotKey, url, w, h, filename, aspectWarning){
+function showFixed(slotKey, blob, w, h, filename, aspectWarning){
   const before = $('before-bar-' + slotKey);
   const after = $('after-bar-' + slotKey);
   const download = $('download-' + slotKey);
   const resultBox = $('fixresult-' + slotKey);
   const noteEl = resultBox.querySelector('.fix-note');
+  const embedNote = $('embed-note-' + slotKey);
+  const url = URL.createObjectURL(blob);
+
+  slotState[slotKey].fixedBlob = blob;
+  slotState[slotKey].fixedUrl = url;
 
   const originalImg = document.querySelector('#bar-' + slotKey + ' img');
   before.innerHTML = '';
@@ -902,14 +1164,47 @@ function showFixed(slotKey, url, w, h, filename, aspectWarning){
   }
 
   after.innerHTML = `<img src="${url}" alt="fixed logo" />`;
+  noteEl.classList.toggle('warning', Boolean(aspectWarning));
   noteEl.innerHTML = aspectWarning
-    ? `⚠ ${aspectWarning}`
+    ? `<strong class="fix-note-title">⚠ Size trade-off</strong><span>${aspectWarning}</span><span class="fix-next">Choose Width target or Height target above to prioritize one dimension. The artwork will not be stretched.</span>`
     : `Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.`;
-  noteEl.style.color = aspectWarning ? 'var(--amber)' : '';
   download.href = url;
   download.download = filename;
+  download.target = '_blank';
+  download.rel = 'noopener';
   download.textContent = `⬇ Download fixed logo (${w}×${h}px)`;
+  if (embedNote) embedNote.classList.toggle('show', window.top !== window.self);
   resultBox.classList.add('show');
+}
+
+async function saveFixedLogo(event, slotKey){
+  const state = slotState[slotKey];
+  if (!state || !state.fixedBlob) return;
+  event.preventDefault();
+
+  const filename = event.currentTarget.download || `${slotKey}-logo-fixed`;
+  if ('showSaveFilePicker' in window) {
+    try {
+      const handle = await window.showSaveFilePicker({ suggestedName: filename });
+      const writable = await handle.createWritable();
+      await writable.write(state.fixedBlob);
+      await writable.close();
+      return;
+    } catch (error) {
+      if (error.name === 'AbortError') return;
+    }
+  }
+
+  const url = state.fixedUrl || URL.createObjectURL(state.fixedBlob);
+  state.fixedUrl = url;
+  const fallback = document.createElement('a');
+  fallback.href = url;
+  fallback.download = filename;
+  fallback.target = '_blank';
+  fallback.rel = 'noopener';
+  document.body.appendChild(fallback);
+  fallback.click();
+  fallback.remove();
 }
 
 function renderInBar(barEl, src, isSvg){
@@ -931,7 +1226,7 @@ function wireSlot(slotKey, dropId, inputId, barId){
     if (!file) return;
     const isSvg = file.type === 'image/svg+xml' || /\.svg$/i.test(file.name);
     const url = URL.createObjectURL(file);
-    slotState[slotKey] = { isSvg };
+    slotState[slotKey] = { isSvg, variant: $('variant-' + slotKey).value };
     $('autofix-' + slotKey).classList.remove('show');
     $('fixresult-' + slotKey).classList.remove('show');
 
@@ -954,16 +1249,29 @@ function wireSlot(slotKey, dropId, inputId, barId){
   drop.addEventListener('drop', (e) => { const f = e.dataTransfer.files[0]; if (f) handleFile(f); });
 
   $('fixbtn-' + slotKey).addEventListener('click', () => generateFix(slotKey));
+  $('download-' + slotKey).addEventListener('click', event => saveFixedLogo(event, slotKey));
+
+  $('variant-' + slotKey).addEventListener('change', () => {
+    const state = slotState[slotKey];
+    if (!state) return;
+    state.variant = $('variant-' + slotKey).value;
+    updatePriorityControls(slotKey);
+    const currentImg = bar.querySelector('img');
+    if (currentImg) analyzeImage(currentImg, slotKey);
+  });
 
   document.querySelectorAll('#priority-' + slotKey + ' .priority-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#priority-' + slotKey + ' .priority-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       slotPriority[slotKey] = btn.dataset.priority;
+      updatePriorityControls(slotKey);
       // re-run the fix immediately if a result is already showing, so switching feels live
       if ($('fixresult-' + slotKey).classList.contains('show')) generateFix(slotKey);
     });
   });
+
+  updatePriorityControls(slotKey);
 }
 
 wireSlot('large', 'drop-large', 'file-large', 'bar-large');
@@ -985,6 +1293,7 @@ const CURRENT_LOGO_BASE64 = 'iVBORw0KGgoAAAANSUhEUgAAAJ8AAAAaCAYAAACpZo6LAAAACXB
 (function loadCurrentLogo(){
   const src = 'data:image/png;base64,' + CURRENT_LOGO_BASE64;
   const bar = $('bar-large');
+  slotState.large = { isSvg: false, variant: 'land' };
   const img = renderInBar(bar, src, false);
   img.onload = () => analyzeImage(img, 'large');
 })();
