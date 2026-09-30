@@ -744,7 +744,7 @@
             </div>
             <a class="download-btn" id="download-large" download>⬇ Download fixed logo</a>
             <p class="fix-note">Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.</p>
-            <p class="embed-note" id="embed-note-large">This page is embedded in an iframe. If download is blocked, add <code>allow-downloads</code> to the iframe sandbox or open the page directly.</p>
+            <p class="embed-note" id="embed-note-large">This page is embedded in an iframe. If a Save dialog doesn't appear, the fixed logo opens in this box instead — right-click it (or press Ctrl+S) and choose "Save Image As". No extra iframe permissions are needed.</p>
           </div>
         </div>
       </div>
@@ -1170,8 +1170,6 @@ function showFixed(slotKey, blob, w, h, filename, aspectWarning){
     : `Only empty canvas space is trimmed — the artwork itself is untouched, so the logo looks identical on every site, just exported at the right size.`;
   download.href = url;
   download.download = filename;
-  download.target = '_blank';
-  download.rel = 'noopener';
   download.textContent = `⬇ Download fixed logo (${w}×${h}px)`;
   if (embedNote) embedNote.classList.toggle('show', window.top !== window.self);
   resultBox.classList.add('show');
@@ -1192,19 +1190,16 @@ async function saveFixedLogo(event, slotKey){
       return;
     } catch (error) {
       if (error.name === 'AbortError') return;
+      // Picker unavailable/blocked (e.g. sandboxed iframe) — fall through to the manual-save fallback below.
     }
   }
 
-  const url = state.fixedUrl || URL.createObjectURL(state.fixedBlob);
-  state.fixedUrl = url;
-  const fallback = document.createElement('a');
-  fallback.href = url;
-  fallback.download = filename;
-  fallback.target = '_blank';
-  fallback.rel = 'noopener';
-  document.body.appendChild(fallback);
-  fallback.click();
-  fallback.remove();
+  // A frame can always navigate itself, even when sandboxed without "allow-downloads"/"allow-popups".
+  // So instead of a forced download, open the fixed file in this same frame and let the user save it
+  // manually (Ctrl+S or right-click → Save As) — no extra sandbox tokens required on the parent iframe.
+  const reader = new FileReader();
+  reader.onload = () => { window.location.href = reader.result; };
+  reader.readAsDataURL(state.fixedBlob);
 }
 
 function renderInBar(barEl, src, isSvg){
